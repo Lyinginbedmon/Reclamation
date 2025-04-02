@@ -1,11 +1,13 @@
 {
   "base_chance": 0.2,
   "catalysts": {
-    "blocks": [
-      "minecraft:cracked_stone_bricks"
-    ],
     "cap": 9,
-    "range": 4
+    "range": 4,
+    "target": {
+      "blocks": [
+        "minecraft:cracked_stone_bricks"
+      ]
+    }
   },
   "conditions": [
     {

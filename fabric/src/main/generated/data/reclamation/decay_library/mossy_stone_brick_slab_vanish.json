@@ -1,11 +1,13 @@
 {
   "base_chance": 0.15,
   "catalysts": {
-    "blocks": [
-      "minecraft:mossy_stone_brick_slab"
-    ],
     "cap": 9,
-    "range": 4
+    "range": 4,
+    "target": {
+      "blocks": [
+        "minecraft:mossy_stone_brick_slab"
+      ]
+    }
   },
   "conditions": [
     {

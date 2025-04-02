@@ -1,11 +1,13 @@
 {
   "base_chance": 0.4,
   "catalysts": {
-    "blocks": [
-      "reclamation:cracked_stone_brick_stairs"
-    ],
     "cap": 9,
-    "range": 4
+    "range": 4,
+    "target": {
+      "blocks": [
+        "reclamation:cracked_stone_brick_stairs"
+      ]
+    }
   },
   "conditions": [
     {

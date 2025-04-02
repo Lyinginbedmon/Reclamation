@@ -1,11 +1,13 @@
 {
   "base_chance": 0.1,
   "catalysts": {
-    "blocks": [
-      "reclamation:rusted_iron"
-    ],
     "cap": 9,
-    "range": 1
+    "range": 1,
+    "target": {
+      "blocks": [
+        "reclamation:rusted_iron"
+      ]
+    }
   },
   "conditions": [
     {

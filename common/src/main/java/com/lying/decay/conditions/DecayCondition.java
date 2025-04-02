@@ -1,6 +1,5 @@
 package com.lying.decay.conditions;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -15,11 +14,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -27,10 +22,6 @@ import net.minecraft.util.math.BlockPos;
 public abstract class DecayCondition
 {
 	public static final Codec<DecayCondition> CODEC = Codec.of(DecayCondition::encode, DecayCondition::decode);
-	
-	protected static final Codec<List<Block>> BLOCK_CODEC = Registries.BLOCK.getCodec().listOf();
-	protected static final Codec<List<BlockState>> BLOCKSTATE_CODEC = BlockState.CODEC.listOf();
-	protected static final Codec<List<TagKey<Block>>> TAG_CODEC = TagKey.codec(RegistryKeys.BLOCK).listOf();
 	
 	protected Optional<String> name = Optional.empty();
 	protected boolean inverted = false;

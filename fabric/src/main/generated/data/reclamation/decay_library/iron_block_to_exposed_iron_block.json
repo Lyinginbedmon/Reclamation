@@ -1,12 +1,14 @@
 {
   "base_chance": 0.1,
   "catalysts": {
-    "blocks": [
-      "reclamation:exposed_iron",
-      "minecraft:water"
-    ],
     "cap": 9,
-    "range": 1
+    "range": 1,
+    "target": {
+      "blocks": [
+        "reclamation:exposed_iron",
+        "minecraft:water"
+      ]
+    }
   },
   "conditions": [
     "reclamation:exposed",

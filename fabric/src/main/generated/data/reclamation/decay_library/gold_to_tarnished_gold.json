@@ -1,11 +1,13 @@
 {
   "base_chance": 0.05,
   "catalysts": {
-    "blocks": [
-      "reclamation:tarnished_gold"
-    ],
     "cap": 4,
-    "range": 1
+    "range": 1,
+    "target": {
+      "blocks": [
+        "reclamation:tarnished_gold"
+      ]
+    }
   },
   "conditions": [
     "reclamation:exposed",
