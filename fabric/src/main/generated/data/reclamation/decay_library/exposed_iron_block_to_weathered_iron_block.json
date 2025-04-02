@@ -1,0 +1,27 @@
+{
+  "base_chance": 0.1,
+  "catalysts": {
+    "blocks": [
+      "reclamation:weathered_iron"
+    ],
+    "cap": 9,
+    "range": 1
+  },
+  "conditions": [
+    {
+      "blocks": [
+        "reclamation:exposed_iron"
+      ],
+      "id": "reclamation:is_block"
+    }
+  ],
+  "functions": [
+    {
+      "blocks": [
+        "reclamation:weathered_iron"
+      ],
+      "id": "reclamation:convert"
+    }
+  ],
+  "name": "reclamation:exposed_iron_block_to_weathered_iron_block"
+}

@@ -1,0 +1,62 @@
+{
+  "base_chance": 0.15,
+  "catalysts": {
+    "blocks": [
+      "minecraft:mossy_stone_brick_stairs"
+    ],
+    "cap": 9,
+    "range": 4
+  },
+  "conditions": [
+    {
+      "blocks": [
+        "minecraft:mossy_stone_bricks"
+      ],
+      "id": "reclamation:is_block"
+    }
+  ],
+  "functions": [
+    {
+      "id": "reclamation:convert",
+      "states": [
+        {
+          "Name": "minecraft:mossy_stone_brick_stairs",
+          "Properties": {
+            "facing": "north",
+            "half": "bottom",
+            "shape": "straight",
+            "waterlogged": "false"
+          }
+        },
+        {
+          "Name": "minecraft:mossy_stone_brick_stairs",
+          "Properties": {
+            "facing": "east",
+            "half": "bottom",
+            "shape": "straight",
+            "waterlogged": "false"
+          }
+        },
+        {
+          "Name": "minecraft:mossy_stone_brick_stairs",
+          "Properties": {
+            "facing": "south",
+            "half": "bottom",
+            "shape": "straight",
+            "waterlogged": "false"
+          }
+        },
+        {
+          "Name": "minecraft:mossy_stone_brick_stairs",
+          "Properties": {
+            "facing": "west",
+            "half": "bottom",
+            "shape": "straight",
+            "waterlogged": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "name": "reclamation:mossy_stone_brick_to_mossy_stone_brick_stairs"
+}

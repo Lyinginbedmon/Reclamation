@@ -1,0 +1,16 @@
+{
+  "base_chance": 1.0,
+  "conditions": [
+    {
+      "blocks": [
+        "minecraft:gravel"
+      ],
+      "id": "reclamation:is_block"
+    },
+    "reclamation:air_above"
+  ],
+  "functions": [
+    "reclamation:shuffle"
+  ],
+  "name": "reclamation:gravel_shuffle"
+}

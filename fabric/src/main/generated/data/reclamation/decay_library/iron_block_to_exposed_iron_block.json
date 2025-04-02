@@ -1,0 +1,29 @@
+{
+  "base_chance": 0.1,
+  "catalysts": {
+    "blocks": [
+      "reclamation:exposed_iron",
+      "minecraft:water"
+    ],
+    "cap": 9,
+    "range": 1
+  },
+  "conditions": [
+    "reclamation:exposed",
+    {
+      "blocks": [
+        "minecraft:iron_block"
+      ],
+      "id": "reclamation:is_block"
+    }
+  ],
+  "functions": [
+    {
+      "blocks": [
+        "reclamation:exposed_iron"
+      ],
+      "id": "reclamation:convert"
+    }
+  ],
+  "name": "reclamation:iron_block_to_exposed_iron_block"
+}

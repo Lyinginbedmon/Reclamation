@@ -1,0 +1,26 @@
+{
+	"itemGroup.reclamation.item_group": "Reclamation",
+	// Entities
+	// Blocks
+	"block.reclamation.rusted_iron": "Rusted Iron",
+	"block.reclamation.weathered_iron": "Weathered Iron",
+	"block.reclamation.exposed_iron": "Exposed Iron",
+	"block.reclamation.tarnished_gold": "Tarnished Gold",
+	"block.reclamation.leaf_pile": "Leaf Pile",
+	"block.reclamation.cracked_stone_brick_slab": "Cracked Stone Brick Slab",
+	"block.reclamation.cracked_stone_brick_stairs": "Cracked Stone Brick Stairs",
+	// Items
+	"item.reclamation.withering_dust": "Withering Dust",
+	// Status effects
+	// Item tags
+	// Commands
+	"command.reclamation.failed_generic": "Command failed",
+	"command.reclamation.natural_decay_rate.get": "Natural decay rate is currently set to %s",
+	"command.reclamation.natural_decay_rate.set": "Set natural decay rate to %s",
+	"command.reclamation.natural_decay_radius.get": "Natural decay radius is currently set to %s",
+	"command.reclamation.natural_decay_radius.set": "Set natural decay radius to %s",
+	"command.reclamation.decay_region": "Tried to decay %s blocks, %s blocks affected"
+	// Gui
+	// Enums
+	// Keybinds
+}

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "reclamation",
+  "version": "${version}",
+  "name": "Reclamation",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/reclamation/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.lying.fabric.ReclamationFabric"
+    ],
+    "client": [
+      "com.lying.fabric.client.ReclamationFabricClient"
+    ],
+	"fabric-datagen": [
+		"com.lying.fabric.data.RCDataGenerators"
+	]
+  },
+  "mixins": [
+    "reclamation.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.21.4",
+    "java": ">=21",
+    "architectury": ">=15.0.1",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

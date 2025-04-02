@@ -1,0 +1,40 @@
+{
+  "base_chance": 0.4,
+  "catalysts": {
+    "blocks": [
+      "reclamation:cracked_stone_brick_slab"
+    ],
+    "cap": 9,
+    "range": 4
+  },
+  "conditions": [
+    {
+      "blocks": [
+        "reclamation:cracked_stone_brick_slab"
+      ],
+      "id": "reclamation:is_block"
+    }
+  ],
+  "functions": [
+    {
+      "id": "reclamation:convert",
+      "states": [
+        {
+          "Name": "minecraft:mossy_stone_brick_slab",
+          "Properties": {
+            "type": "bottom",
+            "waterlogged": "false"
+          }
+        }
+      ]
+    },
+    "reclamation:fall",
+    {
+      "blocks": [
+        "minecraft:air"
+      ],
+      "id": "reclamation:convert"
+    }
+  ],
+  "name": "reclamation:cracked_stone_brick_slab_vanish"
+}

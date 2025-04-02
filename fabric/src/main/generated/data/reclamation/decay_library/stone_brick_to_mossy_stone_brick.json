@@ -1,0 +1,27 @@
+{
+  "base_chance": 0.1,
+  "catalysts": {
+    "blocks": [
+      "minecraft:mossy_stone_bricks"
+    ],
+    "cap": 9,
+    "range": 4
+  },
+  "conditions": [
+    {
+      "blocks": [
+        "minecraft:stone_bricks"
+      ],
+      "id": "reclamation:is_block"
+    }
+  ],
+  "functions": [
+    {
+      "blocks": [
+        "minecraft:mossy_stone_bricks"
+      ],
+      "id": "reclamation:convert"
+    }
+  ],
+  "name": "reclamation:stone_brick_to_mossy_stone_brick"
+}

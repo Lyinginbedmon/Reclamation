@@ -1,0 +1,40 @@
+{
+  "base_chance": 0.4,
+  "catalysts": {
+    "blocks": [
+      "reclamation:cracked_stone_brick_stairs"
+    ],
+    "cap": 9,
+    "range": 4
+  },
+  "conditions": [
+    {
+      "blocks": [
+        "reclamation:cracked_stone_brick_stairs"
+      ],
+      "id": "reclamation:is_block"
+    }
+  ],
+  "functions": [
+    {
+      "id": "reclamation:convert",
+      "states": [
+        {
+          "Name": "reclamation:cracked_stone_brick_slab",
+          "Properties": {
+            "type": "bottom",
+            "waterlogged": "false"
+          }
+        },
+        {
+          "Name": "reclamation:cracked_stone_brick_slab",
+          "Properties": {
+            "type": "top",
+            "waterlogged": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "name": "reclamation:cracked_stone_brick_stairs_to_cracked_stone_brick_slab"
+}
