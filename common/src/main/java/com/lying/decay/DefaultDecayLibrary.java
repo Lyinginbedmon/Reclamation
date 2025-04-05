@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.lying.decay.conditions.ConditionHasValue;
+import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.conditions.ConditionBoolean;
@@ -39,10 +39,10 @@ public class DefaultDecayLibrary
 					RCDecayConditions.SKY_ABOVE.get(),
 					ConditionBoolean.Or.of(
 						ConditionBoolean.And.of(
-							ConditionHasValue.of(Map.of(Properties.WATERLOGGED, false)),
+							ConditionHasProperty.of(Map.of(Properties.WATERLOGGED, false)),
 							RCDecayConditions.IN_RAIN.get()).named("dry_block_in_rain"),
 						ConditionBoolean.And.of(
-							ConditionHasValue.of(Map.of(Properties.WATERLOGGED, true)),
+							ConditionHasProperty.of(Map.of(Properties.WATERLOGGED, true)),
 							RCDecayConditions.IN_RAIN.get().invert()).named("wet_block_in_sun")))
 				.function(
 					FunctionBlockState.CycleValue.of(Properties.WATERLOGGED)).build());
@@ -141,6 +141,7 @@ public class DefaultDecayLibrary
 				.name("gravel_shuffle")
 				.condition(
 					ConditionIsBlock.of(Blocks.GRAVEL),
+					RCDecayConditions.ON_GROUND.get(),
 					RCDecayConditions.AIR_ABOVE.get())
 				.function(
 					RCDecayFunctions.SHUFFLE.get()).build());

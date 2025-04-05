@@ -30,7 +30,7 @@ public class ConditionIsBlock extends DecayCondition
 	{
 		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
 		Builder builder = BlockPredicate.Builder.create();
-		builder.add(target);
+		builder.addBlock(target);
 		inst.predicate = builder.build();
 		return inst;
 	}
@@ -39,7 +39,7 @@ public class ConditionIsBlock extends DecayCondition
 	{
 		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
 		Builder builder = BlockPredicate.Builder.create();
-		builder.add(target);
+		builder.addBlockState(target);
 		inst.predicate = builder.build();
 		return inst;
 	}
@@ -49,8 +49,15 @@ public class ConditionIsBlock extends DecayCondition
 	{
 		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
 		Builder builder = BlockPredicate.Builder.create();
-		builder.add(target);
+		builder.addBlockTag(target);
 		inst.predicate = builder.build();
+		return inst;
+	}
+	
+	public static DecayCondition of(BlockPredicate predicate)
+	{
+		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
+		inst.predicate = predicate;
 		return inst;
 	}
 	

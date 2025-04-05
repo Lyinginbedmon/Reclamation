@@ -2,7 +2,9 @@ package com.lying.utility;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
@@ -22,26 +24,49 @@ public class BlockPredicate implements Predicate<BlockState>
 {
 	public static final Codec<BlockPredicate> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 			Registries.BLOCK.getCodec().listOf().optionalFieldOf("blocks").forGetter(p -> p.blocks),
-			BlockState.CODEC.listOf().optionalFieldOf("states").forGetter(p -> p.states),
-			TagKey.codec(RegistryKeys.BLOCK).listOf().optionalFieldOf("tags").forGetter(p -> p.tags))
-				.apply(instance, (a, b, c) -> 
+			BlockState.CODEC.listOf().optionalFieldOf("states").forGetter(p -> p.blockStates),
+			TagKey.codec(RegistryKeys.BLOCK).listOf().optionalFieldOf("tags").forGetter(p -> p.blockTags),
+			Codec.STRING.listOf().optionalFieldOf("properties").forGetter(p -> p.blockProperties),
+			PropertyMap.CODEC.listOf().optionalFieldOf("values").forGetter(p -> p.blockValues))
+				.apply(instance, (a, b, c, d, e) -> 
 				{
 					Builder builder = Builder.create();
-					a.ifPresent(l -> builder.add(l.toArray(new Block[0])));
-					b.ifPresent(l -> builder.add(l.toArray(new BlockState[0])));
-					c.ifPresent(l -> builder.addTags(l));
+					a.ifPresent(l -> builder.addBlock(l.toArray(new Block[0])));
+					b.ifPresent(l -> builder.addBlockState(l.toArray(new BlockState[0])));
+					c.ifPresent(l -> builder.addBlockTags(l));
+					d.ifPresent(l -> builder.addBlockProperty(l.toArray(new String[0])));
 					return builder.build();
 				}));
 	
 	protected final Optional<List<Block>> blocks;
-	protected final Optional<List<BlockState>> states;
-	protected final Optional<List<TagKey<Block>>> tags;
+	protected final Optional<List<BlockState>> blockStates;
+	protected final Optional<List<TagKey<Block>>> blockTags;
+	protected final Optional<List<String>> blockProperties;
+	protected final Optional<List<PropertyMap>> blockValues;
 	
-	protected BlockPredicate(Optional<List<Block>> blocksIn, Optional<List<BlockState>> statesIn, Optional<List<TagKey<Block>>> tagsIn)
+	/** List of type-specific Matcher objects for each internal Optional value */
+	protected final List<Matcher<?>> matchers;
+	
+	protected BlockPredicate(
+			Optional<List<Block>> blocksIn, 
+			Optional<List<BlockState>> statesIn, 
+			Optional<List<TagKey<Block>>> tagsIn, 
+			Optional<List<String>> blockPropertiesIn, 
+			Optional<List<PropertyMap>> blockValuesIn)
 	{
 		blocks = blocksIn;
-		states = statesIn;
-		tags = tagsIn;
+		blockStates = statesIn;
+		blockTags = tagsIn;
+		blockProperties = blockPropertiesIn;
+		blockValues = blockValuesIn;
+		
+		matchers = List.of(
+				new Matcher<Block>(blocks, (state, stream) -> stream.anyMatch(b -> state.isOf(b))), 
+				new Matcher<BlockState>(blockStates, (state, stream) -> stream.anyMatch(s -> state.equals(s))), 
+				new Matcher<TagKey<Block>>(blockTags, (state, stream) -> stream.anyMatch(t -> state.isIn(t))), 
+				new Matcher<String>(blockProperties, (state, stream) -> stream.allMatch(s -> state.getProperties().stream().anyMatch(p -> p.getName().equalsIgnoreCase(s)))),
+				new Matcher<PropertyMap>(blockValues, (state, stream) -> stream.anyMatch(map -> map.matches(state)))
+				);
 	}
 	
 	public JsonElement toJson()
@@ -56,21 +81,33 @@ public class BlockPredicate implements Predicate<BlockState>
 	
 	public boolean isEmpty()
 	{
-		return
-				blocks.isEmpty() &&
-				states.isEmpty() &&
-				tags.isEmpty();
+		return matchers.stream().allMatch(Matcher::isEmpty);
 	}
 	
 	public boolean test(BlockState currentState)
 	{
-		return
-				!isEmpty() &&
-				(
-					(blocks.isPresent() && blocks.get().stream().anyMatch(b -> currentState.isOf(b))) || 
-					(states.isPresent() && states.get().stream().anyMatch(s -> currentState.equals(s))) ||
-					(tags.isPresent() && tags.get().stream().anyMatch(t -> currentState.isIn(t)))
-				);
+		return matchers.stream().anyMatch(Matcher::isPresent) && matchers.stream().anyMatch(v -> v.match(currentState));
+	}
+	
+	private static class Matcher<T extends Object>
+	{
+		private final Optional<List<T>> values;
+		private final BiPredicate<BlockState, Stream<T>> handlerFunc;
+		
+		public Matcher(Optional<List<T>> valuesIn, BiPredicate<BlockState, Stream<T>> handlerFuncIn)
+		{
+			values = valuesIn;
+			handlerFunc = handlerFuncIn;
+		}
+		
+		public final boolean isPresent() { return values.isPresent(); }
+		
+		public final boolean isEmpty() { return values.isEmpty(); }
+		
+		public final boolean match(BlockState state)
+		{
+			return !values.isEmpty() && handlerFunc.test(state, values.get().stream());
+		}
 	}
 	
 	public static class Builder
@@ -78,12 +115,14 @@ public class BlockPredicate implements Predicate<BlockState>
 		List<Block> blocks = Lists.newArrayList();
 		List<BlockState> states = Lists.newArrayList();
 		List<TagKey<Block>> tags = Lists.newArrayList();
+		List<String> blockProperties = Lists.newArrayList();
+		List<PropertyMap> blockValues = Lists.newArrayList();
 		
 		protected Builder() { }
 		
 		public static Builder create() { return new Builder(); }
 		
-		public Builder add(Block... blocks)
+		public Builder addBlock(Block... blocks)
 		{
 			for(Block block : blocks)
 			{
@@ -94,7 +133,7 @@ public class BlockPredicate implements Predicate<BlockState>
 			return this;
 		}
 		
-		public Builder add(BlockState... states)
+		public Builder addBlockState(BlockState... states)
 		{
 			for(BlockState state : states)
 			{
@@ -106,18 +145,12 @@ public class BlockPredicate implements Predicate<BlockState>
 		}
 		
 		@SuppressWarnings("unchecked")
-		public Builder add(TagKey<Block>... tags)
+		public Builder addBlockTag(TagKey<Block>... tags)
 		{
-			for(TagKey<Block> tag : tags)
-			{
-				this.tags.removeIf(b -> b.equals(tag));
-				this.tags.add(tag);
-			}
-			
-			return this;
+			return addBlockTags(List.of(tags));
 		}
 		
-		public Builder addTags(List<TagKey<Block>> tagsIn)
+		public Builder addBlockTags(List<TagKey<Block>> tagsIn)
 		{
 			tagsIn.forEach(tag -> 
 			{
@@ -127,12 +160,36 @@ public class BlockPredicate implements Predicate<BlockState>
 			return this;
 		}
 		
+		public Builder addBlockProperty(String... values)
+		{
+			for(String value : values)
+				if(!blockProperties.contains(value))
+					blockProperties.add(value);
+			return this;
+		}
+		
+		public Builder addBlockValues(PropertyMap... values)
+		{
+			for(PropertyMap map : values)
+				if(blockValues.stream().noneMatch(b -> PropertyMap.equals(b, map)))
+					blockValues.add(map);
+			return this;
+		}
+		
+		/** Returns an optional of the given list or an empty optional if it is empty */
+		private static <T extends Object> Optional<List<T>> orEmpty(List<T> list)
+		{
+			return list.isEmpty() ? Optional.empty() : Optional.of(list);
+		}
+		
 		public BlockPredicate build()
 		{
 			return new BlockPredicate(
-					blocks.isEmpty() ? Optional.empty() : Optional.of(blocks), 
-					states.isEmpty() ? Optional.empty() : Optional.of(states),
-					tags.isEmpty() ? Optional.empty() : Optional.of(tags));
+					orEmpty(blocks), 
+					orEmpty(states),
+					orEmpty(tags),
+					orEmpty(blockProperties),
+					orEmpty(blockValues));
 		}
 	}
 }

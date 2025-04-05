@@ -73,20 +73,20 @@ public class Catalysers
 		
 		public Builder blocks(Block... blocksIn)
 		{
-			predicate.add(blocksIn);
+			predicate.addBlock(blocksIn);
 			return this;
 		}
 		
 		public Builder states(BlockState... statesIn)
 		{
-			predicate.add(statesIn);
+			predicate.addBlockState(statesIn);
 			return this;
 		}
 		
 		@SuppressWarnings("unchecked")
-		public Builder states(TagKey<Block>... tagsIn)
+		public Builder tags(TagKey<Block>... tagsIn)
 		{
-			predicate.add(tagsIn);
+			predicate.addBlockTag(tagsIn);
 			return this;
 		}
 		

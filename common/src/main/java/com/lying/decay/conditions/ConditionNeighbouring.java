@@ -1,10 +1,8 @@
 package com.lying.decay.conditions;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lying.init.RCDecayConditions;
@@ -93,9 +91,6 @@ public abstract class ConditionNeighbouring extends DecayCondition
 	
 	public static class Blocks extends ConditionNeighbouring
 	{
-		protected List<Block> blocks = Lists.newArrayList();
-		protected List<BlockState> states = Lists.newArrayList();
-		protected List<TagKey<Block>> tags = Lists.newArrayList();
 		protected BlockPredicate predicate = BlockPredicate.Builder.create().build();
 		
 		public Blocks(Identifier idIn)
@@ -112,7 +107,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		{
 			Blocks inst = (Blocks)RCDecayConditions.IS_BLOCK.get();
 			Builder builder = BlockPredicate.Builder.create();
-			builder.add(target);
+			builder.addBlock(target);
 			inst.predicate = builder.build();
 			return inst;
 		}
@@ -121,7 +116,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		{
 			Blocks inst = (Blocks)RCDecayConditions.IS_BLOCK.get();
 			Builder builder = BlockPredicate.Builder.create();
-			builder.add(target);
+			builder.addBlockState(target);
 			inst.predicate = builder.build();
 			return inst;
 		}
@@ -131,8 +126,15 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		{
 			Blocks inst = (Blocks)RCDecayConditions.IS_BLOCK.get();
 			Builder builder = BlockPredicate.Builder.create();
-			builder.add(target);
+			builder.addBlockTag(target);
 			inst.predicate = builder.build();
+			return inst;
+		}
+		
+		public static Blocks of(BlockPredicate predicate)
+		{
+			Blocks inst = (Blocks)RCDecayConditions.IS_BLOCK.get();
+			inst.predicate = predicate;
 			return inst;
 		}
 		
@@ -176,17 +178,18 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		}
 	}
 	
-	public static class OnGround extends Supported
+	public static class OnGround extends DecayCondition
 	{
 		public OnGround(Identifier idIn)
 		{
 			super(idIn);
-			faces(Direction.DOWN);
 		}
 		
-		protected JsonObject write(JsonObject obj)
+		public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
 		{
-			return obj;
+			BlockPos neighbour = pos.down();
+			BlockState state = world.getBlockState(neighbour);
+			return !state.isReplaceable() && state.isSideSolidFullSquare(world, neighbour, Direction.UP);
 		}
 	}
 	
@@ -195,7 +198,11 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		public Unsupported(Identifier idIn)
 		{
 			super(idIn);
-			invert();
+		}
+		
+		protected boolean isMatch(BlockState state, BlockPos neighbour, Direction face, BlockPos pos, ServerWorld world)
+		{
+			return !super.isMatch(state, neighbour, face, pos, world);
 		}
 	}
 	

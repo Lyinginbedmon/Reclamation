@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import com.lying.Reclamation;
 import com.lying.decay.conditions.ConditionClimate;
-import com.lying.decay.conditions.ConditionHasValue;
+import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.conditions.ConditionBoolean;
@@ -25,7 +25,7 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> AND			= register("and", id -> new ConditionBoolean.And(id));
 	
 	public static final Supplier<DecayCondition> IS_BLOCK		= register("is_block", id -> new ConditionIsBlock(id));
-	public static final Supplier<DecayCondition> HAS_VALUE		= register("has_value", id -> new ConditionHasValue(id));
+	public static final Supplier<DecayCondition> HAS_PROPERTY	= register("has_property", id -> new ConditionHasProperty(id));
 	public static final Supplier<DecayCondition> SKY_ABOVE		= register("sky_above", id -> new ConditionClimate.SkyAbove(id));
 	public static final Supplier<DecayCondition> IN_RAIN		= register("in_rain", id -> new ConditionClimate.IsRaining(id));
 	public static final Supplier<DecayCondition> ADJACENT_TO	= register("adjacent_to", id -> new ConditionNeighbouring.Blocks(id));
