@@ -105,7 +105,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		
 		public static Blocks of(Block... target)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.IS_BLOCK.get();
+			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
 			Builder builder = BlockPredicate.Builder.create();
 			builder.addBlock(target);
 			inst.predicate = builder.build();
@@ -114,7 +114,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		
 		public static Blocks of(BlockState... target)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.IS_BLOCK.get();
+			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
 			Builder builder = BlockPredicate.Builder.create();
 			builder.addBlockState(target);
 			inst.predicate = builder.build();
@@ -124,7 +124,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		@SuppressWarnings("unchecked")
 		public static Blocks of(TagKey<Block>... target)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.IS_BLOCK.get();
+			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
 			Builder builder = BlockPredicate.Builder.create();
 			builder.addBlockTag(target);
 			inst.predicate = builder.build();
@@ -133,7 +133,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		
 		public static Blocks of(BlockPredicate predicate)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.IS_BLOCK.get();
+			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
 			inst.predicate = predicate;
 			return inst;
 		}

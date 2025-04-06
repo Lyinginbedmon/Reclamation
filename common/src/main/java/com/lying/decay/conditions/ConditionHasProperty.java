@@ -26,7 +26,7 @@ public class ConditionHasProperty extends DecayCondition
 	{
 		ConditionHasProperty condition = (ConditionHasProperty)RCDecayConditions.HAS_PROPERTY.get();
 		for(Entry<Property<T>, T> entry : valuesIn.entrySet())
-			condition.map.put(entry.getKey().getName(), entry.getKey().name(entry.getValue()));
+			condition.map.put(entry.getKey(), entry.getValue());
 		
 		return condition;
 	}

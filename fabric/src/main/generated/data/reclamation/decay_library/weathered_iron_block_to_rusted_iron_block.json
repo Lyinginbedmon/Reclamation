@@ -1,27 +1,28 @@
 {
   "base_chance": 0.1,
-  "catalysts": {
-    "cap": 9,
-    "range": 1,
-    "target": {
-      "blocks": [
-        "reclamation:rusted_iron"
-      ]
-    }
-  },
   "conditions": [
     {
       "blocks": [
         "reclamation:weathered_iron"
       ],
       "id": "reclamation:is_block"
+    },
+    {
+      "id": "reclamation:adjacent_to",
+      "target": {
+        "blocks": [
+          "reclamation:weathered_iron",
+          "reclamation:rusted_iron"
+        ]
+      },
+      "threshold": 3
     }
   ],
   "functions": [
     {
-      "blocks": [
-        "reclamation:rusted_iron"
-      ],
+      "convert_to": {
+        "block": "reclamation:rusted_iron"
+      },
       "id": "reclamation:convert"
     }
   ],

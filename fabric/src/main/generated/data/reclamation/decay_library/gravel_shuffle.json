@@ -7,6 +7,7 @@
       ],
       "id": "reclamation:is_block"
     },
+    "reclamation:on_ground",
     "reclamation:air_above"
   ],
   "functions": [

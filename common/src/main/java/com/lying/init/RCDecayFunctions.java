@@ -23,6 +23,8 @@ public class RCDecayFunctions
 	
 	/** Replaces affected block with another */
 	public static final Supplier<DecayFunction> CONVERT		= register("convert", id -> new FunctionConvert(id));
+	/** Replaces affected block with air */
+	public static final Supplier<DecayFunction> TO_AIR		= register("to_air", id -> new FunctionConvert.ToAir(id));
 	/** Moves affected block randomly to an adjacent open space */
 	public static final Supplier<DecayFunction> SHUFFLE		= register("shuffle", id -> new FunctionShuffle(id));
 	/** Applies bonemeal to the affected block */
@@ -35,8 +37,12 @@ public class RCDecayFunctions
 	public static final Supplier<DecayFunction> WATERLOG	= register("waterlog", id -> new FunctionBlockState.Waterlog(id));
 	/** Removes water from the affected block if possible */
 	public static final Supplier<DecayFunction> DEHYDRATE	= register("dehydrate", id -> new FunctionBlockState.Dehydrate(id));
+	/** Copies one or more blockstate values from the original blockstate */
+	public static final Supplier<DecayFunction> COPY_VALUE	= register("copy_blockstate_value", id -> new FunctionBlockState.CopyValue(id));
 	/** Cycles one or more blockstate properties */
 	public static final Supplier<DecayFunction> CYCLE_VALUE	= register("cycle_blockstate_value", id -> new FunctionBlockState.CycleValue(id));
+	/** Sets one or more blockstate properties to random values */
+	public static final Supplier<DecayFunction> RANDOMISE_VALUE	= register("randomise_blockstate_value", id -> new FunctionBlockState.RandomValue(id));
 	/** Sets the value of one or more blockstate properties */
 	public static final Supplier<DecayFunction> SET_STATE_VALUE		= register("set_blockstate_value", id -> new FunctionBlockState.SetValue(id));
 	

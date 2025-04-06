@@ -2,9 +2,7 @@ package com.lying.utility;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
@@ -15,6 +13,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
@@ -35,6 +35,7 @@ public class BlockPredicate implements Predicate<BlockState>
 					b.ifPresent(l -> builder.addBlockState(l.toArray(new BlockState[0])));
 					c.ifPresent(l -> builder.addBlockTags(l));
 					d.ifPresent(l -> builder.addBlockProperty(l.toArray(new String[0])));
+					e.ifPresent(l -> builder.addBlockValues(l.toArray(new PropertyMap[0])));
 					return builder.build();
 				}));
 	
@@ -44,8 +45,8 @@ public class BlockPredicate implements Predicate<BlockState>
 	protected final Optional<List<String>> blockProperties;
 	protected final Optional<List<PropertyMap>> blockValues;
 	
-	/** List of type-specific Matcher objects for each internal Optional value */
-	protected final List<Matcher<?>> matchers;
+	/** List of type-specific ListMatcher objects for each internal Optional value */
+	protected final List<ListMatcher<BlockState, ?>> matchers;
 	
 	protected BlockPredicate(
 			Optional<List<Block>> blocksIn, 
@@ -61,17 +62,17 @@ public class BlockPredicate implements Predicate<BlockState>
 		blockValues = blockValuesIn;
 		
 		matchers = List.of(
-				new Matcher<Block>(blocks, (state, stream) -> stream.anyMatch(b -> state.isOf(b))), 
-				new Matcher<BlockState>(blockStates, (state, stream) -> stream.anyMatch(s -> state.equals(s))), 
-				new Matcher<TagKey<Block>>(blockTags, (state, stream) -> stream.anyMatch(t -> state.isIn(t))), 
-				new Matcher<String>(blockProperties, (state, stream) -> stream.allMatch(s -> state.getProperties().stream().anyMatch(p -> p.getName().equalsIgnoreCase(s)))),
-				new Matcher<PropertyMap>(blockValues, (state, stream) -> stream.anyMatch(map -> map.matches(state)))
+				new ListMatcher<BlockState, Block>(blocks, (state, stream) -> stream.anyMatch(b -> state.isOf(b))), 
+				new ListMatcher<BlockState, BlockState>(blockStates, (state, stream) -> stream.anyMatch(s -> state.equals(s))), 
+				new ListMatcher<BlockState, TagKey<Block>>(blockTags, (state, stream) -> stream.anyMatch(t -> state.isIn(t))), 
+				new ListMatcher<BlockState, String>(blockProperties, (state, stream) -> stream.allMatch(s -> state.getProperties().stream().anyMatch(p -> p.getName().equalsIgnoreCase(s)))),
+				new ListMatcher<BlockState, PropertyMap>(blockValues, (state, stream) -> stream.anyMatch(map -> map.matches(state)))
 				);
 	}
 	
 	public JsonElement toJson()
 	{
-		return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow().getAsJsonObject();
+		return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
 	}
 	
 	public static BlockPredicate fromJson(JsonObject obj)
@@ -79,35 +80,24 @@ public class BlockPredicate implements Predicate<BlockState>
 		return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow();
 	}
 	
+	public NbtElement toNbt()
+	{
+		return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
+	}
+	
+	public static BlockPredicate fromNbt(NbtElement nbt)
+	{
+		return CODEC.parse(NbtOps.INSTANCE, nbt).getOrThrow();
+	}
+	
 	public boolean isEmpty()
 	{
-		return matchers.stream().allMatch(Matcher::isEmpty);
+		return matchers.stream().allMatch(ListMatcher::isEmpty);
 	}
 	
 	public boolean test(BlockState currentState)
 	{
-		return matchers.stream().anyMatch(Matcher::isPresent) && matchers.stream().anyMatch(v -> v.match(currentState));
-	}
-	
-	private static class Matcher<T extends Object>
-	{
-		private final Optional<List<T>> values;
-		private final BiPredicate<BlockState, Stream<T>> handlerFunc;
-		
-		public Matcher(Optional<List<T>> valuesIn, BiPredicate<BlockState, Stream<T>> handlerFuncIn)
-		{
-			values = valuesIn;
-			handlerFunc = handlerFuncIn;
-		}
-		
-		public final boolean isPresent() { return values.isPresent(); }
-		
-		public final boolean isEmpty() { return values.isEmpty(); }
-		
-		public final boolean match(BlockState state)
-		{
-			return !values.isEmpty() && handlerFunc.test(state, values.get().stream());
-		}
+		return matchers.stream().anyMatch(ListMatcher::isPresent) && matchers.stream().anyMatch(v -> v.match(currentState));
 	}
 	
 	public static class Builder

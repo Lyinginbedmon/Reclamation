@@ -19,9 +19,9 @@
   ],
   "functions": [
     {
-      "blocks": [
-        "minecraft:mossy_stone_bricks"
-      ],
+      "convert_to": {
+        "block": "minecraft:mossy_stone_bricks"
+      },
       "id": "reclamation:convert"
     }
   ],

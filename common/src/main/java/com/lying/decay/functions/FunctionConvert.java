@@ -1,25 +1,19 @@
 package com.lying.decay.functions;
 
-import java.util.List;
-import java.util.Optional;
-
-import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.lying.Reclamation;
 import com.lying.decay.DecayContext;
 import com.lying.init.RCDecayFunctions;
-import com.mojang.serialization.JsonOps;
+import com.lying.utility.StateGetter;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
 
 public class FunctionConvert extends DecayFunction
 {
-	private List<Block> blocks = Lists.newArrayList();
-	private List<BlockState> blockstates = Lists.newArrayList();
+	private static final String GETTER = "convert_to";
+	private StateGetter states = new StateGetter();
 	
 	public FunctionConvert(Identifier idIn)
 	{
@@ -28,66 +22,48 @@ public class FunctionConvert extends DecayFunction
 	
 	public static DecayFunction to(Block... target)
 	{
-		FunctionConvert inst = ((FunctionConvert)RCDecayFunctions.CONVERT.get()).clear();
+		FunctionConvert inst = ((FunctionConvert)RCDecayFunctions.CONVERT.get());
 		for(Block state : target)
-			inst.blocks.add(state);
+			inst.states.addBlock(state);
 		return inst;
 	}
 	
 	public static DecayFunction to(BlockState... target)
 	{
-		FunctionConvert inst = ((FunctionConvert)RCDecayFunctions.CONVERT.get()).clear();
+		FunctionConvert inst = ((FunctionConvert)RCDecayFunctions.CONVERT.get());
 		for(BlockState state : target)
-			inst.blockstates.add(state);
+			inst.states.addBlockState(state);
 		return inst;
-	}
-	
-	protected FunctionConvert clear()
-	{
-		blocks.clear();
-		blockstates.clear();
-		return this;
 	}
 	
 	protected void applyTo(DecayContext context)
 	{
-		destination(context.random).ifPresent(state -> context.setBlockState(state));
-	}
-	
-	protected Optional<BlockState> destination(Random random)
-	{
-		if(blocks.isEmpty() && blockstates.isEmpty())
-			return Optional.empty();
-		
-		List<BlockState> states = Lists.newArrayList();
-		states.addAll(blockstates);
-		states.addAll(blocks.stream().map(b -> b.getDefaultState()).toList());
-		return states.isEmpty() ? Optional.empty() : Optional.of(states.size() > 1 ? states.get(random.nextInt(states.size())) : states.get(0));
+		states.getRandom(context.random).ifPresent(state -> context.setBlockState(state));
 	}
 	
 	protected JsonObject write(JsonObject obj)
 	{
-		if(!blocks.isEmpty())
-			obj.add("blocks", (JsonElement)BLOCK_CODEC.encodeStart(JsonOps.INSTANCE, blocks).getOrThrow());
-		if(!blockstates.isEmpty())
-			obj.add("states", (JsonElement)BLOCKSTATE_CODEC.encodeStart(JsonOps.INSTANCE, blockstates).getOrThrow());
+		if(!states.isEmpty())
+			obj.add(GETTER, states.toJson());
 		return obj;
 	}
 	
 	protected void read(JsonObject obj)
 	{
-		clear();
-		if(obj.has("blocks"))
+		if(obj.has(GETTER))
+			states = StateGetter.fromJson(obj.get(GETTER));
+	}
+	
+	public static class ToAir extends DecayFunction
+	{
+		public ToAir(Identifier idIn)
 		{
-			List<Block> blockList = BLOCK_CODEC.parse(JsonOps.INSTANCE, obj.get("blocks")).resultOrPartial(Reclamation.LOGGER::error).orElse(null);
-			if(blockList != null)
-				blocks.addAll(blockList);
+			super(idIn);
 		}
 		
-		if(obj.has("states"))
+		protected void applyTo(DecayContext context)
 		{
-			List<BlockState> stateList = BLOCKSTATE_CODEC.parse(JsonOps.INSTANCE, obj.get("states")).resultOrPartial(Reclamation.LOGGER::error).orElse(List.of());
-			blockstates.addAll(stateList);
+			context.setBlockState(Blocks.AIR.getDefaultState());
 		}
 	}
 }

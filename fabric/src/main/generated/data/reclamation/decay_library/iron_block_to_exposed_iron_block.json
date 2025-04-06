@@ -1,29 +1,28 @@
 {
   "base_chance": 0.1,
-  "catalysts": {
-    "cap": 9,
-    "range": 1,
-    "target": {
-      "blocks": [
-        "reclamation:exposed_iron",
-        "minecraft:water"
-      ]
-    }
-  },
   "conditions": [
-    "reclamation:exposed",
     {
       "blocks": [
         "minecraft:iron_block"
       ],
       "id": "reclamation:is_block"
+    },
+    {
+      "id": "reclamation:adjacent_to",
+      "target": {
+        "blocks": [
+          "reclamation:exposed_iron",
+          "reclamation:weathered_iron",
+          "reclamation:rusted_iron"
+        ]
+      }
     }
   ],
   "functions": [
     {
-      "blocks": [
-        "reclamation:exposed_iron"
-      ],
+      "convert_to": {
+        "block": "reclamation:exposed_iron"
+      },
       "id": "reclamation:convert"
     }
   ],

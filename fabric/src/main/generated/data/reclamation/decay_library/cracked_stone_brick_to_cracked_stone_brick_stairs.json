@@ -19,44 +19,15 @@
   ],
   "functions": [
     {
-      "id": "reclamation:convert",
-      "states": [
-        {
-          "Name": "reclamation:cracked_stone_brick_stairs",
-          "Properties": {
-            "facing": "north",
-            "half": "bottom",
-            "shape": "straight",
-            "waterlogged": "false"
-          }
-        },
-        {
-          "Name": "reclamation:cracked_stone_brick_stairs",
-          "Properties": {
-            "facing": "east",
-            "half": "bottom",
-            "shape": "straight",
-            "waterlogged": "false"
-          }
-        },
-        {
-          "Name": "reclamation:cracked_stone_brick_stairs",
-          "Properties": {
-            "facing": "south",
-            "half": "bottom",
-            "shape": "straight",
-            "waterlogged": "false"
-          }
-        },
-        {
-          "Name": "reclamation:cracked_stone_brick_stairs",
-          "Properties": {
-            "facing": "west",
-            "half": "bottom",
-            "shape": "straight",
-            "waterlogged": "false"
-          }
-        }
+      "convert_to": {
+        "block": "reclamation:cracked_stone_brick_stairs"
+      },
+      "id": "reclamation:convert"
+    },
+    {
+      "id": "reclamation:randomise_blockstate_value",
+      "properties": [
+        "facing"
       ]
     }
   ],

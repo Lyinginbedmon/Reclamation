@@ -10,7 +10,7 @@
           "name": "dry_block_in_rain",
           "set": [
             {
-              "id": "reclamation:has_value",
+              "id": "reclamation:has_property",
               "properties": {
                 "waterlogged": "false"
               }
@@ -23,7 +23,7 @@
           "name": "wet_block_in_sun",
           "set": [
             {
-              "id": "reclamation:has_value",
+              "id": "reclamation:has_property",
               "properties": {
                 "waterlogged": "true"
               }

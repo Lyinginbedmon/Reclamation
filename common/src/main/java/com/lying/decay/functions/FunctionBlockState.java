@@ -1,9 +1,6 @@
 package com.lying.decay.functions;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.lying.Reclamation;
 import com.lying.decay.DecayContext;
 import com.lying.init.RCDecayFunctions;
+import com.lying.utility.PropertyMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +19,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.Random;
 
 public abstract class FunctionBlockState extends DecayFunction
 {
@@ -124,20 +123,23 @@ public abstract class FunctionBlockState extends DecayFunction
 		{
 			properties.clear();
 			if(obj.has("properties"))
-			{
-				JsonArray array = obj.getAsJsonArray("properties");
-				array.forEach(element -> properties.add(element.getAsString()));
-			}
+				obj.getAsJsonArray("properties").forEach(element -> properties.add(element.getAsString()));
 		}
 	}
 	
-	public static class SetValue extends FunctionBlockState
+	public static class RandomValue extends CycleValue
 	{
-		protected Map<String, String> properties = new HashMap<>();
-		
-		public SetValue(Identifier idIn)
+		public RandomValue(Identifier idIn)
 		{
 			super(idIn);
+		}
+		
+		public static RandomValue of(Property<?>... set)
+		{
+			RandomValue function = (RandomValue)RCDecayFunctions.RANDOMISE_VALUE.get();
+			for(Property<?> property : set)
+				function.properties.add(property.getName());
+			return function;
 		}
 		
 		protected void applyTo(DecayContext context)
@@ -147,28 +149,77 @@ public abstract class FunctionBlockState extends DecayFunction
 			StateManager<Block, BlockState> manager = block.getStateManager();
 			
 			Property<?> property = null;
-			for(Entry<String, String> entry : properties.entrySet())
-				if((property = manager.getProperty(entry.getKey())) != null)
-					state = setValue(property, entry.getValue(), state);
+			for(String propertyName : properties)
+				if((property = manager.getProperty(propertyName)) != null)
+					state = randomise(property, context.random, state);
 			
 			if(!state.equals(context.currentState))
 				context.setBlockState(state);
 		}
 		
-		protected static <T extends Comparable<T>> BlockState setValue(Property<T> property, String string, BlockState state)
+		private static <T extends Comparable<T>> BlockState randomise(Property<T> property, Random random, BlockState state)
 		{
-			Optional<T> value = property.parse(string);
-			return value.isPresent() ? state.with(property, value.get()) : state;
+			List<T> values = property.getValues();
+			return state.with(property, values.get(random.nextInt(values.size())));
+		}
+	}
+	
+	public static class CopyValue extends CycleValue
+	{
+		public CopyValue(Identifier idIn)
+		{
+			super(idIn);
+		}
+		
+		public static CopyValue of(Property<?>... set)
+		{
+			CopyValue function = (CopyValue)RCDecayFunctions.COPY_VALUE.get();
+			for(Property<?> property : set)
+				function.properties.add(property.getName());
+			return function;
+		}
+		
+		protected void applyTo(DecayContext context)
+		{
+			BlockState original = context.originalState;
+			BlockState current = context.currentState;
+			
+			StateManager<Block, BlockState> stateManager = original.getBlock().getStateManager();
+			Property<?> property = null;
+			for(String propertyName : properties)
+				if((property = stateManager.getProperty(propertyName)) != null)
+					current = copyValue(property, original, current);
+			
+			if(!current.equals(context.currentState))
+				context.setBlockState(current);
+		}
+		
+		private static <T extends Comparable<T>> BlockState copyValue(Property<T> property, BlockState original, BlockState current)
+		{
+			return current.get(property) != null ? current.with(property, original.get(property)) : current;
+		}
+	}
+	
+	public static class SetValue extends FunctionBlockState
+	{
+		protected PropertyMap properties = new PropertyMap();
+		
+		public SetValue(Identifier idIn)
+		{
+			super(idIn);
+		}
+		
+		protected void applyTo(DecayContext context)
+		{
+			BlockState state = properties.applyTo(context.currentState);
+			if(!state.equals(context.currentState))
+				context.setBlockState(state);
 		}
 		
 		protected JsonObject write(JsonObject obj)
 		{
 			if(!properties.isEmpty())
-			{
-				JsonObject map = new JsonObject();
-				properties.entrySet().forEach(entry -> map.addProperty(entry.getKey(), entry.getValue()));
-				obj.add("properties", map);
-			}
+				obj.add("properties", properties.toJson());
 			return obj;
 		}
 		
@@ -176,10 +227,7 @@ public abstract class FunctionBlockState extends DecayFunction
 		{
 			properties.clear();
 			if(obj.has("properties"))
-			{
-				JsonObject map = obj.getAsJsonObject("properties");
-				map.entrySet().forEach(entry -> properties.put(entry.getKey(), entry.getValue().getAsString()));
-			}
+				properties = PropertyMap.fromJson(obj.get("properties"));
 		}
 	}
 }

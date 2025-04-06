@@ -19,22 +19,15 @@
   ],
   "functions": [
     {
-      "id": "reclamation:convert",
-      "states": [
-        {
-          "Name": "minecraft:mossy_stone_brick_slab",
-          "Properties": {
-            "type": "bottom",
-            "waterlogged": "false"
-          }
-        },
-        {
-          "Name": "minecraft:mossy_stone_brick_slab",
-          "Properties": {
-            "type": "top",
-            "waterlogged": "false"
-          }
-        }
+      "convert_to": {
+        "block": "minecraft:mossy_stone_brick_slab"
+      },
+      "id": "reclamation:convert"
+    },
+    {
+      "id": "reclamation:randomise_blockstate_value",
+      "properties": [
+        "type"
       ]
     }
   ],

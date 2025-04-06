@@ -31,17 +31,21 @@ public class Catalysers
 	
 	public float calculateMultiplier(World world, BlockPos pos)
 	{
+		return Math.max(0.1F, (float)Math.pow(getTally(world, pos) / saturation, 0.2F));
+	}
+	
+	private float getTally(World world, BlockPos pos)
+	{
 		float tally = 0;
-		for (BlockPos offset : BlockPos.iterateOutwards(pos, scanRange, scanRange, scanRange))
+		for(BlockPos offset : BlockPos.iterateOutwards(pos, scanRange, scanRange, scanRange))
 		{
-			int l = offset.getManhattanDistance(pos);
-			if (l > scanRange)
-				break;
+			if(offset.equals(pos))
+				continue;
 			
-			if(!offset.equals(pos) && predicate.test(world.getBlockState(offset)))
-				tally++;
+			if(predicate.test(world.getBlockState(offset)) && ++tally >= saturation)
+				return tally;
 		}
-		return Math.max(0.1F, (float)Math.pow(tally / saturation, 0.2F));
+		return tally;
 	}
 	
 	public static class Builder

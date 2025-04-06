@@ -20,9 +20,9 @@
   ],
   "functions": [
     {
-      "blocks": [
-        "reclamation:tarnished_gold"
-      ],
+      "convert_to": {
+        "block": "reclamation:tarnished_gold"
+      },
       "id": "reclamation:convert"
     }
   ],

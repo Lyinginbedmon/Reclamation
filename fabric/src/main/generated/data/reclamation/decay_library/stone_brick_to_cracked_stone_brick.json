@@ -19,9 +19,9 @@
   ],
   "functions": [
     {
-      "blocks": [
-        "minecraft:cracked_stone_bricks"
-      ],
+      "convert_to": {
+        "block": "minecraft:cracked_stone_bricks"
+      },
       "id": "reclamation:convert"
     }
   ],
