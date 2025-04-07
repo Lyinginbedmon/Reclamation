@@ -1,6 +1,7 @@
 package com.lying.decay;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,14 +11,17 @@ import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.functions.FunctionBlockState;
 import com.lying.decay.functions.FunctionConvert;
+import com.lying.decay.functions.FunctionSprout;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
 import com.lying.init.RCDecayFunctions;
+import com.lying.utility.StateGetter;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 
 public class DefaultDecayLibrary 
 {
@@ -124,12 +128,16 @@ public class DefaultDecayLibrary
 					RCDecayFunctions.FALL.get(),
 					RCDecayFunctions.TO_AIR.get()).build());
 		
-		register(DecayData.Builder.create(0.5F)
-				.name("grass_get_fluffy")
+		register(DecayData.Builder.create(0.2F)
+				.name("grass_sprout")
 				.condition(
-					ConditionIsBlock.of(Blocks.GRASS_BLOCK), 
+					ConditionIsBlock.of(Blocks.GRASS_BLOCK, Blocks.PODZOL),
+					RCDecayConditions.AIR_ABOVE.get(),
 					RCDecayConditions.SKY_ABOVE.get())
-				.function(RCDecayFunctions.BONEMEAL.get()).build());
+				.function(
+					FunctionSprout.of(
+						StateGetter.create().addBlock(Blocks.POPPY, Blocks.DANDELION, Blocks.SHORT_GRASS, Blocks.TALL_GRASS, Blocks.BROWN_MUSHROOM, Blocks.RED_MUSHROOM), 
+						EnumSet.of(Direction.UP))).build());
 		register(DecayData.Builder.create()
 				.name("gravel_shuffle")
 				.condition(
@@ -171,5 +179,6 @@ public class DefaultDecayLibrary
 					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
 				.function(FunctionConvert.to(RCBlocks.TARNISHED_GOLD.get())).build());
+		
 	}
 }

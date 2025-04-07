@@ -23,7 +23,7 @@ public class StateGetter
 			BlockState.CODEC.listOf().optionalFieldOf("blockstates").forGetter(StateGetter::blockStatesOpt),
 			Registries.BLOCK.getCodec().listOf().optionalFieldOf("blocks").forGetter(StateGetter::blocksOpt))
 			.apply(instance, (a,b, c, d) -> 
-				(new StateGetter())
+				create()
 					.addBlockState(a.orElse(null))
 					.addBlock(b.orElse(null))
 					.addBlockState(c.orElse(List.of()).toArray(new BlockState[0]))
@@ -37,7 +37,9 @@ public class StateGetter
 	
 	private List<BlockState> states = Lists.newArrayList();
 	
-	public StateGetter() { }
+	protected StateGetter() { }
+	
+	public static StateGetter create() { return new StateGetter(); }
 	
 	private Optional<List<BlockState>> blockStatesOpt()
 	{
@@ -55,9 +57,10 @@ public class StateGetter
 		{
 			if(state == null)
 				continue;
-			addState(state);
+			
 			blockStates.removeIf(s -> s.equals(state));
 			blockStates.add(state);
+			addState(state);
 		}
 		return this;
 	}
@@ -68,9 +71,10 @@ public class StateGetter
 		{
 			if(block == null)
 				continue;
-			addState(block.getDefaultState());
+			
 			blocks.removeIf(b -> b.equals(block));
 			blocks.add(block);
+			addState(block.getDefaultState());
 		}
 		return this;
 	}

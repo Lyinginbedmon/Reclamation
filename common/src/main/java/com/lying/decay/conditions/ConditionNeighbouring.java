@@ -225,7 +225,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		
 		protected boolean isMatch(BlockState state, BlockPos neighbour, Direction face, BlockPos pos, ServerWorld world)
 		{
-			return state.isAir();
+			return state.isAir();	// TODO Improve occlusion check
 		}
 	}
 }

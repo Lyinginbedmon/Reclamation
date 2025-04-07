@@ -13,6 +13,7 @@ import com.lying.decay.functions.FunctionBonemeal;
 import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionFallingBlock;
 import com.lying.decay.functions.FunctionShuffle;
+import com.lying.decay.functions.FunctionSprout;
 import com.lying.reference.Reference;
 
 import net.minecraft.util.Identifier;
@@ -45,8 +46,8 @@ public class RCDecayFunctions
 	public static final Supplier<DecayFunction> RANDOMISE_VALUE	= register("randomise_blockstate_value", id -> new FunctionBlockState.RandomValue(id));
 	/** Sets the value of one or more blockstate properties */
 	public static final Supplier<DecayFunction> SET_STATE_VALUE		= register("set_blockstate_value", id -> new FunctionBlockState.SetValue(id));
-	
-	public static final Supplier<DecayFunction> SPROUT				= register("sprout", id -> null);
+	/* Places a block in an adjacent space to the affected block */
+	public static final Supplier<DecayFunction> SPROUT				= register("sprout", id -> new FunctionSprout(id));
 	
 	private static Supplier<DecayFunction> register(String nameIn, Function<Identifier, DecayFunction> funcIn)
 	{

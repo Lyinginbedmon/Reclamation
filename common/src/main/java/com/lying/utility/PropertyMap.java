@@ -1,12 +1,13 @@
 package com.lying.utility;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.lying.Reclamation;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -15,9 +16,6 @@ import com.mojang.serialization.JsonOps;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 
@@ -27,46 +25,30 @@ public class PropertyMap extends HashMap<String, String>
 {
 	public static final Codec<PropertyMap> CODEC	= Codec.of(PropertyMap::encode, PropertyMap::decode);
 	
-	@SuppressWarnings("unchecked")
 	private static <T> DataResult<T> encode(final PropertyMap map, final DynamicOps<T> ops, final T prefix)
 	{
-		if(ops == JsonOps.INSTANCE)
-			return (DataResult<T>)DataResult.success(map.toJson());
-		else if(ops == NbtOps.INSTANCE)
-		{
-			NbtCompound nbt = new NbtCompound();
-			map.entrySet().forEach(entry -> nbt.putString(entry.getKey(), entry.getValue()));
-			return (DataResult<T>)DataResult.success(nbt);
-		}
-		return DataResult.error(() -> "Unrecognised dynamic ops for property map storage");
+		Map<T,T> list = new HashMap<>();
+		map.entrySet().forEach(entry -> list.put(ops.createString(entry.getKey()), ops.createString(entry.getValue())));
+		return DataResult.success(ops.createMap(list));
 	}
 	
 	private static <T> DataResult<Pair<PropertyMap, T>> decode(final DynamicOps<T> ops, final T input)
 	{
-		if(ops == JsonOps.INSTANCE)
-			return DataResult.success(Pair.of(fromJson((JsonElement)input), input));
-		else if(ops == NbtOps.INSTANCE && ((NbtElement)input).getNbtType() == NbtCompound.TYPE)
-		{
-			PropertyMap map = new PropertyMap();
-			NbtCompound nbt = (NbtCompound)input;
-			nbt.getKeys().forEach(key -> map.put(key, nbt.getString(key)));
-			return DataResult.success(Pair.of(map, input));
-		}
-		return DataResult.error(() -> "Unrecognised dynamic ops for property map retrieval");
+		PropertyMap map = new PropertyMap();
+		ops.getMap(input).result().ifPresent(m -> 
+			m.entries().forEach(entry -> 
+				map.put(ops.getStringValue(entry.getFirst()).getOrThrow(), ops.getStringValue(entry.getSecond()).getOrThrow())));
+		return DataResult.success(Pair.of(map, input));
 	}
 	
 	public JsonElement toJson()
 	{
-		JsonObject obj = new JsonObject();
-		entrySet().forEach(entry -> obj.addProperty(entry.getKey(), entry.getValue()));
-		return obj;
+		return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
 	}
 	
 	public static PropertyMap fromJson(JsonElement obj)
 	{
-		PropertyMap map = new PropertyMap();
-		obj.getAsJsonObject().entrySet().forEach(entry -> map.put(entry.getKey(), entry.getValue().getAsString()));
-		return map;
+		return CODEC.parse(JsonOps.INSTANCE, obj).resultOrPartial(Reclamation.LOGGER::error).orElseThrow();
 	}
 	
 	@Nullable

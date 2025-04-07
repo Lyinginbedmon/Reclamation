@@ -29,12 +29,12 @@ public abstract class DecayCondition
 	@SuppressWarnings("unchecked")
 	private static <T> DataResult<T> encode(final DecayCondition func, final DynamicOps<T> ops, final T prefix)
 	{
-		return ops == JsonOps.INSTANCE ? (DataResult<T>)DataResult.success(func.toJson()) : DataResult.error(() -> "Storing decay function as NBT is not supported");
+		return ops == JsonOps.INSTANCE ? (DataResult<T>)DataResult.success(func.toJson()) : DataResult.error(() -> "Storing decay condition as NBT is not supported");
 	}
 	
 	private static <T> DataResult<Pair<DecayCondition, T>> decode(final DynamicOps<T> ops, final T input)
 	{
-		return ops == JsonOps.INSTANCE ? DataResult.success(Pair.of(fromJson((JsonElement)input), input)) : DataResult.error(() -> "Loading decay function from NBT is not supported");
+		return ops == JsonOps.INSTANCE ? DataResult.success(Pair.of(fromJson((JsonElement)input), input)) : DataResult.error(() -> "Loading decay condition from NBT is not supported");
 	}
 	
 	private final Identifier registryID;

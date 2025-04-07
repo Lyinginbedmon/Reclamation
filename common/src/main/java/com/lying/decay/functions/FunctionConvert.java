@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 public class FunctionConvert extends DecayFunction
 {
 	private static final String GETTER = "convert_to";
-	private StateGetter states = new StateGetter();
+	private StateGetter states = StateGetter.create();
 	
 	public FunctionConvert(Identifier idIn)
 	{
