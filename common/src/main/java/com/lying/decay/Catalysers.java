@@ -1,71 +1,120 @@
 package com.lying.decay;
 
+import java.util.Optional;
+import java.util.function.BiFunction;
+
 import com.lying.utility.BlockPredicate;
+import com.lying.utility.TallyGetter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 public class Catalysers
 {
 	public static final Codec<Catalysers> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.fieldOf("cap").forGetter(c -> c.saturation),
-			Codec.INT.fieldOf("range").forGetter(c -> c.scanRange),
-			BlockPredicate.CODEC.fieldOf("target").forGetter(c -> c.predicate)
+			Codec.FLOAT.optionalFieldOf("minimum").forGetter(c -> c.minMult),
+			Codec.FLOAT.optionalFieldOf("maximum").forGetter(c -> c.maxMult),
+			Mode.CODEC.optionalFieldOf("mode").forGetter(c -> c.mode),
+			Codec.FLOAT.optionalFieldOf("power").forGetter(c -> c.power),
+			TallyGetter.CODEC.fieldOf("tally").forGetter(c -> c.tally)
 			)
-			.apply(instance, (c,r,b) -> new Catalysers(c, r, b)));
+			.apply(instance, (min, max, mod, pow, tally) -> new Catalysers(min, max, mod, pow, tally)));
 	
-	private final int saturation, scanRange;
-	private final BlockPredicate predicate;
+	private final Optional<Float> minMult, maxMult, power;
+	private final Optional<Mode> mode;
 	
-	protected Catalysers(int saturation, int scanRange, BlockPredicate predicate)
+	private final TallyGetter tally;
+	
+	protected Catalysers(Optional<Float> min, Optional<Float> max, Optional<Mode> modeIn, Optional<Float> power, TallyGetter getter)
 	{
-		this.saturation = saturation;
-		this.scanRange = scanRange;
-		this.predicate = predicate;
+		this.minMult = min;
+		this.maxMult = max;
+		this.mode = modeIn;
+		this.power = power;
+		
+		this.tally = getter;
 	}
 	
 	public float calculateMultiplier(World world, BlockPos pos)
 	{
-		return Math.max(0.1F, (float)Math.pow(getTally(world, pos) / saturation, 0.2F));
+		float minimum = minMult.orElse(0.1F);
+		float maximum = maxMult.orElse(1F);
+		if(minimum == maximum)
+			return minimum;
+		
+		float value = mode.orElse(Mode.PERCENTILE).func.apply(tally.getTally(world, pos), (float)tally.capacity());
+		return MathHelper.clamp((float)Math.pow(value, power.orElse(0.2F)), minimum, maximum);
 	}
 	
-	private float getTally(World world, BlockPos pos)
+	public static enum Mode implements StringIdentifiable
 	{
-		float tally = 0;
-		for(BlockPos offset : BlockPos.iterateOutwards(pos, scanRange, scanRange, scanRange))
+		FLAT((tally, capacity) -> tally),
+		PERCENTILE((tally, capacity) -> tally / capacity);
+		
+		public static final Codec<Mode> CODEC = StringIdentifiable.createBasicCodec(Mode::values);
+		private final BiFunction<Float, Float, Float> func;
+		
+		private Mode(BiFunction<Float, Float, Float> funcIn)
 		{
-			if(offset.equals(pos))
-				continue;
-			
-			if(predicate.test(world.getBlockState(offset)) && ++tally >= saturation)
-				return tally;
+			func = funcIn;
 		}
-		return tally;
+		
+		public String asString() { return name().toLowerCase(); }
 	}
 	
 	public static class Builder
 	{
-		private int saturation = 9, scanRange = 4;
+		private Optional<Integer> capacity = Optional.empty(), scanRange = Optional.empty();
+		private Optional<Vec3i> scanVec = Optional.empty();
+		private Optional<Float> min = Optional.empty(), max = Optional.empty(), power = Optional.empty();
+		private Optional<Mode> mode = Optional.empty();
 		private BlockPredicate.Builder predicate = BlockPredicate.Builder.create();
 		
 		protected Builder() { }
 		
 		public static Builder create() { return new Builder(); }
 		
+		public Builder mode(Mode modeIn)
+		{
+			mode = Optional.of(modeIn);
+			return this;
+		}
+		
+		public Builder minMax(float val1, float val2)
+		{
+			min = Optional.of(Math.min(val1, val2));
+			max = Optional.of(Math.max(val1, val2));
+			return this;
+		}
+		
 		public Builder blockCap(int value)
 		{
-			saturation = Math.max(1, value);
+			capacity = Optional.of(Math.max(1, value));
 			return this;
 		}
 		
 		public Builder searchRange(int range)
 		{
-			scanRange = Math.max(1, range);
+			scanRange = Optional.of(Math.max(1, range));
+			return this;
+		}
+		
+		public Builder searchRange(int x, int y, int z)
+		{
+			return searchRange(new Vec3i(Math.max(0, x), Math.max(0, y), Math.max(0, z)));
+		}
+		
+		public Builder searchRange(Vec3i range)
+		{
+			scanVec = Optional.of(range);
 			return this;
 		}
 		
@@ -96,7 +145,7 @@ public class Catalysers
 		
 		public Catalysers build()
 		{
-			return new Catalysers(saturation, scanRange, predicate.build());
+			return new Catalysers(min, max, mode, power, new TallyGetter(capacity, scanRange, scanVec, predicate.build()));
 		}
 	}
 }

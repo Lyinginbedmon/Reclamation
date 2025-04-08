@@ -1,5 +1,4 @@
 {
-  "base_chance": 0.0025,
   "conditions": [
     "reclamation:exposed",
     {
@@ -17,5 +16,8 @@
       "id": "reclamation:convert"
     }
   ],
+  "likelihood": {
+    "base": 0.0025
+  },
   "name": "reclamation:iron_block_start_rusting"
 }

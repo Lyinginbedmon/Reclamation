@@ -62,6 +62,18 @@ public class FunctionSprout extends DecayFunction
 		return func;
 	}
 	
+	public FunctionSprout count(int countIn)
+	{
+		count = countIn < 1 ? Optional.empty() : Optional.of(Math.min(countIn, 6));
+		return this;
+	}
+	
+	public FunctionSprout ignorePlacement(boolean ignoreIn)
+	{
+		force = ignoreIn ? Optional.of(ignoreIn) : Optional.empty();
+		return this;
+	}
+	
 	protected void applyTo(DecayContext context)
 	{
 		if(resultMap.isEmpty())
@@ -84,7 +96,9 @@ public class FunctionSprout extends DecayFunction
 				{
 					world.setBlockState(offset, 
 						state.getBlock().getStateManager().getProperty(Properties.WATERLOGGED.getName()) != null && waterLogged ? state.with(Properties.WATERLOGGED, waterLogged) : state);
-					state.getBlock().onPlaced(world, offset, state, null, new ItemStack(state.getBlock().asItem()));
+					
+					if(!force.orElse(false))
+						state.getBlock().onPlaced(world, offset, state, null, new ItemStack(state.getBlock().asItem()));
 				}
 				
 				if(--placings == 0)

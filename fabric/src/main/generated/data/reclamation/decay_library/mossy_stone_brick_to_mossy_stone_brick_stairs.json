@@ -1,14 +1,4 @@
 {
-  "base_chance": 0.15,
-  "catalysts": {
-    "cap": 9,
-    "range": 4,
-    "target": {
-      "blocks": [
-        "minecraft:mossy_stone_brick_stairs"
-      ]
-    }
-  },
   "conditions": [
     {
       "blocks": [
@@ -31,5 +21,25 @@
       ]
     }
   ],
+  "likelihood": {
+    "base": 0.15,
+    "modifiers": [
+      {
+        "amount": 1.0,
+        "factor": {
+          "tally": {
+            "capacity": 9,
+            "range": 4,
+            "target": {
+              "blocks": [
+                "minecraft:mossy_stone_brick_stairs"
+              ]
+            }
+          }
+        },
+        "operation": "add_multiplied_total"
+      }
+    ]
+  },
   "name": "reclamation:mossy_stone_brick_to_mossy_stone_brick_stairs"
 }

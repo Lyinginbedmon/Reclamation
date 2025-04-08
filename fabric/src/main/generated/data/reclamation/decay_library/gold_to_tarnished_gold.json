@@ -1,14 +1,4 @@
 {
-  "base_chance": 0.05,
-  "catalysts": {
-    "cap": 4,
-    "range": 1,
-    "target": {
-      "blocks": [
-        "reclamation:tarnished_gold"
-      ]
-    }
-  },
   "conditions": [
     "reclamation:exposed",
     {
@@ -26,5 +16,28 @@
       "id": "reclamation:convert"
     }
   ],
+  "likelihood": {
+    "base": 0.0,
+    "modifiers": [
+      {
+        "amount": 0.1,
+        "factor": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "mode": "flat",
+          "tally": {
+            "capacity": 4,
+            "range": 1,
+            "target": {
+              "blocks": [
+                "reclamation:tarnished_gold"
+              ]
+            }
+          }
+        },
+        "operation": "add_value"
+      }
+    ]
+  },
   "name": "reclamation:gold_to_tarnished_gold"
 }

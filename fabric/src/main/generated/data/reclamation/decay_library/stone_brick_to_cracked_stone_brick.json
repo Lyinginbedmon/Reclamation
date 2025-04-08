@@ -1,14 +1,4 @@
 {
-  "base_chance": 0.2,
-  "catalysts": {
-    "cap": 9,
-    "range": 4,
-    "target": {
-      "blocks": [
-        "minecraft:cracked_stone_bricks"
-      ]
-    }
-  },
   "conditions": [
     {
       "blocks": [
@@ -25,5 +15,25 @@
       "id": "reclamation:convert"
     }
   ],
+  "likelihood": {
+    "base": 0.2,
+    "modifiers": [
+      {
+        "amount": 1.0,
+        "factor": {
+          "tally": {
+            "capacity": 9,
+            "range": 4,
+            "target": {
+              "blocks": [
+                "minecraft:cracked_stone_bricks"
+              ]
+            }
+          }
+        },
+        "operation": "add_multiplied_total"
+      }
+    ]
+  },
   "name": "reclamation:stone_brick_to_cracked_stone_brick"
 }

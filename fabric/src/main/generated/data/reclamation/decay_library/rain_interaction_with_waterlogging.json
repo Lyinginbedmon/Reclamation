@@ -1,5 +1,4 @@
 {
-  "base_chance": 0.3,
   "conditions": [
     "reclamation:sky_above",
     {
@@ -45,5 +44,8 @@
       ]
     }
   ],
+  "likelihood": {
+    "base": 0.3
+  },
   "name": "reclamation:rain_interaction_with_waterlogging"
 }

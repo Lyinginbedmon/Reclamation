@@ -1,14 +1,4 @@
 {
-  "base_chance": 0.15,
-  "catalysts": {
-    "cap": 9,
-    "range": 4,
-    "target": {
-      "blocks": [
-        "minecraft:mossy_stone_brick_slab"
-      ]
-    }
-  },
   "conditions": [
     {
       "blocks": [
@@ -33,5 +23,25 @@
     "reclamation:fall",
     "reclamation:to_air"
   ],
+  "likelihood": {
+    "base": 0.15,
+    "modifiers": [
+      {
+        "amount": 1.0,
+        "factor": {
+          "tally": {
+            "capacity": 9,
+            "range": 4,
+            "target": {
+              "blocks": [
+                "minecraft:mossy_stone_brick_slab"
+              ]
+            }
+          }
+        },
+        "operation": "add_multiplied_total"
+      }
+    ]
+  },
   "name": "reclamation:mossy_stone_brick_slab_vanish"
 }

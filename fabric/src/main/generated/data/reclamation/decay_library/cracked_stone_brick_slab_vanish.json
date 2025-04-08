@@ -1,14 +1,4 @@
 {
-  "base_chance": 0.4,
-  "catalysts": {
-    "cap": 9,
-    "range": 4,
-    "target": {
-      "blocks": [
-        "reclamation:cracked_stone_brick_slab"
-      ]
-    }
-  },
   "conditions": [
     {
       "blocks": [
@@ -33,5 +23,24 @@
     "reclamation:fall",
     "reclamation:to_air"
   ],
+  "likelihood": {
+    "base": 0.4,
+    "modifiers": [
+      {
+        "amount": 1.0,
+        "factor": {
+          "tally": {
+            "capacity": 9,
+            "target": {
+              "blocks": [
+                "reclamation:cracked_stone_brick_slab"
+              ]
+            }
+          }
+        },
+        "operation": "add_multiplied_total"
+      }
+    ]
+  },
   "name": "reclamation:cracked_stone_brick_slab_vanish"
 }

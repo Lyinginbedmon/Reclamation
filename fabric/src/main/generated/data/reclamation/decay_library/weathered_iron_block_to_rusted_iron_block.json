@@ -1,5 +1,4 @@
 {
-  "base_chance": 0.1,
   "conditions": [
     {
       "blocks": [
@@ -26,5 +25,8 @@
       "id": "reclamation:convert"
     }
   ],
+  "likelihood": {
+    "base": 0.1
+  },
   "name": "reclamation:weathered_iron_block_to_rusted_iron_block"
 }
