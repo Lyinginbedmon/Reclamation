@@ -1,23 +1,19 @@
 {
+  "chance": {
+    "base_chance": 0.0025
+  },
   "conditions": [
     "reclamation:exposed",
     {
-      "blocks": [
-        "minecraft:iron_block"
-      ],
+      "block": "minecraft:iron_block",
       "id": "reclamation:is_block"
     }
   ],
-  "functions": [
-    {
-      "convert_to": {
-        "block": "reclamation:exposed_iron"
-      },
-      "id": "reclamation:convert"
-    }
-  ],
-  "likelihood": {
-    "base": 0.0025
+  "function": {
+    "convert_to": {
+      "block": "reclamation:exposed_iron"
+    },
+    "id": "reclamation:convert"
   },
   "name": "reclamation:iron_block_start_rusting"
 }

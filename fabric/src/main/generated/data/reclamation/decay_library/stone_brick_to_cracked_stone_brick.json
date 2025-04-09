@@ -1,39 +1,31 @@
 {
-  "conditions": [
-    {
-      "blocks": [
-        "minecraft:stone_bricks"
-      ],
-      "id": "reclamation:is_block"
-    }
-  ],
-  "functions": [
-    {
-      "convert_to": {
-        "block": "minecraft:cracked_stone_bricks"
+  "chance": {
+    "base_chance": 0.2,
+    "modifier": {
+      "amount": 1.0,
+      "multiplier": {
+        "minimum": 0.1,
+        "power": 0.2,
+        "search": {
+          "capacity": 9,
+          "looking_for": {
+            "block": "minecraft:cracked_stone_bricks"
+          },
+          "range": 4
+        }
       },
-      "id": "reclamation:convert"
+      "operation": "add_multiplied_total"
     }
-  ],
-  "likelihood": {
-    "base": 0.2,
-    "modifiers": [
-      {
-        "amount": 1.0,
-        "factor": {
-          "tally": {
-            "capacity": 9,
-            "range": 4,
-            "target": {
-              "blocks": [
-                "minecraft:cracked_stone_bricks"
-              ]
-            }
-          }
-        },
-        "operation": "add_multiplied_total"
-      }
-    ]
+  },
+  "condition": {
+    "block": "minecraft:stone_bricks",
+    "id": "reclamation:is_block"
+  },
+  "function": {
+    "convert_to": {
+      "block": "minecraft:cracked_stone_bricks"
+    },
+    "id": "reclamation:convert"
   },
   "name": "reclamation:stone_brick_to_cracked_stone_brick"
 }

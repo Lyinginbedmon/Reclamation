@@ -1,5 +1,7 @@
 package com.lying.utility;
 
+import static com.lying.utility.RCUtils.listOrSolo;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,38 +20,29 @@ import net.minecraft.util.math.random.Random;
 public class StateGetter
 {
 	public static final Codec<StateGetter> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-			BlockState.CODEC.optionalFieldOf("blockstate").forGetter(g -> g.targetState),
-			Registries.BLOCK.getCodec().optionalFieldOf("block").forGetter(g -> g.targetBlock),
-			BlockState.CODEC.listOf().optionalFieldOf("blockstates").forGetter(StateGetter::blockStatesOpt),
-			Registries.BLOCK.getCodec().listOf().optionalFieldOf("blocks").forGetter(StateGetter::blocksOpt))
-			.apply(instance, (a,b, c, d) -> 
-				create()
-					.addBlockState(a.orElse(null))
-					.addBlock(b.orElse(null))
-					.addBlockState(c.orElse(List.of()).toArray(new BlockState[0]))
-					.addBlock(d.orElse(List.of()).toArray(new Block[0]))));
+			BlockState.CODEC.optionalFieldOf("state").forGetter(g -> listOrSolo(Optional.of(g.blockStates)).getRight()),
+			BlockState.CODEC.listOf().optionalFieldOf("states").forGetter(g -> listOrSolo(Optional.of(g.blockStates)).getLeft()),
+			Registries.BLOCK.getCodec().optionalFieldOf("block").forGetter(g -> listOrSolo(Optional.of(g.blocks)).getRight()),
+			Registries.BLOCK.getCodec().listOf().optionalFieldOf("blocks").forGetter(g -> listOrSolo(Optional.of(g.blocks)).getLeft()))
+			.apply(instance, (state, stateList, block, blockList) -> 
+			{
+				StateGetter getter = create();
+				state.ifPresent(s -> getter.addBlockState(s));
+				stateList.ifPresent(s -> getter.addBlockState(s.toArray(new BlockState[0])));
+				
+				block.ifPresent(s -> getter.addBlock(s));
+				blockList.ifPresent(s -> getter.addBlock(s.toArray(new Block[0])));
+				return getter;
+			}));
 	
 	private List<Block> blocks = Lists.newArrayList();
 	private List<BlockState> blockStates = Lists.newArrayList();
-	
-	private Optional<BlockState> targetState = Optional.empty();
-	private Optional<Block> targetBlock = Optional.empty();
 	
 	private List<BlockState> states = Lists.newArrayList();
 	
 	protected StateGetter() { }
 	
 	public static StateGetter create() { return new StateGetter(); }
-	
-	private Optional<List<BlockState>> blockStatesOpt()
-	{
-		return !blockStates.isEmpty() && targetState.isEmpty() ? Optional.of(blockStates) : Optional.empty();
-	}
-	
-	private Optional<List<Block>> blocksOpt()
-	{
-		return !blocks.isEmpty() && targetBlock.isEmpty() ? Optional.of(blocks) : Optional.empty();
-	}
 	
 	public StateGetter addBlockState(BlockState... statesIn)
 	{
@@ -83,20 +76,6 @@ public class StateGetter
 	{
 		boolean result = !states.removeIf(s -> s.equals(state));
 		states.add(state);
-		
-		switch(states.size())
-		{
-			case 1:
-				if(!blocks.isEmpty())
-					targetBlock = Optional.of(blocks.get(0));
-				else if(!blockStates.isEmpty())
-					targetState = Optional.of(blockStates.get(0));
-				break;
-			default:
-				targetState = Optional.empty();
-				targetBlock = Optional.empty();
-				break;
-		}
 		return result;
 	}
 	

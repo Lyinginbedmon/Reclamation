@@ -1,6 +1,7 @@
 package com.lying.decay.conditions;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.JsonArray;
@@ -62,7 +63,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 	protected JsonObject write(JsonObject obj)
 	{
 		if(threshold != 1)
-			obj.addProperty("threshold", threshold);
+			obj.addProperty("at_least", threshold);
 		faces.ifPresent(set -> 
 		{
 			JsonArray array = new JsonArray();
@@ -74,7 +75,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 	
 	protected void read(JsonObject obj)
 	{
-		this.threshold = obj.has("threshold") ? obj.get("threshold").getAsInt() : 1;
+		this.threshold = obj.has("at_least") ? obj.get("at_least").getAsInt() : 1;
 		this.faces = Optional.empty();
 		if(obj.has("faces"))
 		{
@@ -121,12 +122,20 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			return inst;
 		}
 		
-		@SuppressWarnings("unchecked")
-		public static Blocks of(TagKey<Block>... target)
+		public static Blocks of(TagKey<Block> target)
 		{
 			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
 			Builder builder = BlockPredicate.Builder.create();
 			builder.addBlockTag(target);
+			inst.predicate = builder.build();
+			return inst;
+		}
+		
+		public static Blocks of(List<TagKey<Block>> target)
+		{
+			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
+			Builder builder = BlockPredicate.Builder.create();
+			builder.addBlockTags(target);
 			inst.predicate = builder.build();
 			return inst;
 		}
@@ -141,14 +150,14 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		protected JsonObject write(JsonObject obj)
 		{
 			super.write(obj);
-			obj.add("target", predicate.toJson());
+			obj.add("look_for", predicate.toJson());
 			return obj;
 		}
 		
 		protected void read(JsonObject obj)
 		{
 			super.read(obj);
-			predicate = BlockPredicate.fromJson(obj.getAsJsonObject("target"));
+			predicate = BlockPredicate.fromJson(obj.getAsJsonObject("look_for"));
 		}
 	}
 	

@@ -1,43 +1,33 @@
 {
+  "chance": {
+    "base_chance": 0.0,
+    "modifier": {
+      "amount": 0.15,
+      "multiplier": {
+        "search": {
+          "capacity": 4,
+          "looking_for": {
+            "block": "reclamation:tarnished_gold"
+          },
+          "range": 1
+        },
+        "use_tally_as": "flat_value"
+      },
+      "operation": "add_value"
+    }
+  },
   "conditions": [
     "reclamation:exposed",
     {
-      "blocks": [
-        "minecraft:gold_block"
-      ],
+      "block": "minecraft:gold_block",
       "id": "reclamation:is_block"
     }
   ],
-  "functions": [
-    {
-      "convert_to": {
-        "block": "reclamation:tarnished_gold"
-      },
-      "id": "reclamation:convert"
-    }
-  ],
-  "likelihood": {
-    "base": 0.0,
-    "modifiers": [
-      {
-        "amount": 0.1,
-        "factor": {
-          "maximum": 1.0,
-          "minimum": 0.0,
-          "mode": "flat",
-          "tally": {
-            "capacity": 4,
-            "range": 1,
-            "target": {
-              "blocks": [
-                "reclamation:tarnished_gold"
-              ]
-            }
-          }
-        },
-        "operation": "add_value"
-      }
-    ]
+  "function": {
+    "convert_to": {
+      "block": "reclamation:tarnished_gold"
+    },
+    "id": "reclamation:convert"
   },
   "name": "reclamation:gold_to_tarnished_gold"
 }

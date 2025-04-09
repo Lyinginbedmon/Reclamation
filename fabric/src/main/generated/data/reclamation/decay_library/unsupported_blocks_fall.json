@@ -1,9 +1,9 @@
 {
   "conditions": [
     {
+      "at_least": 2,
       "id": "reclamation:supported",
-      "inverted": true,
-      "threshold": 2
+      "inverted": true
     },
     {
       "id": "reclamation:or",
@@ -40,8 +40,6 @@
       ]
     }
   ],
-  "functions": [
-    "reclamation:fall"
-  ],
+  "function": "reclamation:fall",
   "name": "reclamation:unsupported_blocks_fall"
 }

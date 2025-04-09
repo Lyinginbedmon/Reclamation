@@ -1,12 +1,26 @@
 {
-  "conditions": [
-    {
-      "blocks": [
-        "minecraft:cracked_stone_bricks"
-      ],
-      "id": "reclamation:is_block"
+  "chance": {
+    "base_chance": 0.4,
+    "modifier": {
+      "amount": 1.0,
+      "multiplier": {
+        "minimum": 0.1,
+        "power": 0.2,
+        "search": {
+          "capacity": 9,
+          "looking_for": {
+            "block": "reclamation:cracked_stone_brick_stairs"
+          },
+          "range": 4
+        }
+      },
+      "operation": "add_multiplied_total"
     }
-  ],
+  },
+  "condition": {
+    "block": "minecraft:cracked_stone_bricks",
+    "id": "reclamation:is_block"
+  },
   "functions": [
     {
       "convert_to": {
@@ -21,25 +35,5 @@
       ]
     }
   ],
-  "likelihood": {
-    "base": 0.4,
-    "modifiers": [
-      {
-        "amount": 1.0,
-        "factor": {
-          "tally": {
-            "capacity": 9,
-            "range": 4,
-            "target": {
-              "blocks": [
-                "reclamation:cracked_stone_brick_stairs"
-              ]
-            }
-          }
-        },
-        "operation": "add_multiplied_total"
-      }
-    ]
-  },
   "name": "reclamation:cracked_stone_brick_to_cracked_stone_brick_stairs"
 }

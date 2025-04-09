@@ -1,5 +1,7 @@
 package com.lying.decay;
 
+import static com.lying.utility.RCUtils.listOrSolo;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,15 +26,22 @@ public class DecayData
 {
 	public static final Codec<DecayData> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 			Identifier.CODEC.optionalFieldOf("name").forGetter(d -> d.packName),
-			DecayCondition.CODEC.listOf().fieldOf("conditions").forGetter(d -> d.conditions),
-			DecayChance.CODEC.optionalFieldOf("likelihood").forGetter(d -> d.chance.isEmpty() ? Optional.empty() : Optional.of(d.chance)),
-			DecayFunction.CODEC.listOf().fieldOf("functions").forGetter(d -> d.functions))
-			.apply(instance, (name, conditions, likelihood, functions) -> 
+			DecayChance.CODEC.optionalFieldOf("chance").forGetter(d -> d.chance.isEmpty() ? Optional.empty() : Optional.of(d.chance)),
+			DecayCondition.CODEC.listOf().optionalFieldOf("conditions").forGetter(d -> listOrSolo(Optional.of(d.conditions)).getLeft()),
+			DecayCondition.CODEC.optionalFieldOf("condition").forGetter(d -> listOrSolo(Optional.of(d.conditions)).getRight()),
+			DecayFunction.CODEC.listOf().optionalFieldOf("functions").forGetter(d -> listOrSolo(Optional.of(d.functions)).getLeft()),
+			DecayFunction.CODEC.optionalFieldOf("function").forGetter(d -> listOrSolo(Optional.of(d.functions)).getRight())
+			)
+			.apply(instance, (name, chance, conditionList, condition, functionList, function) -> 
 			{
-				DecayData.Builder builder = DecayData.Builder.create(likelihood.orElse(DecayChance.base()));
+				DecayData.Builder builder = DecayData.Builder.create(chance.orElse(DecayChance.base()));
 				name.ifPresent(s -> builder.name(s));
-				conditions.forEach(condition -> builder.condition(condition));
-				functions.forEach(function -> builder.function(function));
+				
+				conditionList.ifPresent(l -> l.forEach(builder::condition));
+				condition.ifPresent(l -> builder.condition(l));
+				
+				functionList.ifPresent(l -> l.forEach(builder::function));
+				function.ifPresent(l -> builder.function(l));
 				return builder.build();
 			}));
 	

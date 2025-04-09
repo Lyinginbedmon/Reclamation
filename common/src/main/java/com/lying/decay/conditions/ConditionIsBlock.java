@@ -1,5 +1,7 @@
 package com.lying.decay.conditions;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 import com.lying.init.RCDecayConditions;
 import com.lying.utility.BlockPredicate;
@@ -44,12 +46,20 @@ public class ConditionIsBlock extends DecayCondition
 		return inst;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static DecayCondition of(TagKey<Block>... target)
+	public static DecayCondition of(TagKey<Block> target)
 	{
 		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
 		Builder builder = BlockPredicate.Builder.create();
 		builder.addBlockTag(target);
+		inst.predicate = builder.build();
+		return inst;
+	}
+	
+	public static DecayCondition of(List<TagKey<Block>> target)
+	{
+		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
+		Builder builder = BlockPredicate.Builder.create();
+		builder.addBlockTags(target);
 		inst.predicate = builder.build();
 		return inst;
 	}

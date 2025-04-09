@@ -1,4 +1,7 @@
 {
+  "chance": {
+    "base_chance": 0.2
+  },
   "conditions": [
     {
       "blocks": [
@@ -10,30 +13,25 @@
     "reclamation:air_above",
     "reclamation:sky_above"
   ],
-  "functions": [
-    {
-      "count": 1,
-      "id": "reclamation:sprout",
-      "sprouted": {
-        "face": "up",
-        "growth": {
-          "blocks": [
-            "minecraft:poppy",
-            "minecraft:dandelion",
-            "minecraft:short_grass",
-            "minecraft:tall_grass",
-            "minecraft:oak_sapling",
-            "minecraft:spruce_sapling",
-            "minecraft:birch_sapling",
-            "minecraft:brown_mushroom",
-            "minecraft:red_mushroom"
-          ]
-        }
+  "function": {
+    "count": 1,
+    "id": "reclamation:sprout",
+    "sprouted": {
+      "face": "up",
+      "growth": {
+        "blocks": [
+          "minecraft:poppy",
+          "minecraft:dandelion",
+          "minecraft:short_grass",
+          "minecraft:tall_grass",
+          "minecraft:oak_sapling",
+          "minecraft:spruce_sapling",
+          "minecraft:birch_sapling",
+          "minecraft:brown_mushroom",
+          "minecraft:red_mushroom"
+        ]
       }
     }
-  ],
-  "likelihood": {
-    "base": 0.2
   },
   "name": "reclamation:grass_sprout"
 }

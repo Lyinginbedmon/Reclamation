@@ -1,5 +1,7 @@
 package com.lying.utility;
 
+import static com.lying.utility.RCUtils.listOrSolo;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -23,19 +25,33 @@ import net.minecraft.registry.tag.TagKey;
 public class BlockPredicate implements Predicate<BlockState>
 {
 	public static final Codec<BlockPredicate> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-			Registries.BLOCK.getCodec().listOf().optionalFieldOf("blocks").forGetter(p -> p.blocks),
-			BlockState.CODEC.listOf().optionalFieldOf("states").forGetter(p -> p.blockStates),
-			TagKey.codec(RegistryKeys.BLOCK).listOf().optionalFieldOf("tags").forGetter(p -> p.blockTags),
-			Codec.STRING.listOf().optionalFieldOf("properties").forGetter(p -> p.blockProperties),
-			PropertyMap.CODEC.listOf().optionalFieldOf("values").forGetter(p -> p.blockValues))
-				.apply(instance, (a, b, c, d, e) -> 
+			Registries.BLOCK.getCodec().listOf().optionalFieldOf("blocks").forGetter(p -> listOrSolo(p.blocks).getLeft()),
+			Registries.BLOCK.getCodec().optionalFieldOf("block").forGetter(p -> listOrSolo(p.blocks).getRight()),
+			BlockState.CODEC.listOf().optionalFieldOf("states").forGetter(p -> listOrSolo(p.blockStates).getLeft()),
+			BlockState.CODEC.optionalFieldOf("state").forGetter(p -> listOrSolo(p.blockStates).getRight()),
+			TagKey.codec(RegistryKeys.BLOCK).listOf().optionalFieldOf("tags").forGetter(p -> listOrSolo(p.blockTags).getLeft()),
+			TagKey.codec(RegistryKeys.BLOCK).optionalFieldOf("tag").forGetter(p -> listOrSolo(p.blockTags).getRight()),
+			Codec.STRING.listOf().optionalFieldOf("properties").forGetter(p -> listOrSolo(p.blockProperties).getLeft()),
+			Codec.STRING.optionalFieldOf("property").forGetter(p -> listOrSolo(p.blockProperties).getRight()),
+			PropertyMap.CODEC.listOf().optionalFieldOf("values").forGetter(p -> listOrSolo(p.blockValues).getLeft()),
+			PropertyMap.CODEC.optionalFieldOf("value").forGetter(p -> listOrSolo(p.blockValues).getRight()))
+				.apply(instance, (blockList, block, stateList, state, tagList, tag, propertyList, property, valueList, values) -> 
 				{
 					Builder builder = Builder.create();
-					a.ifPresent(l -> builder.addBlock(l.toArray(new Block[0])));
-					b.ifPresent(l -> builder.addBlockState(l.toArray(new BlockState[0])));
-					c.ifPresent(l -> builder.addBlockTags(l));
-					d.ifPresent(l -> builder.addBlockProperty(l.toArray(new String[0])));
-					e.ifPresent(l -> builder.addBlockValues(l.toArray(new PropertyMap[0])));
+					blockList.ifPresent(l -> builder.addBlock(l.toArray(new Block[0])));
+					block.ifPresent(l -> builder.addBlock(l));
+					
+					stateList.ifPresent(l -> builder.addBlockState(l.toArray(new BlockState[0])));
+					state.ifPresent(l -> builder.addBlockState(l));
+					
+					tagList.ifPresent(l -> builder.addBlockTags(l));
+					tag.ifPresent(l -> builder.addBlockTag(l));
+					
+					propertyList.ifPresent(l -> builder.addBlockProperty(l.toArray(new String[0])));
+					property.ifPresent(l -> builder.addBlockProperty(l));
+					
+					valueList.ifPresent(l -> builder.addBlockValues(l.toArray(new PropertyMap[0])));
+					values.ifPresent(l -> builder.addBlockValues(l));
 					return builder.build();
 				}));
 	
@@ -134,8 +150,7 @@ public class BlockPredicate implements Predicate<BlockState>
 			return this;
 		}
 		
-		@SuppressWarnings("unchecked")
-		public Builder addBlockTag(TagKey<Block>... tags)
+		public Builder addBlockTag(TagKey<Block> tags)
 		{
 			return addBlockTags(List.of(tags));
 		}

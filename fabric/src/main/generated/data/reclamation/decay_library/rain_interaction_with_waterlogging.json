@@ -1,4 +1,7 @@
 {
+  "chance": {
+    "base_chance": 0.3
+  },
   "conditions": [
     "reclamation:sky_above",
     {
@@ -36,16 +39,11 @@
       ]
     }
   ],
-  "functions": [
-    {
-      "id": "reclamation:cycle_blockstate_value",
-      "properties": [
-        "waterlogged"
-      ]
-    }
-  ],
-  "likelihood": {
-    "base": 0.3
+  "function": {
+    "id": "reclamation:cycle_blockstate_value",
+    "properties": [
+      "waterlogged"
+    ]
   },
   "name": "reclamation:rain_interaction_with_waterlogging"
 }

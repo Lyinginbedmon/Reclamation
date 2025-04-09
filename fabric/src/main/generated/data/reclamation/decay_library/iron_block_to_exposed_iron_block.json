@@ -1,14 +1,15 @@
 {
+  "chance": {
+    "base_chance": 0.1
+  },
   "conditions": [
     {
-      "blocks": [
-        "minecraft:iron_block"
-      ],
+      "block": "minecraft:iron_block",
       "id": "reclamation:is_block"
     },
     {
       "id": "reclamation:adjacent_to",
-      "target": {
+      "look_for": {
         "blocks": [
           "reclamation:exposed_iron",
           "reclamation:weathered_iron",
@@ -17,16 +18,11 @@
       }
     }
   ],
-  "functions": [
-    {
-      "convert_to": {
-        "block": "reclamation:exposed_iron"
-      },
-      "id": "reclamation:convert"
-    }
-  ],
-  "likelihood": {
-    "base": 0.1
+  "function": {
+    "convert_to": {
+      "block": "reclamation:exposed_iron"
+    },
+    "id": "reclamation:convert"
   },
   "name": "reclamation:iron_block_to_exposed_iron_block"
 }

@@ -9,13 +9,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
+/** Counts matching blocks around a position up to a specified capacity */
 public class TallyGetter
 {
 	public static final Codec<TallyGetter> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 			Codec.INT.optionalFieldOf("capacity").forGetter(c -> c.capacity),
 			Codec.INT.optionalFieldOf("range").forGetter(c -> c.scanRange),
 			Vec3i.CODEC.optionalFieldOf("area").forGetter(c -> c.scanVec),
-			BlockPredicate.CODEC.fieldOf("target").forGetter(c -> c.predicate)
+			BlockPredicate.CODEC.fieldOf("looking_for").forGetter(c -> c.predicate)
 			)
 			.apply(instance, (a, b, c, d) -> new TallyGetter(a, b, c, d)));
 	
@@ -31,10 +32,17 @@ public class TallyGetter
 		this.predicate = predicateIn;
 	}
 	
-	public int capacity() { return capacity.orElse(9); }
+	public static TallyGetter blank() { return new TallyGetter(Optional.empty(), Optional.empty(), Optional.empty(), BlockPredicate.Builder.create().build()); }
+	
+	public boolean isBlank() { return predicate.isEmpty(); }
+	
+	public int capacity() { return capacity.orElse(10); }
 	
 	public float getTally(World world, BlockPos pos)
 	{
+		if(predicate.isEmpty())
+			return 0F;
+		
 		float tally = 0;
 		Iterable<BlockPos> iterable;
 		if(scanVec.isPresent())
