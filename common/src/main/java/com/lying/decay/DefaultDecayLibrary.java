@@ -3,8 +3,10 @@ package com.lying.decay;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.lying.data.RCBlockTags;
 import com.lying.decay.conditions.ConditionBoolean;
 import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
@@ -165,22 +167,17 @@ public class DefaultDecayLibrary
 		
 		register(DecayData.Builder.create(
 				DecayChance.base(0.0025F)
-					.addModifier(0.4F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().searchRange(1).blockCap(1).blocks(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
+					.addModifier(0.4F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(3).tags(RCBlockTags.RUST).build()))
 				.name("iron_block_start_rusting")
 				.condition(
-					RCDecayConditions.EXPOSED.get(),
+					ConditionBoolean.Or.of(
+						RCDecayConditions.EXPOSED.get(),
+						ConditionNeighbouring.Blocks.of(List.of(RCBlockTags.RUST))),
 					ConditionIsBlock.of(Blocks.IRON_BLOCK))
 				.function(FunctionConvert.to(RCBlocks.EXPOSED_IRON.get())).build());
 		register(DecayData.Builder.create(
 				DecayChance.base(0F)
-					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
-				.name("iron_block_to_exposed_iron_block")
-				.condition(
-					ConditionIsBlock.of(Blocks.IRON_BLOCK))
-				.function(FunctionConvert.to(RCBlocks.EXPOSED_IRON.get())).build());
-		register(DecayData.Builder.create(
-				DecayChance.base(0F)
-					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
+					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).tags(RCBlockTags.RUST).build()))
 				.name("exposed_iron_block_to_weathered_iron_block")
 				.condition(
 					ConditionIsBlock.of(RCBlocks.EXPOSED_IRON.get()))
@@ -195,7 +192,7 @@ public class DefaultDecayLibrary
 		
 		register(DecayData.Builder.create(
 				DecayChance.base(0.000025F)
-					.addModifier(0.15F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).blockCap(4).searchRange(1).blocks(RCBlocks.TARNISHED_GOLD.get()).build()))
+					.addModifier(0.15F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).blockCap(6).searchRange(1).blocks(RCBlocks.TARNISHED_GOLD.get()).build()))
 				.name("gold_to_tarnished_gold")
 				.condition(
 					RCDecayConditions.EXPOSED.get(),

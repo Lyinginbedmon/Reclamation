@@ -1,23 +1,24 @@
 {
   "chance": {
-    "base_chance": 0.1
-  },
-  "conditions": [
-    {
-      "block": "reclamation:exposed_iron",
-      "id": "reclamation:is_block"
-    },
-    {
-      "at_least": 2,
-      "id": "reclamation:adjacent_to",
-      "look_for": {
-        "blocks": [
-          "reclamation:exposed_iron",
-          "reclamation:weathered_iron"
-        ]
-      }
+    "base_chance": 0.0,
+    "modifier": {
+      "amount": 0.3,
+      "multiplier": {
+        "search": {
+          "looking_for": {
+            "tag": "#reclamation:rust_block"
+          },
+          "range": 1
+        },
+        "use_tally_as": "flat_value"
+      },
+      "operation": "add_value"
     }
-  ],
+  },
+  "condition": {
+    "block": "reclamation:exposed_iron",
+    "id": "reclamation:is_block"
+  },
   "function": {
     "convert_to": {
       "block": "reclamation:weathered_iron"

@@ -9,5 +9,6 @@ public class RCDataGenerators implements DataGeneratorEntrypoint
 	{
 		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 		pack.addProvider(RCDecayProvider::new);
+		pack.addProvider(RCBlockTagsProvider::new);
 	}
 }

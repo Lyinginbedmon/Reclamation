@@ -1,6 +1,6 @@
 {
   "chance": {
-    "base_chance": 0.0,
+    "base_chance": 2.5E-5,
     "modifier": {
       "amount": 0.15,
       "multiplier": {

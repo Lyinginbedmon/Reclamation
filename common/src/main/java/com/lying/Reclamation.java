@@ -15,6 +15,7 @@ import com.lying.decay.context.LiveDecayContext;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
 import com.lying.init.RCDecayFunctions;
+import com.lying.init.RCGameRules;
 import com.lying.init.RCItems;
 import com.lying.reference.Reference;
 
@@ -37,6 +38,7 @@ public final class Reclamation
     	config = new ServerConfig("config/ReclamationServer.cfg");
     	config.read();
     	
+    	RCGameRules.init();
     	RCCommands.init();
     	RCBlocks.init();
         RCItems.init();
@@ -59,8 +61,8 @@ public final class Reclamation
     		
     		// Log of updated blocks to prevent blocks being decayed multiple times in one update
     		List<BlockPos> updated = Lists.newArrayList();
-    		int radius = config.naturalDecayRadius();
-    		for(int i=config.naturalDecayRate(); i>0; --i)
+    		int radius = overworld.getGameRules().getInt(RCGameRules.DECAY_RADIUS);
+    		for(int i=overworld.getGameRules().getInt(RCGameRules.DECAY_SPEED); i>0; --i)
     		{
     			ServerPlayerEntity player = players.size() > 1 ? players.get(rand.nextInt(players.size())) : players.get(0);
     			

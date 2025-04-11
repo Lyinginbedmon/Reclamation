@@ -13,6 +13,7 @@ import com.lying.decay.DecayData;
 import com.lying.decay.DecayLibrary;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.QueuedDecayContext;
+import com.lying.init.RCGameRules;
 import com.lying.reference.Reference;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -25,6 +26,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -32,6 +34,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.GameRules.IntRule;
 
 public class RCCommands
 {
@@ -86,33 +89,39 @@ public class RCCommands
 	
 	private static int getNaturalDecayRate(ServerCommandSource source) throws CommandSyntaxException
 	{
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_rate.get", Reclamation.config.naturalDecayRate()), true);
+		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_rate.get", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_SPEED)), true);
 		return 15;
 	}
 	
 	private static int setNaturalDecayRate(int rate, ServerCommandSource source) throws CommandSyntaxException
 	{
+		MinecraftServer server = source.getServer();
+		ServerWorld world = server.getOverworld();
+		IntRule rule = world.getGameRules().get(RCGameRules.DECAY_SPEED);
 		if(rate >= 0)
-			Reclamation.config.setRate(rate);
+			rule.set(rate, server);
 		else
-			Reclamation.config.resetRate();
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_rate.set", Reclamation.config.naturalDecayRate()), true);
+			rule.set(Reclamation.config.naturalDecaySpeed(), server);
+		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_rate.set", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_SPEED)), true);
 		return 15;
 	}
 	
 	private static int getNaturalDecayRadius(ServerCommandSource source) throws CommandSyntaxException
 	{
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_radius.get", Reclamation.config.naturalDecayRadius()), true);
+		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_radius.get", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_RADIUS)), true);
 		return 15;
 	}
 	
 	private static int setNaturalDecayRadius(int radius, ServerCommandSource source) throws CommandSyntaxException
 	{
+		MinecraftServer server = source.getServer();
+		ServerWorld world = server.getOverworld();
+		IntRule rule = world.getGameRules().get(RCGameRules.DECAY_RADIUS);
 		if(radius >= 0)
-			Reclamation.config.setRadius(radius);
+			rule.set(radius, server);
 		else
-			Reclamation.config.resetRadius();
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_radius.set", Reclamation.config.naturalDecayRadius()), true);
+			rule.set(Reclamation.config.naturalDecayRadius(), server);
+		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_radius.set", world.getGameRules().getInt(RCGameRules.DECAY_RADIUS)), true);
 		return 15;
 	}
 	
