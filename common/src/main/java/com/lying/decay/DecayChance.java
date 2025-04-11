@@ -52,15 +52,27 @@ public class DecayChance
 		return new DecayChance(value >= 0F ? Optional.of(value) : Optional.empty(), List.of());
 	}
 	
+	public DecayChance addModifier(Operation mode)
+	{
+		modifiers.add(new ChanceModifier(1F, mode, Optional.empty()));
+		return this;
+	}
+	
 	public DecayChance addModifier(Operation mode, BlockSaturationCalculator catalyser)
 	{
-		modifiers.add(new ChanceModifier(1F, mode, catalyser));
+		modifiers.add(new ChanceModifier(1F, mode, Optional.of(catalyser)));
+		return this;
+	}
+	
+	public DecayChance addModifier(float amount, Operation mode)
+	{
+		modifiers.add(new ChanceModifier(amount, mode, Optional.empty()));
 		return this;
 	}
 	
 	public DecayChance addModifier(float amount, Operation mode, BlockSaturationCalculator catalyser)
 	{
-		modifiers.add(new ChanceModifier(amount, mode, catalyser));
+		modifiers.add(new ChanceModifier(amount, mode, Optional.of(catalyser)));
 		return this;
 	}
 	
@@ -80,17 +92,17 @@ public class DecayChance
 		return totalChance;
 	}
 	
-	private static record ChanceModifier(float amount, Operation mode, BlockSaturationCalculator catalyser)
+	private static record ChanceModifier(float amount, Operation mode, Optional<BlockSaturationCalculator> catalyser)
 	{
 		public static final Codec<ChanceModifier> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 				Codec.FLOAT.fieldOf("amount").forGetter(ChanceModifier::amount),
 				Operation.CODEC.fieldOf("operation").forGetter(ChanceModifier::mode),
-				BlockSaturationCalculator.CODEC.fieldOf("multiplier").forGetter(ChanceModifier::catalyser))
+				BlockSaturationCalculator.CODEC.optionalFieldOf("multiplier").forGetter(ChanceModifier::catalyser))
 					.apply(instance, (a,b,c) -> new ChanceModifier(a, b, c)));
 		
 		public float value(ServerWorld world, BlockPos pos)
 		{
-			return amount() * catalyser().calculate(world, pos);
+			return amount() * catalyser().orElse(BlockSaturationCalculator.ofValue(1F)).calculate(world, pos);
 		}
 	}
 }

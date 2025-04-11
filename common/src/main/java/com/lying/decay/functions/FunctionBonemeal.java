@@ -1,6 +1,6 @@
 package com.lying.decay.functions;
 
-import com.lying.decay.DecayContext;
+import com.lying.decay.context.DecayContext;
 
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
@@ -16,6 +16,6 @@ public class FunctionBonemeal extends DecayFunction
 	
 	protected void applyTo(DecayContext context)
 	{
-		BoneMealItem.useOnFertilizable(new ItemStack(Items.BONE_MEAL), context.world, context.currentPos);
+		context.execute((pos,world) -> BoneMealItem.useOnFertilizable(new ItemStack(Items.BONE_MEAL), world, pos));
 	}
 }

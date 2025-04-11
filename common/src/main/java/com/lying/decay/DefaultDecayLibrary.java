@@ -164,35 +164,37 @@ public class DefaultDecayLibrary
 					RCDecayFunctions.SHUFFLE.get()).build());
 		
 		register(DecayData.Builder.create(
-				DecayChance.base(0.0025F))
+				DecayChance.base(0.0025F)
+					.addModifier(0.4F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().searchRange(1).blockCap(1).blocks(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
 				.name("iron_block_start_rusting")
 				.condition(
 					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.IRON_BLOCK))
 				.function(FunctionConvert.to(RCBlocks.EXPOSED_IRON.get())).build());
-		register(DecayData.Builder.create(DecayChance.base(0.1F))
+		register(DecayData.Builder.create(
+				DecayChance.base(0F)
+					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
 				.name("iron_block_to_exposed_iron_block")
 				.condition(
-					ConditionIsBlock.of(Blocks.IRON_BLOCK),
-					ConditionNeighbouring.Blocks.of(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).threshold(1))
+					ConditionIsBlock.of(Blocks.IRON_BLOCK))
 				.function(FunctionConvert.to(RCBlocks.EXPOSED_IRON.get())).build());
 		register(DecayData.Builder.create(
-				DecayChance.base(0.1F))
+				DecayChance.base(0F)
+					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
 				.name("exposed_iron_block_to_weathered_iron_block")
 				.condition(
-					ConditionIsBlock.of(RCBlocks.EXPOSED_IRON.get()),
-					ConditionNeighbouring.Blocks.of(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WEATHERED_IRON.get()).threshold(2))
+					ConditionIsBlock.of(RCBlocks.EXPOSED_IRON.get()))
 				.function(FunctionConvert.to(RCBlocks.WEATHERED_IRON.get())).build());
 		register(DecayData.Builder.create(
-				DecayChance.base(0.1F))
+				DecayChance.base(0F)
+					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
 				.name("weathered_iron_block_to_rusted_iron_block")
 				.condition(
-					ConditionIsBlock.of(RCBlocks.WEATHERED_IRON.get()),
-					ConditionNeighbouring.Blocks.of(RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).threshold(3))
+					ConditionIsBlock.of(RCBlocks.WEATHERED_IRON.get()))
 				.function(FunctionConvert.to(RCBlocks.RUSTED_IRON.get())).build());
 		
 		register(DecayData.Builder.create(
-				DecayChance.base(0.0F)
+				DecayChance.base(0.000025F)
 					.addModifier(0.15F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).blockCap(4).searchRange(1).blocks(RCBlocks.TARNISHED_GOLD.get()).build()))
 				.name("gold_to_tarnished_gold")
 				.condition(

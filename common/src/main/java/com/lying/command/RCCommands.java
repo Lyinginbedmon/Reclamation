@@ -4,11 +4,15 @@ import static com.lying.reference.Reference.ModInfo.translate;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.google.common.collect.Lists;
 import com.lying.Reclamation;
 import com.lying.decay.DecayData;
 import com.lying.decay.DecayLibrary;
+import com.lying.decay.context.DecayContext;
+import com.lying.decay.context.QueuedDecayContext;
 import com.lying.reference.Reference;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -27,7 +31,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 
 public class RCCommands
@@ -68,7 +71,7 @@ public class RCCommands
 					)
 				.then(literal("decay")
 					.then(argument("from", BlockPosArgumentType.blockPos())
-						.executes(context -> tryDecayRegion(BlockBox.create(BlockPosArgumentType.getBlockPos(context, "from"), BlockPosArgumentType.getBlockPos(context, "from")), context.getSource()))
+						.executes(context -> tryDecayRegion(new BlockBox(BlockPosArgumentType.getBlockPos(context, "from")), context.getSource()))
 						.then(argument("to", BlockPosArgumentType.blockPos())
 							.executes(context -> tryDecayRegion(BlockBox.create(BlockPosArgumentType.getBlockPos(context, "from"), BlockPosArgumentType.getBlockPos(context, "to")), context.getSource()))
 							.then(argument("entry", IdentifierArgumentType.identifier()).suggests(DECAY_ENTRY_IDS)
@@ -115,19 +118,22 @@ public class RCCommands
 	
 	private static int tryDecayRegion(BlockBox region, ServerCommandSource source) throws CommandSyntaxException
 	{
-		ServerWorld world = source.getWorld();
+		ServerWorld serverWorld = source.getWorld();
 		int totalBlocks = region.getBlockCountX() * region.getBlockCountY() * region.getBlockCountZ();
-		int limit = world.getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
+		int limit = serverWorld.getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
 		if(totalBlocks > limit)
 			throw TOO_BIG_EXCEPTION.create(limit, totalBlocks);
 		
-		int tally = 0;
-		Random rand = world.getRandom();
-		for(BlockPos pos : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
-			if(Reclamation.tryToDecay(pos, world, rand))
-				tally++;
+		List<DecayContext> queue = Lists.newArrayList();
+		for(BlockPos position : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
+		{
+			DecayContext context = Reclamation.tryToDecay(serverWorld, QueuedDecayContext.supplier(position, serverWorld));
+			if(context != null)
+				queue.add(context);
+		}
+		queue.forEach(DecayContext::close);
 		
-		final int decayed = tally;
+		final int decayed = queue.size();
 		source.sendFeedback(() -> Reference.ModInfo.translate("command", "decay_region", totalBlocks, decayed), true);
 		return 15;
 	}
@@ -140,17 +146,21 @@ public class RCCommands
 		if(totalBlocks > limit)
 			throw TOO_BIG_EXCEPTION.create(limit, totalBlocks);
 		
-		int tally = 0;
-		Random rand = world.getRandom();
 		Optional<DecayData> entry = DecayLibrary.instance().get(entryType);
 		if(entry.isEmpty())
 			throw FAILED_UNKNOWN_ENTRY.create();
-		else
-			for(BlockPos pos : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
-				if(Reclamation.tryToDecay(pos, world, rand, entry.get(), false))
-					tally++;
 		
-		final int decayed = tally;
+		List<DecayContext> queue = Lists.newArrayList();
+		for(BlockPos pos : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
+		{
+			DecayContext context = QueuedDecayContext.supplier(pos, world);
+			if(Reclamation.tryToDecay(world, entry.get(), false, context) != null)
+				queue.add(context);
+		}
+		
+		queue.forEach(DecayContext::close);
+		
+		final int decayed = queue.size();
 		source.sendFeedback(() -> Reference.ModInfo.translate("command", "decay_region", totalBlocks, decayed), true);
 		return 15;
 	}

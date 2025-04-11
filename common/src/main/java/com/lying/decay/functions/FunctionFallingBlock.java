@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lying.Reclamation;
-import com.lying.decay.DecayContext;
+import com.lying.decay.context.DecayContext;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.block.Block;
@@ -39,10 +39,10 @@ public abstract class FunctionFallingBlock extends DecayFunction
 		
 		protected void applyTo(DecayContext context)
 		{
-			if(!canFallThrough(context.world.getBlockState(context.currentPos.down())))
+			if(!canFallThrough(context.getBlockState(context.currentPos().down())))
 				return;
 			
-			FallingBlockEntity.spawnFromBlock(context.world, context.currentPos, context.currentState);
+			context.execute((pos, world) -> FallingBlockEntity.spawnFromBlock(world, pos, context.currentState()));
 			context.breakBlock();
 			context.preventFurtherChanges();
 		}
@@ -60,8 +60,8 @@ public abstract class FunctionFallingBlock extends DecayFunction
 		
 		protected void applyTo(DecayContext context)
 		{
-			if(canFallThrough(context.world.getBlockState(context.currentPos.down())))
-				destination(context.random).ifPresent(state -> FallingBlockEntity.spawnFromBlock(context.world, context.currentPos.down(), state));
+			if(canFallThrough(context.getBlockState(context.currentPos().down())))
+				destination(context.random).ifPresent(state -> context.execute((pos, world) -> FallingBlockEntity.spawnFromBlock(world, pos.down(), state)));
 		}
 		
 		protected Optional<BlockState> destination(Random random)

@@ -8,8 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.lying.Reclamation;
-import com.lying.decay.DecayContext;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayFunctions;
 import com.lying.utility.PropertyMap;
 
@@ -54,7 +53,7 @@ public abstract class FunctionBlockState extends DecayFunction
 		
 		protected void applyTo(DecayContext context)
 		{
-			BlockState state = context.currentState;
+			BlockState state = context.currentState();
 			if(state.contains(Properties.WATERLOGGED) && !state.get(Properties.WATERLOGGED))
 				context.setBlockState(state.with(Properties.WATERLOGGED, true));
 		}
@@ -69,8 +68,7 @@ public abstract class FunctionBlockState extends DecayFunction
 		
 		protected void applyTo(DecayContext context)
 		{
-			Reclamation.LOGGER.info(" # Dehydrating block at {}", context.currentPos.toString());
-			BlockState state = context.currentState;
+			BlockState state = context.currentState();
 			if(state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED))
 				context.setBlockState(state.with(Properties.WATERLOGGED, false));
 		}
@@ -95,7 +93,7 @@ public abstract class FunctionBlockState extends DecayFunction
 		
 		protected void applyTo(DecayContext context)
 		{
-			BlockState state = context.currentState;
+			BlockState state = context.currentState();
 			Block block = state.getBlock();
 			StateManager<Block, BlockState> manager = block.getStateManager();
 			
@@ -104,7 +102,7 @@ public abstract class FunctionBlockState extends DecayFunction
 				if((property = manager.getProperty(propertyName)) != null)
 					state = state.cycle(property);
 			
-			if(!state.equals(context.currentState))
+			if(!state.equals(context.currentState()))
 				context.setBlockState(state);
 		}
 		
@@ -144,7 +142,7 @@ public abstract class FunctionBlockState extends DecayFunction
 		
 		protected void applyTo(DecayContext context)
 		{
-			BlockState state = context.currentState;
+			BlockState state = context.currentState();
 			Block block = state.getBlock();
 			StateManager<Block, BlockState> manager = block.getStateManager();
 			
@@ -153,7 +151,7 @@ public abstract class FunctionBlockState extends DecayFunction
 				if((property = manager.getProperty(propertyName)) != null)
 					state = randomise(property, context.random, state);
 			
-			if(!state.equals(context.currentState))
+			if(!state.equals(context.currentState()))
 				context.setBlockState(state);
 		}
 		
@@ -182,7 +180,7 @@ public abstract class FunctionBlockState extends DecayFunction
 		protected void applyTo(DecayContext context)
 		{
 			BlockState original = context.originalState;
-			BlockState current = context.currentState;
+			BlockState current = context.currentState();
 			
 			StateManager<Block, BlockState> stateManager = original.getBlock().getStateManager();
 			Property<?> property = null;
@@ -190,7 +188,7 @@ public abstract class FunctionBlockState extends DecayFunction
 				if((property = stateManager.getProperty(propertyName)) != null)
 					current = copyValue(property, original, current);
 			
-			if(!current.equals(context.currentState))
+			if(!current.equals(context.currentState()))
 				context.setBlockState(current);
 		}
 		
@@ -211,8 +209,8 @@ public abstract class FunctionBlockState extends DecayFunction
 		
 		protected void applyTo(DecayContext context)
 		{
-			BlockState state = properties.applyTo(context.currentState);
-			if(!state.equals(context.currentState))
+			BlockState state = properties.applyTo(context.currentState());
+			if(!state.equals(context.currentState()))
 				context.setBlockState(state);
 		}
 		

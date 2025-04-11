@@ -1,7 +1,7 @@
 package com.lying.decay.functions;
 
 import com.google.gson.JsonObject;
-import com.lying.decay.DecayContext;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayFunctions;
 import com.lying.utility.StateGetter;
 

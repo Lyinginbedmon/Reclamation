@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.lying.Reclamation;
-import com.lying.decay.DecayContext;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayFunctions;
 import com.lying.utility.StateGetter;
 import com.mojang.datafixers.util.Pair;
@@ -79,32 +79,34 @@ public class FunctionSprout extends DecayFunction
 		if(resultMap.isEmpty())
 			return;
 		
-		ServerWorld world = context.world;
 		Random random = context.random;
-		List<Direction> faces = Lists.newArrayList(resultMap.keySet());
-		int placings = count.orElse(faces.size());
-		while(!faces.isEmpty())
+		context.execute((pos, world) -> 
 		{
-			Direction face = faces.remove(random.nextInt(faces.size()));
-			BlockPos offset = context.currentPos.offset(face);
-			boolean waterLogged = world.getFluidState(offset).isOf(Fluids.WATER);
-			Optional<BlockState> growth = resultMap.get(face, random);
-			if(growth.isPresent())
+			List<Direction> faces = Lists.newArrayList(resultMap.keySet());
+			int placings = count.orElse(faces.size());
+			while(!faces.isEmpty())
 			{
-				BlockState state = growth.get();
-				if(force.orElse(false) || canPlaceAt(state, world, offset))
+				Direction face = faces.remove(random.nextInt(faces.size()));
+				BlockPos offset = pos.offset(face);
+				boolean waterLogged = world.getFluidState(offset).isOf(Fluids.WATER);
+				Optional<BlockState> growth = resultMap.get(face, random);
+				if(growth.isPresent())
 				{
-					world.setBlockState(offset, 
-						state.getBlock().getStateManager().getProperty(Properties.WATERLOGGED.getName()) != null && waterLogged ? state.with(Properties.WATERLOGGED, waterLogged) : state);
+					BlockState state = growth.get();
+					if(force.orElse(false) || canPlaceAt(state, world, offset))
+					{
+						world.setBlockState(offset, 
+							state.getBlock().getStateManager().getProperty(Properties.WATERLOGGED.getName()) != null && waterLogged ? state.with(Properties.WATERLOGGED, waterLogged) : state);
+						
+						if(!force.orElse(false))
+							state.getBlock().onPlaced(world, offset, state, null, new ItemStack(state.getBlock().asItem()));
+					}
 					
-					if(!force.orElse(false))
-						state.getBlock().onPlaced(world, offset, state, null, new ItemStack(state.getBlock().asItem()));
+					if(--placings == 0)
+						return;
 				}
-				
-				if(--placings == 0)
-					return;
 			}
-		}
+		});
 	}
 	
 	public boolean canPlaceAt(BlockState state, ServerWorld world, BlockPos pos)

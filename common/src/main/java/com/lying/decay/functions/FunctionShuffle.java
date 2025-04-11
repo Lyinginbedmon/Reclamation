@@ -1,6 +1,6 @@
 package com.lying.decay.functions;
 
-import com.lying.decay.DecayContext;
+import com.lying.decay.context.DecayContext;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -21,8 +21,8 @@ public class FunctionShuffle extends DecayFunction
 		
 		for(Direction face : Direction.shuffle(context.random).stream().filter(d -> d.getAxis() != Axis.Y).toList())
 		{
-			BlockPos offset = context.currentPos.offset(face);
-			if(context.world.isAir(offset))
+			BlockPos offset = context.currentPos().offset(face);
+			if(context.isAir(offset))
 			{
 				context.moveTo(offset);
 				return;

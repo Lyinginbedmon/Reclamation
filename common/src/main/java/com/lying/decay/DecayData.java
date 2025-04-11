@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lying.decay.conditions.DecayCondition;
+import com.lying.decay.context.DecayContext;
 import com.lying.decay.functions.DecayFunction;
 import com.lying.reference.Reference;
 import com.mojang.serialization.Codec;
@@ -88,10 +89,9 @@ public class DecayData
 		return MathHelper.clamp(chance.chance(pos, world), 0F, 1F);
 	}
 	
-	/** Sequentially applies all functions of this data to the given position */
-	public void apply(ServerWorld world, BlockPos pos, BlockState currentState)
+	/** Sequentially applies all functions of this data to the given context */
+	public void apply(DecayContext context)
 	{
-		DecayContext context = new DecayContext(pos, world, currentState);
 		for(DecayFunction func : functions)
 			if(context.continuityBroken())
 				break;

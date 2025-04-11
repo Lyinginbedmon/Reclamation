@@ -10,9 +10,11 @@ import com.lying.command.RCCommands;
 import com.lying.config.ServerConfig;
 import com.lying.decay.DecayData;
 import com.lying.decay.DecayLibrary;
+import com.lying.decay.context.DecayContext;
+import com.lying.decay.context.LiveDecayContext;
 import com.lying.init.RCBlocks;
-import com.lying.init.RCDecayFunctions;
 import com.lying.init.RCDecayConditions;
+import com.lying.init.RCDecayFunctions;
 import com.lying.init.RCItems;
 import com.lying.reference.Reference;
 
@@ -61,45 +63,45 @@ public final class Reclamation
     		for(int i=config.naturalDecayRate(); i>0; --i)
     		{
     			ServerPlayerEntity player = players.size() > 1 ? players.get(rand.nextInt(players.size())) : players.get(0);
-    			ServerWorld world = player.getServerWorld();
     			
     			int offX = rand.nextBetween(-radius, radius);
     			int offY = rand.nextBetween(-radius, radius);
     			int offZ = rand.nextBetween(-radius, radius);
-    			BlockPos pos = player.getBlockPos().add(offX, offY, offZ);
-    			if(updated.contains(pos))
+    			BlockPos randomPos = player.getBlockPos().add(offX, offY, offZ);
+    			if(updated.contains(randomPos))
     				continue;
     			
-    			tryToDecay(pos, world, rand);
-    			updated.add(pos);
+    			tryToDecay(player.getServerWorld(), LiveDecayContext.supplier(randomPos, player.getServerWorld()));
+    			updated.add(randomPos);
     		}
     	});
     }
     
-    public static boolean tryToDecay(BlockPos pos, ServerWorld world, Random rand)
+    public static DecayContext tryToDecay(ServerWorld world, DecayContext context)
     {
-    	if(pos.getY() > 255 || pos.getY() < world.getBottomY())
-			return false;
+    	BlockPos pos = context.initialPos;
+    	if(world.isOutOfHeightLimit(pos))
+			return null;
     	
 		BlockState state = world.getBlockState(pos);
 		if(state.isIn(BlockTags.WITHER_IMMUNE))
-			return false;
+			return null;
 		
 		List<DecayData> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
 		if(decayOptions.isEmpty())
-			return false;
+			return null;
 		
-		DecayData decay = decayOptions.size() > 1 ? decayOptions.get(rand.nextInt(decayOptions.size())) : decayOptions.get(0);
-		return tryToDecay(pos, world, rand, decay, true);
+		DecayData decay = decayOptions.size() > 1 ? decayOptions.get(context.random.nextInt(decayOptions.size())) : decayOptions.get(0);
+		return tryToDecay(world, decay, true, context);
     }
     
-    public static boolean tryToDecay(BlockPos pos, ServerWorld world, Random rand, DecayData entry, boolean ignoreConditions)
+    public static DecayContext tryToDecay(ServerWorld world, DecayData entry, boolean ignoreConditions, DecayContext context)
     {
-		if((ignoreConditions || entry.test(world, pos, world.getBlockState(pos))) && world.getRandom().nextFloat() <= entry.chance(pos, world))
+		if((ignoreConditions || entry.test(world, context.currentPos(), context.currentState())) && context.random.nextFloat() <= entry.chance(context.currentPos(), world))
 		{
-			entry.apply(world, pos, world.getBlockState(pos));
-			return true;
+			entry.apply(context);
+			return context;
 		}
-		return false;
+		return null;
     }
 }
