@@ -84,8 +84,6 @@ public class DecayData
 	/** Returns a value between 0 and 1 representing the chance of a given decay update causing a block to decay */
 	public float chance(BlockPos pos, ServerWorld world)
 	{
-		// If there are no catalysers, just return the base chance
-		// Otherwise, calculate chance as proportional to the number of catalysers within scanning range
 		return MathHelper.clamp(chance.chance(pos, world), 0F, 1F);
 	}
 	

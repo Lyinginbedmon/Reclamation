@@ -23,6 +23,6 @@ class ListMatcher<S extends Object, T extends Object>
 	
 	public final boolean match(S state)
 	{
-		return !values.isEmpty() && handlerFunc.test(state, values.get().stream());
+		return values.isEmpty() || handlerFunc.test(state, values.get().stream());
 	}
 }

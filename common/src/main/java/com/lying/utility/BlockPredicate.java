@@ -113,7 +113,7 @@ public class BlockPredicate implements Predicate<BlockState>
 	
 	public boolean test(BlockState currentState)
 	{
-		return matchers.stream().anyMatch(ListMatcher::isPresent) && matchers.stream().anyMatch(v -> v.match(currentState));
+		return !isEmpty() && matchers.stream().allMatch(v -> v.match(currentState));
 	}
 	
 	public static class Builder
