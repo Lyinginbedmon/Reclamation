@@ -3,7 +3,7 @@ package com.lying.decay.functions;
 import com.google.gson.JsonObject;
 import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayFunctions;
-import com.lying.utility.StateGetter;
+import com.lying.utility.BlockProvider;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 public class FunctionConvert extends DecayFunction
 {
 	private static final String GETTER = "convert_to";
-	private StateGetter states = StateGetter.create();
+	private BlockProvider states = BlockProvider.create();
 	
 	public FunctionConvert(Identifier idIn)
 	{
@@ -51,7 +51,7 @@ public class FunctionConvert extends DecayFunction
 	protected void read(JsonObject obj)
 	{
 		if(obj.has(GETTER))
-			states = StateGetter.fromJson(obj.get(GETTER));
+			states = BlockProvider.fromJson(obj.get(GETTER));
 	}
 	
 	public static class ToAir extends DecayFunction

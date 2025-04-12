@@ -12,7 +12,7 @@ import com.google.gson.JsonObject;
 import com.lying.Reclamation;
 import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayFunctions;
-import com.lying.utility.StateGetter;
+import com.lying.utility.BlockProvider;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -41,21 +41,21 @@ public class FunctionSprout extends DecayFunction
 		super(idIn);
 	}
 	
-	public static FunctionSprout of(StateGetter solo)
+	public static FunctionSprout of(BlockProvider solo)
 	{
 		FunctionSprout func = (FunctionSprout)RCDecayFunctions.SPROUT.get();
 		func.resultMap = new SproutMap(Optional.of(solo), Optional.empty(), Optional.empty());
 		return func;
 	}
 	
-	public static FunctionSprout of(StateGetter solo, EnumSet<Direction> onFaces)
+	public static FunctionSprout of(BlockProvider solo, EnumSet<Direction> onFaces)
 	{
 		FunctionSprout func = (FunctionSprout)RCDecayFunctions.SPROUT.get();
 		func.resultMap = new SproutMap(Optional.of(solo), Optional.of(onFaces), Optional.empty());
 		return func;
 	}
 	
-	public static FunctionSprout of(Map<Direction, StateGetter> mapIn)
+	public static FunctionSprout of(Map<Direction, BlockProvider> mapIn)
 	{
 		FunctionSprout func = (FunctionSprout)RCDecayFunctions.SPROUT.get();
 		func.resultMap = new SproutMap(Optional.empty(), Optional.empty(), Optional.of(mapIn));
@@ -130,24 +130,24 @@ public class FunctionSprout extends DecayFunction
 	}
 	
 	@SuppressWarnings("serial")
-	private static class SproutMap extends HashMap<Direction, StateGetter>
+	private static class SproutMap extends HashMap<Direction, BlockProvider>
 	{
 		public static final Codec<SproutMap> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-				StateGetter.CODEC.optionalFieldOf("growth").forGetter(s -> s.soloGetter),
+				BlockProvider.CODEC.optionalFieldOf("growth").forGetter(s -> s.soloGetter),
 				SerializedFaceSet.CODEC.optionalFieldOf("face").forGetter(s -> s.directionSet),
 				SerializedFaceGetterMap.CODEC.optionalFieldOf("growth_by_face").forGetter(s -> s.resultByFaceMap))
 				.apply(instance, (a, b, c) -> new SproutMap(a, b, c)));
 		
 		private final Optional<EnumSet<Direction>> directionSet;
-		private final Optional<StateGetter> soloGetter;
-		private final Optional<Map<Direction, StateGetter>> resultByFaceMap;
+		private final Optional<BlockProvider> soloGetter;
+		private final Optional<Map<Direction, BlockProvider>> resultByFaceMap;
 		
 		public SproutMap()
 		{
 			this(Optional.empty(), Optional.empty(), Optional.empty());
 		}
 		
-		protected SproutMap(Optional<StateGetter> soloGetterIn, Optional<EnumSet<Direction>> facesIn, Optional<Map<Direction, StateGetter>> cloneIn)
+		protected SproutMap(Optional<BlockProvider> soloGetterIn, Optional<EnumSet<Direction>> facesIn, Optional<Map<Direction, BlockProvider>> cloneIn)
 		{
 			directionSet = facesIn;
 			soloGetter = soloGetterIn;
@@ -194,21 +194,21 @@ public class FunctionSprout extends DecayFunction
 	
 	private static class SerializedFaceGetterMap
 	{
-		private static final Codec<Map<Direction, StateGetter>> CODEC	= Codec.of(SerializedFaceGetterMap::encode, SerializedFaceGetterMap::decode);
+		private static final Codec<Map<Direction, BlockProvider>> CODEC	= Codec.of(SerializedFaceGetterMap::encode, SerializedFaceGetterMap::decode);
 		
-		private static <T> DataResult<T> encode(final Map<Direction, StateGetter> map, final DynamicOps<T> ops, final T prefix)
+		private static <T> DataResult<T> encode(final Map<Direction, BlockProvider> map, final DynamicOps<T> ops, final T prefix)
 		{
 			Map<T,T> valueMap = new HashMap<>();
-			map.entrySet().forEach(entry -> valueMap.put(ops.createString(entry.getKey().asString()), StateGetter.CODEC.encode(entry.getValue(), ops, null).getOrThrow()));
+			map.entrySet().forEach(entry -> valueMap.put(ops.createString(entry.getKey().asString()), BlockProvider.CODEC.encode(entry.getValue(), ops, null).getOrThrow()));
 			return DataResult.success(ops.createMap(valueMap));
 		}
 		
-		private static <T> DataResult<Pair<Map<Direction, StateGetter>, T>> decode(final DynamicOps<T> ops, final T input)
+		private static <T> DataResult<Pair<Map<Direction, BlockProvider>, T>> decode(final DynamicOps<T> ops, final T input)
 		{
-			Map<Direction, StateGetter> map = new HashMap<>();
+			Map<Direction, BlockProvider> map = new HashMap<>();
 			ops.getMap(input).result().ifPresent(m -> 
 				m.entries().forEach(entry -> 
-					map.put(Direction.byName(ops.getStringValue(entry.getFirst()).getOrThrow()), StateGetter.CODEC.parse(ops, entry.getSecond()).resultOrPartial(Reclamation.LOGGER::error).orElseThrow())));
+					map.put(Direction.byName(ops.getStringValue(entry.getFirst()).getOrThrow()), BlockProvider.CODEC.parse(ops, entry.getSecond()).resultOrPartial(Reclamation.LOGGER::error).orElseThrow())));
 			return DataResult.success(Pair.of(map, input));
 		}
 	}

@@ -18,7 +18,7 @@ import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
 import com.lying.init.RCDecayFunctions;
 import com.lying.utility.BlockSaturationCalculator;
-import com.lying.utility.StateGetter;
+import com.lying.utility.BlockProvider;
 import com.lying.utility.BlockSaturationCalculator.Mode;
 
 import net.minecraft.block.Blocks;
@@ -150,7 +150,7 @@ public class DefaultDecayLibrary
 					RCDecayConditions.SKY_ABOVE.get())
 				.function(
 					FunctionSprout.of(
-						StateGetter.create().addBlock(
+						BlockProvider.create().addBlock(
 							Blocks.POPPY, Blocks.DANDELION, 
 							Blocks.SHORT_GRASS, Blocks.TALL_GRASS, 
 							Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING, 

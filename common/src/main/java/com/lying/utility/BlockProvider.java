@@ -17,16 +17,16 @@ import net.minecraft.block.BlockState;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.random.Random;
 
-public class StateGetter
+public class BlockProvider
 {
-	public static final Codec<StateGetter> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
+	public static final Codec<BlockProvider> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 			BlockState.CODEC.optionalFieldOf("state").forGetter(g -> listOrSolo(Optional.of(g.blockStates)).getRight()),
 			BlockState.CODEC.listOf().optionalFieldOf("states").forGetter(g -> listOrSolo(Optional.of(g.blockStates)).getLeft()),
 			Registries.BLOCK.getCodec().optionalFieldOf("block").forGetter(g -> listOrSolo(Optional.of(g.blocks)).getRight()),
 			Registries.BLOCK.getCodec().listOf().optionalFieldOf("blocks").forGetter(g -> listOrSolo(Optional.of(g.blocks)).getLeft()))
 			.apply(instance, (state, stateList, block, blockList) -> 
 			{
-				StateGetter getter = create();
+				BlockProvider getter = create();
 				state.ifPresent(s -> getter.addBlockState(s));
 				stateList.ifPresent(s -> getter.addBlockState(s.toArray(new BlockState[0])));
 				
@@ -40,11 +40,11 @@ public class StateGetter
 	
 	private List<BlockState> states = Lists.newArrayList();
 	
-	protected StateGetter() { }
+	protected BlockProvider() { }
 	
-	public static StateGetter create() { return new StateGetter(); }
+	public static BlockProvider create() { return new BlockProvider(); }
 	
-	public StateGetter addBlockState(BlockState... statesIn)
+	public BlockProvider addBlockState(BlockState... statesIn)
 	{
 		for(BlockState state : statesIn)
 		{
@@ -58,7 +58,7 @@ public class StateGetter
 		return this;
 	}
 	
-	public StateGetter addBlock(Block... blocksIn)
+	public BlockProvider addBlock(Block... blocksIn)
 	{
 		for(Block block : blocksIn)
 		{
@@ -94,8 +94,8 @@ public class StateGetter
 		return (JsonElement)CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
 	}
 	
-	public static StateGetter fromJson(JsonElement json)
+	public static BlockProvider fromJson(JsonElement json)
 	{
-		return CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(Reclamation.LOGGER::error).orElse(new StateGetter());
+		return CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(Reclamation.LOGGER::error).orElse(new BlockProvider());
 	}
 }
