@@ -12,13 +12,13 @@ public class LiveDecayContext extends DecayContext
 {
 	protected final ServerWorld world;
 	
-	protected LiveDecayContext(BlockPos pos, ServerWorld serverWorld, BlockState state)
+	protected LiveDecayContext(BlockPos pos, ServerWorld serverWorld, BlockState state, DecayType typeIn)
 	{
-		super(pos, state, serverWorld.random);
+		super(pos, state, serverWorld.random, typeIn);
 		world = serverWorld;
 	}
 	
-	public static LiveDecayContext supplier(BlockPos pos, ServerWorld world) { return new LiveDecayContext(pos, world, world.getBlockState(pos)); }
+	public static LiveDecayContext supplier(BlockPos pos, ServerWorld world, DecayType type) { return new LiveDecayContext(pos, world, world.getBlockState(pos), type); }
 	
 	public boolean isAir(BlockPos pos) { return world.getBlockState(pos).isAir(); }
 	

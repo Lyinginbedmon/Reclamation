@@ -7,14 +7,18 @@ import static net.minecraft.server.command.CommandManager.literal;
 import java.util.List;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
-import com.lying.decay.DecayData;
+import com.lying.decay.DecayEntry;
 import com.lying.decay.DecayLibrary;
 import com.lying.decay.context.DecayContext;
+import com.lying.decay.context.DecayContext.DecayType;
 import com.lying.decay.context.QueuedDecayContext;
 import com.lying.init.RCGameRules;
 import com.lying.reference.Reference;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
@@ -34,6 +38,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.GameRules.BooleanRule;
 import net.minecraft.world.GameRules.IntRule;
 
 public class RCCommands
@@ -72,6 +77,14 @@ public class RCCommands
 					.then(literal("get")
 						.executes(context -> getNaturalDecayRadius(context.getSource())))
 					)
+				.then(literal("spawn")
+					.then(literal("reset")
+						.executes(context -> setSpawnNaturalDecay(false, context.getSource())))
+					.then(literal("set")
+						.then(argument("value", BoolArgumentType.bool())
+							.executes(context -> setSpawnNaturalDecay(BoolArgumentType.getBool(context, "value"), context.getSource()))))
+					.then(literal("get")
+						.executes(context -> getSpawnNaturalDecay(context.getSource()))))
 				.then(literal("decay")
 					.then(argument("from", BlockPosArgumentType.blockPos())
 						.executes(context -> tryDecayRegion(new BlockBox(BlockPosArgumentType.getBlockPos(context, "from")), context.getSource()))
@@ -125,6 +138,22 @@ public class RCCommands
 		return 15;
 	}
 	
+	private static int getSpawnNaturalDecay(ServerCommandSource source) throws CommandSyntaxException
+	{
+		source.sendFeedback(() -> Reference.ModInfo.translate("command", "spawn_natural_decay.get", source.getWorld().getGameRules().getBoolean(RCGameRules.DECAY_SPAWN)), true);
+		return 15;
+	}
+	
+	private static int setSpawnNaturalDecay(@Nullable boolean radius, ServerCommandSource source) throws CommandSyntaxException
+	{
+		MinecraftServer server = source.getServer();
+		ServerWorld world = server.getOverworld();
+		BooleanRule rule = world.getGameRules().get(RCGameRules.DECAY_SPAWN);
+		rule.set(radius, server);
+		source.sendFeedback(() -> Reference.ModInfo.translate("command", "spawn_natural_decay.set", world.getGameRules().getBoolean(RCGameRules.DECAY_SPAWN)), true);
+		return 15;
+	}
+	
 	private static int tryDecayRegion(BlockBox region, ServerCommandSource source) throws CommandSyntaxException
 	{
 		ServerWorld serverWorld = source.getWorld();
@@ -135,11 +164,7 @@ public class RCCommands
 		
 		List<DecayContext> queue = Lists.newArrayList();
 		for(BlockPos position : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
-		{
-			DecayContext context = Reclamation.tryToDecay(serverWorld, QueuedDecayContext.supplier(position, serverWorld));
-			if(context != null)
-				queue.add(context);
-		}
+			Reclamation.tryToDecay(serverWorld, QueuedDecayContext.supplier(position, serverWorld, DecayType.ARTIFICIAL)).ifPresent(context -> queue.add(context));
 		queue.forEach(DecayContext::close);
 		
 		final int decayed = queue.size();
@@ -155,18 +180,13 @@ public class RCCommands
 		if(totalBlocks > limit)
 			throw TOO_BIG_EXCEPTION.create(limit, totalBlocks);
 		
-		Optional<DecayData> entry = DecayLibrary.instance().get(entryType);
+		Optional<DecayEntry> entry = DecayLibrary.instance().get(entryType);
 		if(entry.isEmpty())
 			throw FAILED_UNKNOWN_ENTRY.create();
 		
 		List<DecayContext> queue = Lists.newArrayList();
 		for(BlockPos pos : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
-		{
-			DecayContext context = QueuedDecayContext.supplier(pos, world);
-			if(Reclamation.tryToDecay(world, entry.get(), false, context) != null)
-				queue.add(context);
-		}
-		
+			Reclamation.tryToDecay(world, entry.get(), false, QueuedDecayContext.supplier(pos, world, DecayType.ARTIFICIAL)).ifPresent(context -> queue.add(context));
 		queue.forEach(DecayContext::close);
 		
 		final int decayed = queue.size();

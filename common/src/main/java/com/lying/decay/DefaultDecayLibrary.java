@@ -30,18 +30,18 @@ import net.minecraft.util.math.Direction;
 
 public class DefaultDecayLibrary 
 {
-	private static final Map<Identifier, DecayData> DATA = new HashMap<>();
+	private static final Map<Identifier, DecayEntry> DATA = new HashMap<>();
 	
-	private static void register(DecayData dataIn)
+	private static void register(DecayEntry dataIn)
 	{
 		DATA.put(dataIn.packName(), dataIn);
 	}
 	
-	public static Collection<DecayData> getDefaults() { return DATA.values(); }
+	public static Collection<DecayEntry> getDefaults() { return DATA.values(); }
 	
 	static
 	{
-		register(DecayData.Builder.create(DecayChance.base(0.3F))
+		register(DecayEntry.Builder.create(DecayChance.base(0.3F))
 				.name("rain_interaction_with_waterlogging")
 				.condition(
 					RCDecayConditions.SKY_ABOVE.get(),
@@ -54,7 +54,7 @@ public class DefaultDecayLibrary
 							RCDecayConditions.IN_RAIN.get().invert()).named("wet_block_in_sun")))
 				.function(
 					FunctionBlockState.CycleValue.of(Properties.WATERLOGGED)).build());
-		register(DecayData.Builder.create()
+		register(DecayEntry.Builder.create()
 				.name("unsupported_blocks_fall")
 				.condition(
 					((ConditionNeighbouring)RCDecayConditions.SUPPORTED.get()).threshold(2).invert(),
@@ -75,20 +75,20 @@ public class DefaultDecayLibrary
 							RCBlocks.CRACKED_STONE_BRICK_SLAB.get()).named("slabs")))
 				.function(RCDecayFunctions.FALL.get()).build());
 		
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.2F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.CRACKED_STONE_BRICKS).build()))
 				.name("stone_brick_to_cracked_stone_brick")
 				.condition(ConditionIsBlock.of(Blocks.STONE_BRICKS))
 				.function(FunctionConvert.to(Blocks.CRACKED_STONE_BRICKS)).build());
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.1F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.MOSSY_STONE_BRICKS).build()))
 				.name("stone_brick_to_mossy_stone_brick")
 				.condition(ConditionIsBlock.of(Blocks.STONE_BRICKS))
 				.function(FunctionConvert.to(Blocks.MOSSY_STONE_BRICKS)).build());
 		
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.15F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.MOSSY_STONE_BRICK_STAIRS).build()))
 				.name("mossy_stone_brick_to_mossy_stone_brick_stairs")
@@ -96,7 +96,7 @@ public class DefaultDecayLibrary
 				.function(
 					FunctionConvert.to(Blocks.MOSSY_STONE_BRICK_STAIRS),
 					FunctionBlockState.RandomValue.of(Properties.HORIZONTAL_FACING)).build());
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.15F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.MOSSY_STONE_BRICK_STAIRS).build()))
 				.name("mossy_stone_brick_stairs_to_mossy_stone_brick_slab")
@@ -104,7 +104,7 @@ public class DefaultDecayLibrary
 				.function(
 					FunctionConvert.to(Blocks.MOSSY_STONE_BRICK_SLAB),
 					FunctionBlockState.RandomValue.of(Properties.SLAB_TYPE)).build());
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.15F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.MOSSY_STONE_BRICK_SLAB).build()))
 				.name("mossy_stone_brick_slab_vanish")
@@ -114,7 +114,7 @@ public class DefaultDecayLibrary
 					RCDecayFunctions.FALL.get(),
 					RCDecayFunctions.TO_AIR.get()).build());
 		
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.4F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()).build()))
 				.name("cracked_stone_brick_to_cracked_stone_brick_stairs")
@@ -122,7 +122,7 @@ public class DefaultDecayLibrary
 				.function(
 					FunctionConvert.to(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()),
 					FunctionBlockState.RandomValue.of(Properties.HORIZONTAL_FACING)).build());
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.4F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()).build()))
 				.name("cracked_stone_brick_stairs_to_cracked_stone_brick_slab")
@@ -130,7 +130,7 @@ public class DefaultDecayLibrary
 				.function(
 					FunctionConvert.to(RCBlocks.CRACKED_STONE_BRICK_SLAB.get()),
 					FunctionBlockState.RandomValue.of(Properties.SLAB_TYPE)).build());
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.4F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).blockCap(9).blocks(RCBlocks.CRACKED_STONE_BRICK_SLAB.get()).build()))
 				.name("cracked_stone_brick_slab_vanish")
@@ -141,7 +141,7 @@ public class DefaultDecayLibrary
 					RCDecayFunctions.FALL.get(),
 					RCDecayFunctions.TO_AIR.get()).build());
 		
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.2F))
 				.name("grass_sprout")
 				.condition(
@@ -156,7 +156,7 @@ public class DefaultDecayLibrary
 							Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING, 
 							Blocks.BROWN_MUSHROOM, Blocks.RED_MUSHROOM), 
 						EnumSet.of(Direction.UP)).count(1)).build());
-		register(DecayData.Builder.create()
+		register(DecayEntry.Builder.create()
 				.name("gravel_shuffle")
 				.condition(
 					ConditionIsBlock.of(Blocks.GRAVEL),
@@ -165,7 +165,7 @@ public class DefaultDecayLibrary
 				.function(
 					RCDecayFunctions.SHUFFLE.get()).build());
 		
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.0025F)
 					.addModifier(0.4F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(3).tags(RCBlockTags.RUST).build()))
 				.name("iron_block_start_rusting")
@@ -175,14 +175,14 @@ public class DefaultDecayLibrary
 						ConditionNeighbouring.Blocks.of(List.of(RCBlockTags.RUST))),
 					ConditionIsBlock.of(Blocks.IRON_BLOCK))
 				.function(FunctionConvert.to(RCBlocks.EXPOSED_IRON.get())).build());
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0F)
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).tags(RCBlockTags.RUST).build()))
 				.name("exposed_iron_block_to_weathered_iron_block")
 				.condition(
 					ConditionIsBlock.of(RCBlocks.EXPOSED_IRON.get()))
 				.function(FunctionConvert.to(RCBlocks.WEATHERED_IRON.get())).build());
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0F)
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
 				.name("weathered_iron_block_to_rusted_iron_block")
@@ -190,7 +190,7 @@ public class DefaultDecayLibrary
 					ConditionIsBlock.of(RCBlocks.WEATHERED_IRON.get()))
 				.function(FunctionConvert.to(RCBlocks.RUSTED_IRON.get())).build());
 		
-		register(DecayData.Builder.create(
+		register(DecayEntry.Builder.create(
 				DecayChance.base(0.000025F)
 					.addModifier(0.15F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).blockCap(6).searchRange(1).blocks(RCBlocks.TARNISHED_GOLD.get()).build()))
 				.name("gold_to_tarnished_gold")

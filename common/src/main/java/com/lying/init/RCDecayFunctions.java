@@ -23,31 +23,31 @@ public class RCDecayFunctions
 	private static final Map<Identifier, Supplier<DecayFunction>> FUNCTIONS = new HashMap<>();
 	
 	/** Replaces affected block with another */
-	public static final Supplier<DecayFunction> CONVERT		= register("convert", id -> new FunctionConvert(id));
+	public static final Supplier<DecayFunction> CONVERT		= register("convert", FunctionConvert::new);
 	/** Replaces affected block with air */
-	public static final Supplier<DecayFunction> TO_AIR		= register("to_air", id -> new FunctionConvert.ToAir(id));
+	public static final Supplier<DecayFunction> TO_AIR		= register("to_air", FunctionConvert.ToAir::new);
 	/** Moves affected block randomly to an adjacent open space */
-	public static final Supplier<DecayFunction> SHUFFLE		= register("shuffle", id -> new FunctionShuffle(id));
+	public static final Supplier<DecayFunction> SHUFFLE		= register("shuffle", FunctionShuffle::new);
 	/** Applies bonemeal to the affected block */
-	public static final Supplier<DecayFunction> BONEMEAL	= register("bonemeal", id -> new FunctionBonemeal(id));
+	public static final Supplier<DecayFunction> BONEMEAL	= register("bonemeal", FunctionBonemeal::new);
 	/** Causes the affected block to drop as a falling block if able */
-	public static final Supplier<DecayFunction> FALL		= register("fall", id -> new FunctionFallingBlock.Fall(id));
+	public static final Supplier<DecayFunction> FALL		= register("fall", FunctionFallingBlock.Fall::new);
 	/** Causes the affected block to drop a different blockstate as a falling block if able */
-	public static final Supplier<DecayFunction> DROP		= register("drop", id -> new FunctionFallingBlock.Drop(id));
+	public static final Supplier<DecayFunction> DROP		= register("drop", FunctionFallingBlock.Drop::new);
 	/** Waterlogs the affected block if possible */
-	public static final Supplier<DecayFunction> WATERLOG	= register("waterlog", id -> new FunctionBlockState.Waterlog(id));
+	public static final Supplier<DecayFunction> WATERLOG	= register("waterlog", FunctionBlockState.Waterlog::new);
 	/** Removes water from the affected block if possible */
-	public static final Supplier<DecayFunction> DEHYDRATE	= register("dehydrate", id -> new FunctionBlockState.Dehydrate(id));
+	public static final Supplier<DecayFunction> DEHYDRATE	= register("dehydrate", FunctionBlockState.Dehydrate::new);
 	/** Copies one or more blockstate values from the original blockstate */
-	public static final Supplier<DecayFunction> COPY_VALUE	= register("copy_blockstate_value", id -> new FunctionBlockState.CopyValue(id));
+	public static final Supplier<DecayFunction> COPY_VALUE	= register("copy_blockstate_value", FunctionBlockState.CopyValue::new);
 	/** Cycles one or more blockstate properties */
-	public static final Supplier<DecayFunction> CYCLE_VALUE	= register("cycle_blockstate_value", id -> new FunctionBlockState.CycleValue(id));
+	public static final Supplier<DecayFunction> CYCLE_VALUE	= register("cycle_blockstate_value", FunctionBlockState.CycleValue::new);
 	/** Sets one or more blockstate properties to random values */
-	public static final Supplier<DecayFunction> RANDOMISE_VALUE	= register("randomise_blockstate_value", id -> new FunctionBlockState.RandomValue(id));
+	public static final Supplier<DecayFunction> RANDOMISE_VALUE	= register("randomise_blockstate_value", FunctionBlockState.RandomValue::new);
 	/** Sets the value of one or more blockstate properties */
-	public static final Supplier<DecayFunction> SET_STATE_VALUE		= register("set_blockstate_value", id -> new FunctionBlockState.SetValue(id));
+	public static final Supplier<DecayFunction> SET_STATE_VALUE		= register("set_blockstate_value", FunctionBlockState.SetValue::new);
 	/* Places a block in an adjacent space to the affected block */
-	public static final Supplier<DecayFunction> SPROUT				= register("sprout", id -> new FunctionSprout(id));
+	public static final Supplier<DecayFunction> SPROUT				= register("sprout", FunctionSprout::new);
 	
 	private static Supplier<DecayFunction> register(String nameIn, Function<Identifier, DecayFunction> funcIn)
 	{

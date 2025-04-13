@@ -2,6 +2,8 @@ package com.lying.decay.context;
 
 import java.util.function.BiConsumer;
 
+import com.lying.event.DecayEvent;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
@@ -13,6 +15,8 @@ import net.minecraft.util.math.random.Random;
 public abstract class DecayContext
 {
 	public final Random random;
+	
+	public final DecayType type;
 	
 	/** The original location of the affected block */
 	public final BlockPos initialPos;
@@ -28,8 +32,9 @@ public abstract class DecayContext
 	
 	private boolean isBroken = false;
 	
-	protected DecayContext(BlockPos start, BlockState original, Random rand)
+	protected DecayContext(BlockPos start, BlockState original, Random rand, DecayType typeIn)
 	{
+		type = typeIn;
 		random = rand;
 		initialPos = currentPos = start;
 		originalState = currentState = original;
@@ -112,5 +117,16 @@ public abstract class DecayContext
 		setStateInWorld(pos, currentState);
 		
 		currentPos = pos;
+	}
+	
+	public static enum DecayType
+	{
+		NATURAL,
+		ARTIFICIAL;
+		
+		public boolean canDecayBlock(BlockPos pos, ServerWorld world)
+		{
+			return !DecayEvent.CAN_DECAY_BLOCK_EVENT.invoker().canBlockDecay(pos, world, this).isFalse();
+		}
 	}
 }

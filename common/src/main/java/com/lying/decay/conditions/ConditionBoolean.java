@@ -1,7 +1,6 @@
 package com.lying.decay.conditions;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -31,7 +30,6 @@ public abstract class ConditionBoolean extends DecayCondition
 	
 	protected JsonObject write(JsonObject obj)
 	{
-		name.ifPresent(n -> obj.addProperty("name", n));
 		if(!subConditions.isEmpty())
 		{
 			JsonArray list = new JsonArray();
@@ -43,7 +41,6 @@ public abstract class ConditionBoolean extends DecayCondition
 	
 	protected void read(JsonObject obj)
 	{
-		name = obj.has("name") ? Optional.of(obj.get("name").getAsString()) : Optional.empty();
 		subConditions.clear();
 		if(obj.has("set"))
 			obj.getAsJsonArray("set").forEach(element -> 

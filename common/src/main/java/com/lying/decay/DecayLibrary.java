@@ -38,7 +38,7 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 	
 	private static DecayLibrary INSTANCE;
 	
-	private final Map<Identifier, DecayData> DATA = new HashMap<>();
+	private final Map<Identifier, DecayEntry> DATA = new HashMap<>();
 	
 	public static void init()
 	{
@@ -53,16 +53,16 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 	private void clear() { DATA.clear(); }
 	
 	/** Returns a list of all decay entries applicable to the given block */
-	public List<DecayData> getDecayOptions(ServerWorld world, BlockPos pos, BlockState state)
+	public List<DecayEntry> getDecayOptions(ServerWorld world, BlockPos pos, BlockState state)
 	{
 		return DATA.values().stream().filter(d -> d.test(world, pos, state)).toList();
 	}
 	
-	public Optional<DecayData> get(Identifier id) { return DATA.containsKey(id) ? Optional.of(DATA.get(id)) : Optional.empty(); }
+	public Optional<DecayEntry> get(Identifier id) { return DATA.containsKey(id) ? Optional.of(DATA.get(id)) : Optional.empty(); }
 	
 	public Collection<Identifier> entries() { return DATA.keySet(); }
 	
-	public void register(DecayData dataIn)
+	public void register(DecayEntry dataIn)
 	{
 		DATA.put(dataIn.packName(), dataIn);
 		Reclamation.LOGGER.info(" #  Loaded decay entry {}", dataIn.packName());
@@ -104,7 +104,7 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 			Reclamation.LOGGER.info(" # Loading RC decay library...");
 			clear();
 			for(Entry<Identifier, JsonObject> prep : data.entrySet())
-				register(DecayData.readFromJson(prep.getKey(), prep.getValue()));
+				register(DecayEntry.readFromJson(prep.getKey(), prep.getValue()));
 		});
 	}
 }

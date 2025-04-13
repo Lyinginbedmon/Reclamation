@@ -11,6 +11,7 @@ public class RCGameRules
 	
 	public static final GameRules.Key<GameRules.IntRule> DECAY_SPEED	= register("naturalDecaySpeed", Category.UPDATES, GameRules.IntRule.create(Reclamation.config.naturalDecaySpeed()));
 	public static final GameRules.Key<GameRules.IntRule> DECAY_RADIUS	= register("naturalDecayRadius", Category.UPDATES, GameRules.IntRule.create(Reclamation.config.naturalDecayRadius()));
+	public static final GameRules.Key<GameRules.BooleanRule> DECAY_SPAWN	= register("spawnNaturalDecay", Category.UPDATES, GameRules.BooleanRule.create(true));
 	
 	private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Category category, GameRules.Type<T> type)
 	{

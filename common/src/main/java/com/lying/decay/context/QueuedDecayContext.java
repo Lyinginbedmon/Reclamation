@@ -18,13 +18,13 @@ public class QueuedDecayContext extends DecayContext
 	
 	protected final List<Consumer<ServerWorld>> enqueuedWork = Lists.newArrayList();
 	
-	protected QueuedDecayContext(BlockPos pos, ServerWorld serverWorld, BlockState state)
+	protected QueuedDecayContext(BlockPos pos, ServerWorld serverWorld, BlockState state, DecayType typeIn)
 	{
-		super(pos, state, serverWorld.random);
+		super(pos, state, serverWorld.random, typeIn);
 		world = serverWorld;
 	}
 	
-	public static QueuedDecayContext supplier(BlockPos pos, ServerWorld world){ return new QueuedDecayContext(pos, world, world.getBlockState(pos)); }
+	public static QueuedDecayContext supplier(BlockPos pos, ServerWorld world, DecayType type){ return new QueuedDecayContext(pos, world, world.getBlockState(pos), type); }
 	
 	public boolean isAir(BlockPos pos) { return world.getBlockState(pos).isAir(); }
 	

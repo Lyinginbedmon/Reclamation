@@ -21,22 +21,22 @@ public class RCDecayConditions
 {
 	private static final Map<Identifier, Supplier<DecayCondition>> FUNCTIONS = new HashMap<>();
 	
-	public static final Supplier<DecayCondition> OR				= register("or", id -> new ConditionBoolean.Or(id));
-	public static final Supplier<DecayCondition> AND			= register("and", id -> new ConditionBoolean.And(id));
+	public static final Supplier<DecayCondition> OR				= register("or", ConditionBoolean.Or::new);
+	public static final Supplier<DecayCondition> AND			= register("and", ConditionBoolean.And::new);
 	
-	public static final Supplier<DecayCondition> IS_BLOCK		= register("is_block", id -> new ConditionIsBlock(id));
-	public static final Supplier<DecayCondition> HAS_PROPERTY	= register("has_property", id -> new ConditionHasProperty(id));
+	public static final Supplier<DecayCondition> IS_BLOCK		= register("is_block", ConditionIsBlock::new);
+	public static final Supplier<DecayCondition> HAS_PROPERTY	= register("has_property", ConditionHasProperty::new);
 	/** Succeeds if the sky is visible above the affected block */
-	public static final Supplier<DecayCondition> SKY_ABOVE		= register("sky_above", id -> new ConditionClimate.SkyAbove(id));
-	public static final Supplier<DecayCondition> IN_RAIN		= register("in_rain", id -> new ConditionClimate.IsRaining(id));
-	public static final Supplier<DecayCondition> ADJACENT_TO	= register("adjacent_to", id -> new ConditionNeighbouring.Blocks(id));
+	public static final Supplier<DecayCondition> SKY_ABOVE		= register("sky_above", ConditionClimate.SkyAbove::new);
+	public static final Supplier<DecayCondition> IN_RAIN		= register("in_rain", ConditionClimate.IsRaining::new);
+	public static final Supplier<DecayCondition> ADJACENT_TO	= register("adjacent_to", ConditionNeighbouring.Blocks::new);
 	/** Succeeds if the block above the affected block is air */
-	public static final Supplier<DecayCondition> AIR_ABOVE		= register("air_above", id -> new ConditionNeighbouring.AirAbove(id));
+	public static final Supplier<DecayCondition> AIR_ABOVE		= register("air_above", ConditionNeighbouring.AirAbove::new);
 	/** Succeeds if a number of faces of the affected block are not occluded */
-	public static final Supplier<DecayCondition> EXPOSED		= register("exposed", id -> new ConditionNeighbouring.Exposed(id));
-	public static final Supplier<DecayCondition> ON_GROUND		= register("on_ground", id -> new ConditionNeighbouring.OnGround(id));
-	public static final Supplier<DecayCondition> SUPPORTED		= register("supported", id -> new ConditionNeighbouring.Supported(id));
-	public static final Supplier<DecayCondition> UNSUPPORTED	= register("unsupported", id -> new ConditionNeighbouring.Unsupported(id));
+	public static final Supplier<DecayCondition> EXPOSED		= register("exposed", ConditionNeighbouring.Exposed::new);
+	public static final Supplier<DecayCondition> ON_GROUND		= register("on_ground", ConditionNeighbouring.OnGround::new);
+	public static final Supplier<DecayCondition> SUPPORTED		= register("supported", ConditionNeighbouring.Supported::new);
+	public static final Supplier<DecayCondition> UNSUPPORTED	= register("unsupported", ConditionNeighbouring.Unsupported::new);
 	
 	private static Supplier<DecayCondition> register(String nameIn, Function<Identifier, DecayCondition> funcIn)
 	{

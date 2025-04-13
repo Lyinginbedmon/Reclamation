@@ -23,9 +23,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-public class DecayData
+public class DecayEntry
 {
-	public static final Codec<DecayData> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
+	public static final Codec<DecayEntry> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 			Identifier.CODEC.optionalFieldOf("name").forGetter(d -> d.packName),
 			DecayChance.CODEC.optionalFieldOf("chance").forGetter(d -> d.chance.isEmpty() ? Optional.empty() : Optional.of(d.chance)),
 			DecayCondition.CODEC.listOf().optionalFieldOf("conditions").forGetter(d -> listOrSolo(Optional.of(d.conditions)).getLeft()),
@@ -35,7 +35,7 @@ public class DecayData
 			)
 			.apply(instance, (name, chance, conditionList, condition, functionList, function) -> 
 			{
-				DecayData.Builder builder = DecayData.Builder.create(chance.orElse(DecayChance.base()));
+				DecayEntry.Builder builder = DecayEntry.Builder.create(chance.orElse(DecayChance.base()));
 				name.ifPresent(s -> builder.name(s));
 				
 				conditionList.ifPresent(l -> l.forEach(builder::condition));
@@ -51,7 +51,7 @@ public class DecayData
 	private final DecayChance chance;
 	private final List<DecayFunction> functions = Lists.newArrayList();
 	
-	protected DecayData(Optional<Identifier> nameIn, List<DecayCondition> conditionsIn, DecayChance chanceIn, List<DecayFunction> functionsIn)
+	protected DecayEntry(Optional<Identifier> nameIn, List<DecayCondition> conditionsIn, DecayChance chanceIn, List<DecayFunction> functionsIn)
 	{
 		packName = nameIn;
 		conditions.addAll(conditionsIn);
@@ -68,7 +68,7 @@ public class DecayData
 		return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
 	}
 	
-	public static DecayData readFromJson(Identifier fileName, JsonObject json)
+	public static DecayEntry readFromJson(Identifier fileName, JsonObject json)
 	{
 		if(!json.has("name"))
 			json.addProperty("name", fileName.toString());
@@ -153,9 +153,9 @@ public class DecayData
 			return this;
 		}
 		
-		public DecayData build()
+		public DecayEntry build()
 		{
-			return new DecayData(packName, conditions, likelihood, functions);
+			return new DecayEntry(packName, conditions, likelihood, functions);
 		}
 	}
 }
