@@ -5,11 +5,11 @@
       "amount": 0.4,
       "multiplier": {
         "search": {
-          "capacity": 1,
+          "capacity": 3,
           "looking_for": {
             "tag": "#reclamation:rust_block"
           },
-          "range": 1
+          "range": 2
         },
         "use_tally_as": "flat_value"
       },
@@ -20,7 +20,13 @@
     {
       "id": "reclamation:or",
       "set": [
-        "reclamation:exposed",
+        {
+          "id": "reclamation:and",
+          "set": [
+            "reclamation:exposed",
+            "reclamation:in_rain"
+          ]
+        },
         {
           "id": "reclamation:adjacent_to",
           "look_for": {

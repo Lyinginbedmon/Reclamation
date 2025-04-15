@@ -33,6 +33,10 @@ public class RCItems
 	public static final RegistrySupplier<Item> RUSTED_IRON		= registerBlock("rusted_iron", RCBlocks.RUSTED_IRON);
 	public static final RegistrySupplier<Item> WEATHERED_IRON	= registerBlock("weathered_iron", RCBlocks.WEATHERED_IRON);
 	public static final RegistrySupplier<Item> EXPOSED_IRON		= registerBlock("exposed_iron", RCBlocks.EXPOSED_IRON);
+	public static final RegistrySupplier<Item> WAXED_IRON_BLOCK			= registerBlock("waxed_iron_block", RCBlocks.WAXED_IRON_BLOCK);
+	public static final RegistrySupplier<Item> WAXED_RUSTED_IRON		= registerBlock("waxed_rusted_iron", RCBlocks.WAXED_RUSTED_IRON);
+	public static final RegistrySupplier<Item> WAXED_WEATHERED_IRON		= registerBlock("waxed_weathered_iron", RCBlocks.WAXED_WEATHERED_IRON);
+	public static final RegistrySupplier<Item> WAXED_EXPOSED_IRON		= registerBlock("waxed_exposed_iron", RCBlocks.WAXED_EXPOSED_IRON);
 	public static final RegistrySupplier<Item> TARNISHED_GOLD	= registerBlock("tarnished_gold", RCBlocks.TARNISHED_GOLD);
 	public static final RegistrySupplier<Item> LEAF_PILE		= registerBlock("leaf_pile", RCBlocks.LEAF_PILE);
 	public static final RegistrySupplier<Item> IVY				= registerBlock("ivy", RCBlocks.IVY);

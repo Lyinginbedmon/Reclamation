@@ -26,6 +26,7 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -107,21 +108,15 @@ public final class Reclamation
     public static Optional<DecayContext> tryToDecay(ServerWorld world, DecayContext context)
     {
     	BlockPos pos = context.initialPos;
-    	if(world.isOutOfHeightLimit(pos))
-			return Optional.empty();
+    	if(!canBlockDecay(pos, world, Optional.empty()))
+    		return Optional.empty();
     	
-		BlockState state = context.originalState;
-		if(state.isIn(BlockTags.WITHER_IMMUNE))
-			return Optional.empty();
-		
 		// Natural decay checks validity before calling this function, so everything else is checked here
 		if(context.type != DecayType.NATURAL && !context.type.canDecayBlock(pos, world))
 			return Optional.empty();
 		
+		BlockState state = context.originalState;
 		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
-		if(decayOptions.isEmpty())
-			return Optional.empty();
-		
 		DecayEntry decay = decayOptions.size() > 1 ? decayOptions.get(context.random.nextInt(decayOptions.size())) : decayOptions.get(0);
 		return decay(world, decay, context);
     }
@@ -146,7 +141,33 @@ public final class Reclamation
 			DecayEvent.BEFORE_BLOCK_DECAY_EVENT.invoker().onBlockDecay(context, entry);
 			entry.apply(context);
 			DecayEvent.AFTER_BLOCK_DECAY_EVENT.invoker().onBlockDecay(context, entry);
+			return Optional.of(context);
     	}
     	return Optional.empty();
     }
+	
+	public static boolean canBlockDecay(BlockPos pos, ServerWorld world, Optional<ServerCommandSource> source)
+	{
+    	if(world.isOutOfHeightLimit(pos))
+    	{
+    		source.ifPresent(s -> s.sendFeedback(() -> Reference.ModInfo.translate("command", "block_outside_world"), false));
+			return false;
+    	}
+    	
+		BlockState state = world.getBlockState(pos);
+		if(state.isIn(BlockTags.WITHER_IMMUNE))
+		{
+			source.ifPresent(s -> s.sendFeedback(() -> Reference.ModInfo.translate("command", "block_wither_immune"), false));
+			return false;
+		}
+		
+		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
+		if(decayOptions.isEmpty())
+		{
+			source.ifPresent(s -> s.sendFeedback(() -> Reference.ModInfo.translate("command", "block_no_entries"), false));
+			return false;
+		}
+		
+		return true;
+	}
 }

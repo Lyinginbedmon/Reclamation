@@ -5,6 +5,10 @@
 	"block.reclamation.rusted_iron": "Rusted Iron",
 	"block.reclamation.weathered_iron": "Weathered Iron",
 	"block.reclamation.exposed_iron": "Exposed Iron",
+	"block.reclamation.waxed_rusted_iron": "Waxed Rusted Iron",
+	"block.reclamation.waxed_weathered_iron": "Waxed Weathered Iron",
+	"block.reclamation.waxed_exposed_iron": "Waxed Exposed Iron",
+	"block.reclamation.waxed_iron_block": "Waxed Iron Block",
 	"block.reclamation.tarnished_gold": "Tarnished Gold",
 	"block.reclamation.leaf_pile": "Leaf Pile",
 	"block.reclamation.cracked_stone_brick_slab": "Cracked Stone Brick Slab",
@@ -21,7 +25,13 @@
 	"command.reclamation.natural_decay_radius.set": "Set natural decay radius to %s",
 	"command.reclamation.spawn_natural_decay.get": "Spawn area natural decaying is currently set to %s",
 	"command.reclamation.spawn_natural_decay.set": "Set spawn area natural decaying to %s",
-	"command.reclamation.decay_region": "Tried to decay %s blocks, %s blocks affected"
+	"command.reclamation.decay_region": "Tried to decay %s blocks, %s blocks affected",
+	"command.reclamation.decay_chance_list": "Found %s applicable decay entries:",
+	"command.reclamation.decay_chance_entry": "%s: %s",
+	"command.reclamation.block_outside_world": "That block is outside of the world",
+	"command.reclamation.block_wither_immune": "That block is immune to all decay",
+	"command.reclamation.block_no_entries": "The decay library has no entries applicable to that block",
+	"command.reclamation.block_entry_invalid": "That decay entry is not applicable to that block"
 	// Gui
 	// Enums
 	// Keybinds

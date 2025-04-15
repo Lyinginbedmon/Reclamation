@@ -26,6 +26,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -96,13 +97,18 @@ public class RCCommands
 							)
 						)
 					)
+				.then(literal("chance")
+					.then(argument("position", BlockPosArgumentType.blockPos())
+						.executes(context -> getDecayChances(BlockPosArgumentType.getBlockPos(context, "position"), context.getSource()))
+						.then(argument("entry", IdentifierArgumentType.identifier()).suggests(DECAY_ENTRY_IDS)
+							.executes(context -> getSpecificDecayChance(BlockPosArgumentType.getBlockPos(context, "position"), IdentifierArgumentType.getIdentifier(context, "entry"), context.getSource())))))
 				);
 		});
 	}
 	
 	private static int getNaturalDecayRate(ServerCommandSource source) throws CommandSyntaxException
 	{
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_rate.get", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_SPEED)), true);
+		source.sendFeedback(() -> translate("command", "natural_decay_rate.get", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_SPEED)), true);
 		return 15;
 	}
 	
@@ -115,13 +121,13 @@ public class RCCommands
 			rule.set(rate, server);
 		else
 			rule.set(Reclamation.config.naturalDecaySpeed(), server);
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_rate.set", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_SPEED)), true);
+		source.sendFeedback(() -> translate("command", "natural_decay_rate.set", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_SPEED)), true);
 		return 15;
 	}
 	
 	private static int getNaturalDecayRadius(ServerCommandSource source) throws CommandSyntaxException
 	{
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_radius.get", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_RADIUS)), true);
+		source.sendFeedback(() -> translate("command", "natural_decay_radius.get", source.getWorld().getGameRules().getInt(RCGameRules.DECAY_RADIUS)), true);
 		return 15;
 	}
 	
@@ -134,13 +140,13 @@ public class RCCommands
 			rule.set(radius, server);
 		else
 			rule.set(Reclamation.config.naturalDecayRadius(), server);
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "natural_decay_radius.set", world.getGameRules().getInt(RCGameRules.DECAY_RADIUS)), true);
+		source.sendFeedback(() -> translate("command", "natural_decay_radius.set", world.getGameRules().getInt(RCGameRules.DECAY_RADIUS)), true);
 		return 15;
 	}
 	
 	private static int getSpawnNaturalDecay(ServerCommandSource source) throws CommandSyntaxException
 	{
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "spawn_natural_decay.get", source.getWorld().getGameRules().getBoolean(RCGameRules.DECAY_SPAWN)), true);
+		source.sendFeedback(() -> translate("command", "spawn_natural_decay.get", source.getWorld().getGameRules().getBoolean(RCGameRules.DECAY_SPAWN)), true);
 		return 15;
 	}
 	
@@ -150,7 +156,7 @@ public class RCCommands
 		ServerWorld world = server.getOverworld();
 		BooleanRule rule = world.getGameRules().get(RCGameRules.DECAY_SPAWN);
 		rule.set(radius, server);
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "spawn_natural_decay.set", world.getGameRules().getBoolean(RCGameRules.DECAY_SPAWN)), true);
+		source.sendFeedback(() -> translate("command", "spawn_natural_decay.set", world.getGameRules().getBoolean(RCGameRules.DECAY_SPAWN)), true);
 		return 15;
 	}
 	
@@ -168,7 +174,7 @@ public class RCCommands
 		queue.forEach(DecayContext::close);
 		
 		final int decayed = queue.size();
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "decay_region", totalBlocks, decayed), true);
+		source.sendFeedback(() -> translate("command", "decay_region", totalBlocks, decayed), true);
 		return 15;
 	}
 	
@@ -190,7 +196,40 @@ public class RCCommands
 		queue.forEach(DecayContext::close);
 		
 		final int decayed = queue.size();
-		source.sendFeedback(() -> Reference.ModInfo.translate("command", "decay_region", totalBlocks, decayed), true);
+		source.sendFeedback(() -> translate("command", "decay_region", totalBlocks, decayed), true);
+		return 15;
+	}
+	
+	private static int getDecayChances(BlockPos pos, ServerCommandSource source) throws CommandSyntaxException
+	{
+		ServerWorld world = source.getWorld();
+		if(!Reclamation.canBlockDecay(pos, world, Optional.of(source)))
+			return 15;
+		
+		BlockState state = world.getBlockState(pos);
+		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
+		source.sendFeedback(() -> translate("command", "decay_chance_list", decayOptions.size()), true);
+		decayOptions.forEach(entry -> source.sendFeedback(() -> Text.literal(" - ").append(translate("command", "decay_chance_entry", entry.packName().toString(), entry.chance(pos, world))), false));
+		
+		return 15;
+	}
+	
+	private static int getSpecificDecayChance(BlockPos pos, Identifier entryType, ServerCommandSource source) throws CommandSyntaxException
+	{
+		ServerWorld world = source.getWorld();
+		if(!Reclamation.canBlockDecay(pos, world, Optional.of(source)))
+			return 15;
+		
+		Optional<DecayEntry> entry = DecayLibrary.instance().get(entryType);
+		if(entry.isEmpty())
+			throw FAILED_UNKNOWN_ENTRY.create();
+		entry.ifPresent(e -> 
+		{
+			if(e.test(world, pos, world.getBlockState(pos)))
+				source.sendFeedback(() -> translate("command", "decay_chance_entry", e.packName().toString(), e.chance(pos, world)), true);
+			else
+				source.sendFeedback(() -> translate("command", "block_entry_invalid"), true);
+		});
 		return 15;
 	}
 }

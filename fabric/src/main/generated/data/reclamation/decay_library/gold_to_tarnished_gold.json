@@ -5,7 +5,7 @@
       "amount": 0.15,
       "multiplier": {
         "search": {
-          "capacity": 4,
+          "capacity": 6,
           "looking_for": {
             "block": "reclamation:tarnished_gold"
           },

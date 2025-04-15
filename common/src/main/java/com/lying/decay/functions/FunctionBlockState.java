@@ -1,9 +1,6 @@
 package com.lying.decay.functions;
 
 import java.util.List;
-import java.util.Optional;
-
-import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -25,23 +22,6 @@ public abstract class FunctionBlockState extends DecayFunction
 	protected FunctionBlockState(Identifier idIn)
 	{
 		super(idIn);
-	}
-	
-	protected static Optional<Property<?>> getProperty(String name, BlockState state)
-	{
-		return state.getProperties().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst();
-	}
-	
-	@Nullable
-	protected static <T extends Comparable<T>> T parsePropertyValue(String value, Property<T> property)
-	{
-		return property.parse(value).orElse(null);
-	}
-	
-	@Nullable
-	protected static <T extends Comparable<T>> Property<T> parseProperty(String name)
-	{
-		return null;
 	}
 	
 	public static class Waterlog extends FunctionBlockState

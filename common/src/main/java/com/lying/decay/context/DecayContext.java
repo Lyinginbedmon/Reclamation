@@ -121,7 +121,9 @@ public abstract class DecayContext
 	
 	public static enum DecayType
 	{
+		/** Decay applied by normal server function */
 		NATURAL,
+		/** Decay applied by commands */
 		ARTIFICIAL;
 		
 		public boolean canDecayBlock(BlockPos pos, ServerWorld world)

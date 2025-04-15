@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 public class DecayEvent
 {
 	/** Called during decay to verify if a block can be decayed, such as natural decay within spawn protection */
-	public static final Event<CanDecayBlockEvent> CAN_DECAY_BLOCK_EVENT	= EventFactory.createLoop(CanDecayBlockEvent.class);
+	public static final Event<CanDecayBlockEvent> CAN_DECAY_BLOCK_EVENT	= EventFactory.createEventResult(CanDecayBlockEvent.class);
 	
 	@FunctionalInterface
 	public interface CanDecayBlockEvent

@@ -171,7 +171,9 @@ public class DefaultDecayLibrary
 				.name("iron_block_start_rusting")
 				.condition(
 					ConditionBoolean.Or.of(
-						RCDecayConditions.EXPOSED.get(),
+						ConditionBoolean.And.of(
+							RCDecayConditions.EXPOSED.get(),
+							RCDecayConditions.IN_RAIN.get()),
 						ConditionNeighbouring.Blocks.of(List.of(RCBlockTags.RUST))),
 					ConditionIsBlock.of(Blocks.IRON_BLOCK))
 				.function(FunctionConvert.to(RCBlocks.EXPOSED_IRON.get())).build());
