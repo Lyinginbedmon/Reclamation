@@ -1,0 +1,33 @@
+{
+  "conditions": [
+    {
+      "block": "minecraft:air",
+      "id": "reclamation:is_block"
+    },
+    {
+      "faces": [
+        "down"
+      ],
+      "id": "reclamation:adjacent_to",
+      "look_for": {
+        "block": "minecraft:grass_block"
+      }
+    }
+  ],
+  "function": {
+    "convert_to": {
+      "state": {
+        "Name": "reclamation:ivy",
+        "Properties": {
+          "east": "true",
+          "north": "false",
+          "south": "false",
+          "up": "false",
+          "west": "false"
+        }
+      }
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:place_ivy_west"
+}

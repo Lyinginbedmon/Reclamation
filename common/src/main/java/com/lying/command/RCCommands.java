@@ -11,10 +11,10 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
-import com.lying.decay.DecayEntry;
 import com.lying.decay.DecayLibrary;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.DecayContext.DecayType;
+import com.lying.decay.handler.DecayEntry;
 import com.lying.decay.context.QueuedDecayContext;
 import com.lying.init.RCGameRules;
 import com.lying.reference.Reference;

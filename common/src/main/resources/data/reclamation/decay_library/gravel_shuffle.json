@@ -1,0 +1,12 @@
+{
+  "conditions": [
+    {
+      "block": "minecraft:gravel",
+      "id": "reclamation:is_block"
+    },
+    "reclamation:on_ground",
+    "reclamation:air_above"
+  ],
+  "function": "reclamation:shuffle",
+  "name": "reclamation:gravel_shuffle"
+}

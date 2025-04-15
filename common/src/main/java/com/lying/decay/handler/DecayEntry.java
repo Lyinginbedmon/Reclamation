@@ -1,29 +1,30 @@
-package com.lying.decay;
+package com.lying.decay.handler;
 
 import static com.lying.utility.RCUtils.listOrSolo;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.lying.decay.DecayChance;
 import com.lying.decay.conditions.DecayCondition;
-import com.lying.decay.context.DecayContext;
 import com.lying.decay.functions.DecayFunction;
-import com.lying.reference.Reference;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-public class DecayEntry
+/**
+ * Holder object for decay information used by the decay algorithm.
+ * @author Lying
+ */
+public class DecayEntry extends AbstractDecayHandler
 {
 	public static final Codec<DecayEntry> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 			Identifier.CODEC.optionalFieldOf("name").forGetter(d -> d.packName),
@@ -46,22 +47,13 @@ public class DecayEntry
 				return builder.build();
 			}));
 	
-	private final Optional<Identifier> packName;
-	private final List<DecayCondition> conditions = Lists.newArrayList();
-	private final DecayChance chance;
-	private final List<DecayFunction> functions = Lists.newArrayList();
+	protected final DecayChance chance;
 	
 	protected DecayEntry(Optional<Identifier> nameIn, List<DecayCondition> conditionsIn, DecayChance chanceIn, List<DecayFunction> functionsIn)
 	{
-		packName = nameIn;
-		conditions.addAll(conditionsIn);
+		super(nameIn, conditionsIn, functionsIn);
 		chance = chanceIn;
-		functions.addAll(functionsIn);
 	}
-	
-	public Identifier packName() { return packName.orElse(Reference.ModInfo.prefix("unknown_entry")); }
-	
-	public boolean hasName() { return packName.isPresent(); }
 	
 	public JsonElement writeToJson(RegistryWrapper.WrapperLookup lookup)
 	{
@@ -75,36 +67,15 @@ public class DecayEntry
 		return CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
 	}
 	
-	/** Returns true if the given world position meets all conditions of this data */
-	public boolean test(ServerWorld world, BlockPos pos, BlockState state)
-	{
-		return conditions.stream().allMatch(p -> p.test(world, pos, state));
-	}
-	
 	/** Returns a value between 0 and 1 representing the chance of a given decay update causing a block to decay */
 	public float chance(BlockPos pos, ServerWorld world)
 	{
 		return MathHelper.clamp(chance.chance(pos, world), 0F, 1F);
 	}
 	
-	/** Sequentially applies all functions of this data to the given context */
-	public void apply(DecayContext context)
+	public static class Builder extends AbstractDecayHandler.Builder<DecayEntry>
 	{
-		for(DecayFunction func : functions)
-			if(context.continuityBroken())
-				break;
-			else
-				func.apply(context);
-	}
-	
-	public static class Builder
-	{
-		private Optional<Identifier> packName = Optional.empty();
-		
-		private final List<DecayCondition> conditions = Lists.newArrayList();
-		private final List<DecayFunction> functions = Lists.newArrayList();
-		
-		private final DecayChance likelihood;
+		protected final DecayChance likelihood;
 		
 		protected Builder(DecayChance chance)
 		{
@@ -126,31 +97,6 @@ public class DecayEntry
 		public static Builder create()
 		{
 			return create(DecayChance.base());
-		}
-		
-		public Builder name(String string)
-		{
-			return name(Reference.ModInfo.prefix(string.toLowerCase().replace(" ", "_")));
-		}
-		
-		public Builder name(Identifier nameIn)
-		{
-			packName = Optional.of(nameIn);
-			return this;
-		}
-		
-		public Builder condition(DecayCondition... predicatesIn)
-		{
-			for(DecayCondition pred : predicatesIn)
-				conditions.add(pred);
-			return this;
-		}
-		
-		public Builder function(DecayFunction... functionsIn)
-		{
-			for(DecayFunction func : functionsIn)
-				functions.add(func);
-			return this;
 		}
 		
 		public DecayEntry build()

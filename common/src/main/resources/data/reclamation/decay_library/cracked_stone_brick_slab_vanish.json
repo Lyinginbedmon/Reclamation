@@ -1,0 +1,40 @@
+{
+  "chance": {
+    "base_chance": 0.4,
+    "modifier": {
+      "amount": 1.0,
+      "multiplier": {
+        "minimum": 0.1,
+        "power": 0.2,
+        "search": {
+          "capacity": 9,
+          "looking_for": {
+            "block": "reclamation:cracked_stone_brick_slab"
+          }
+        }
+      },
+      "operation": "add_multiplied_total"
+    }
+  },
+  "condition": {
+    "block": "reclamation:cracked_stone_brick_slab",
+    "id": "reclamation:is_block"
+  },
+  "functions": [
+    {
+      "convert_to": {
+        "state": {
+          "Name": "minecraft:mossy_stone_brick_slab",
+          "Properties": {
+            "type": "bottom",
+            "waterlogged": "false"
+          }
+        }
+      },
+      "id": "reclamation:convert"
+    },
+    "reclamation:fall",
+    "reclamation:to_air"
+  ],
+  "name": "reclamation:cracked_stone_brick_slab_vanish"
+}

@@ -14,7 +14,7 @@ public class LiveDecayContext extends DecayContext
 	
 	protected LiveDecayContext(BlockPos pos, ServerWorld serverWorld, BlockState state, DecayType typeIn)
 	{
-		super(pos, state, serverWorld.random, typeIn);
+		super(serverWorld, pos, state, serverWorld.random, typeIn);
 		world = serverWorld;
 	}
 	

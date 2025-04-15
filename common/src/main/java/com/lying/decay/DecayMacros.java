@@ -18,7 +18,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.lying.Reclamation;
 import com.lying.data.ReloadListener;
-import com.lying.decay.handler.DecayEntry;
+import com.lying.decay.handler.DecayMacro;
 import com.lying.reference.Reference;
 
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -31,42 +31,42 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 
-public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
+public class DecayMacros implements ReloadListener<Map<Identifier, JsonObject>>
 {
 	public static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-	public static final String FILE_PATH = "decay_library";
+	public static final String FILE_PATH = "decay_macros";
 	public static final Pattern REGEX = Pattern.compile("[ \\w-]+?(?=\\.)");
 	
-	private static DecayLibrary INSTANCE;
+	private static DecayMacros INSTANCE;
 	
-	private final Map<Identifier, DecayEntry> DATA = new HashMap<>();
+	private final Map<Identifier, DecayMacro> DATA = new HashMap<>();
 	
 	public static void init()
 	{
-		INSTANCE = new DecayLibrary();
+		INSTANCE = new DecayMacros();
 		ReloadListenerRegistry.register(ResourceType.SERVER_DATA, INSTANCE, INSTANCE.getId());
 	}
 	
-	public static DecayLibrary instance() { return INSTANCE; }
+	public static DecayMacros instance() { return INSTANCE; }
 	
 	public Identifier getId() { return Reference.ModInfo.prefix(FILE_PATH); }
 	
 	private void clear() { DATA.clear(); }
 	
 	/** Returns a list of all decay entries applicable to the given block */
-	public List<DecayEntry> getDecayOptions(ServerWorld world, BlockPos pos, BlockState state)
+	public List<DecayMacro> getDecayOptions(ServerWorld world, BlockPos pos, BlockState state)
 	{
 		return DATA.values().stream().filter(d -> d.test(world, pos, state)).toList();
 	}
 	
-	public Optional<DecayEntry> get(Identifier id) { return DATA.containsKey(id) ? Optional.of(DATA.get(id)) : Optional.empty(); }
+	public Optional<DecayMacro> get(Identifier id) { return DATA.containsKey(id) ? Optional.of(DATA.get(id)) : Optional.empty(); }
 	
 	public Collection<Identifier> entries() { return DATA.keySet(); }
 	
-	public void register(DecayEntry dataIn)
+	public void register(DecayMacro dataIn)
 	{
 		DATA.put(dataIn.packName(), dataIn);
-		Reclamation.LOGGER.info(" #  Loaded decay entry {}", dataIn.packName());
+		Reclamation.LOGGER.info(" #  Loaded decay macro {}", dataIn.packName());
 	}
 	
 	public CompletableFuture<Map<Identifier, JsonObject>> load(ResourceManager manager)
@@ -92,7 +92,7 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 				{
 					objects.put(registryID, JsonHelper.deserialize(GSON, (Reader)file.getReader(), JsonObject.class));
 				}
-				catch(Exception e) { Reclamation.LOGGER.error("Error while loading decay library entry "+fileName.toString()); }
+				catch(Exception e) { Reclamation.LOGGER.error("Error while loading decay macro "+fileName.toString()); }
 			});
 			return objects;
 		});
@@ -102,10 +102,10 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 	{
 		return CompletableFuture.runAsync(() -> 
 		{
-			Reclamation.LOGGER.info(" # Loading RC decay library...");
+			Reclamation.LOGGER.info(" # Loading RC decay macros...");
 			clear();
 			for(Entry<Identifier, JsonObject> prep : data.entrySet())
-				register(DecayEntry.readFromJson(prep.getKey(), prep.getValue()));
+				register(DecayMacro.readFromJson(prep.getKey(), prep.getValue()));
 		});
 	}
 }

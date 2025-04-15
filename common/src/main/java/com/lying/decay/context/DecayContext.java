@@ -14,6 +14,7 @@ import net.minecraft.util.math.random.Random;
 /** Holder object for information relevant to the current decay event */
 public abstract class DecayContext
 {
+	public final ServerWorld world;
 	public final Random random;
 	
 	public final DecayType type;
@@ -32,8 +33,9 @@ public abstract class DecayContext
 	
 	private boolean isBroken = false;
 	
-	protected DecayContext(BlockPos start, BlockState original, Random rand, DecayType typeIn)
+	protected DecayContext(ServerWorld serverWorld, BlockPos start, BlockState original, Random rand, DecayType typeIn)
 	{
+		world = serverWorld;
 		type = typeIn;
 		random = rand;
 		initialPos = currentPos = start;

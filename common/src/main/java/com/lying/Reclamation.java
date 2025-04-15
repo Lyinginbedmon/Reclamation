@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.lying.command.RCCommands;
 import com.lying.config.ServerConfig;
-import com.lying.decay.DecayEntry;
 import com.lying.decay.DecayLibrary;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.DecayContext.DecayType;
+import com.lying.decay.handler.DecayEntry;
 import com.lying.decay.context.LiveDecayContext;
 import com.lying.event.DecayEvent;
 import com.lying.init.RCBlocks;
@@ -55,7 +55,8 @@ public final class Reclamation
         registerServerEvents();
     }
     
-    private static void registerServerEvents()
+    @SuppressWarnings("deprecation")
+	private static void registerServerEvents()
     {
     	TickEvent.SERVER_POST.register(server -> 
     	{
@@ -75,10 +76,17 @@ public final class Reclamation
     			ServerPlayerEntity player = players.size() > 1 ? players.get(rand.nextInt(players.size())) : players.get(0);
     			
     			int offX = rand.nextBetween(-radius, radius);
-    			int offY = rand.nextBetween(-radius, radius);
+    			
+    			// Constrain vertical offset by proximity to world height limits
+    			// This reduces occasions where natural decay fails because it targets a block outside of the world
+    			ServerWorld world = player.getServerWorld();
+    			double yDown = Math.max(world.getBottomY(), player.getY() - radius);
+    			double yUp = Math.min(world.getTopYInclusive(), player.getY() + radius);
+    			int offY = rand.nextBetween((int)yDown, (int)yUp);
+    			
     			int offZ = rand.nextBetween(-radius, radius);
-    			BlockPos randomPos = player.getBlockPos().add(offX, offY, offZ);
-    			if(updated.contains(randomPos) || !DecayType.NATURAL.canDecayBlock(randomPos, overworld))
+    			BlockPos randomPos = player.getBlockPos().add(offX, 0, offZ).withY(offY);
+    			if(updated.contains(randomPos) || !world.isChunkLoaded(randomPos) || !DecayType.NATURAL.canDecayBlock(randomPos, world))
     				continue;
     			
     			tryToDecay(player.getServerWorld(), LiveDecayContext.supplier(randomPos, player.getServerWorld(), DecayType.NATURAL)).ifPresent(DecayContext::close);

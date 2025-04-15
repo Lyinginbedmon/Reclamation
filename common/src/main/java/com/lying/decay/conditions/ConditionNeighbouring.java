@@ -181,6 +181,13 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			super(idIn);
 		}
 		
+		public static Supported onFaces(Direction... facesIn)
+		{
+			Supported condition = (Supported)RCDecayConditions.SUPPORTED.get();
+			condition.faces(facesIn);
+			return condition;
+		}
+		
 		protected boolean isMatch(BlockState state, BlockPos neighbour, Direction face, BlockPos pos, ServerWorld world)
 		{
 			return !state.isReplaceable() && state.isSideSolidFullSquare(world, neighbour, face.getOpposite());
@@ -222,7 +229,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			super(idIn);
 		}
 		
-		public Exposed face(Direction... facesIn)
+		public static Exposed face(Direction... facesIn)
 		{
 			Exposed condition = (Exposed)RCDecayConditions.EXPOSED.get();
 			EnumSet<Direction> faces = EnumSet.noneOf(Direction.class);

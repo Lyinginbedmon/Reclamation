@@ -1,0 +1,108 @@
+{
+  "chance": {
+    "base_chance": 0.0,
+    "modifier": {
+      "amount": 0.3,
+      "multiplier": {
+        "search": {
+          "capacity": 1,
+          "looking_for": {
+            "block": "minecraft:grass_block"
+          },
+          "range": 1
+        }
+      },
+      "operation": "add_value"
+    }
+  },
+  "conditions": [
+    {
+      "block": "minecraft:stone_bricks",
+      "id": "reclamation:is_block"
+    },
+    {
+      "faces": [
+        "north",
+        "south",
+        "west",
+        "east"
+      ],
+      "id": "reclamation:exposed"
+    },
+    "reclamation:on_ground"
+  ],
+  "function": {
+    "id": "reclamation:sprout",
+    "sprouted": {
+      "growth_by_face": {
+        "east": {
+          "state": {
+            "Name": "reclamation:ivy",
+            "Properties": {
+              "east": "false",
+              "north": "false",
+              "south": "false",
+              "up": "false",
+              "west": "true"
+            }
+          }
+        },
+        "north": {
+          "state": {
+            "Name": "reclamation:ivy",
+            "Properties": {
+              "east": "false",
+              "north": "false",
+              "south": "true",
+              "up": "false",
+              "west": "false"
+            }
+          }
+        },
+        "south": {
+          "state": {
+            "Name": "reclamation:ivy",
+            "Properties": {
+              "east": "false",
+              "north": "true",
+              "south": "false",
+              "up": "false",
+              "west": "false"
+            }
+          }
+        },
+        "west": {
+          "state": {
+            "Name": "reclamation:ivy",
+            "Properties": {
+              "east": "true",
+              "north": "false",
+              "south": "false",
+              "up": "false",
+              "west": "false"
+            }
+          }
+        }
+      },
+      "must_be": {
+        "id": "reclamation:and",
+        "set": [
+          {
+            "block": "minecraft:air",
+            "id": "reclamation:is_block"
+          },
+          {
+            "faces": [
+              "down"
+            ],
+            "id": "reclamation:adjacent_to",
+            "look_for": {
+              "block": "minecraft:grass_block"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "name": "reclamation:ivy_sprout"
+}

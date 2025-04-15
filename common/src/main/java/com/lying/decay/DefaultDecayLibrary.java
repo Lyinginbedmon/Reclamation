@@ -14,14 +14,16 @@ import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.functions.FunctionBlockState;
 import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionSprout;
+import com.lying.decay.handler.DecayEntry;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
 import com.lying.init.RCDecayFunctions;
-import com.lying.utility.BlockSaturationCalculator;
 import com.lying.utility.BlockProvider;
+import com.lying.utility.BlockSaturationCalculator;
 import com.lying.utility.BlockSaturationCalculator.Mode;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.state.property.Properties;
@@ -149,13 +151,33 @@ public class DefaultDecayLibrary
 					RCDecayConditions.AIR_ABOVE.get(),
 					RCDecayConditions.SKY_ABOVE.get())
 				.function(
-					FunctionSprout.of(
-						BlockProvider.create().addBlock(
+					FunctionSprout.Builder.create()
+						.soloProvider(BlockProvider.create().addBlock(
 							Blocks.POPPY, Blocks.DANDELION, 
 							Blocks.SHORT_GRASS, Blocks.TALL_GRASS, 
 							Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING, 
-							Blocks.BROWN_MUSHROOM, Blocks.RED_MUSHROOM), 
-						EnumSet.of(Direction.UP)).count(1)).build());
+							Blocks.BROWN_MUSHROOM, Blocks.RED_MUSHROOM))
+						.faceSet(EnumSet.of(Direction.UP))
+						.maxPlace(1).build()).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0F)
+					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(1).searchRange(1).blocks(Blocks.GRASS_BLOCK).build()))
+				.name("ivy_sprout")
+				.condition(
+					ConditionIsBlock.of(Blocks.STONE_BRICKS),
+					ConditionNeighbouring.Exposed.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST),
+					RCDecayConditions.ON_GROUND.get())
+				.function(
+					FunctionSprout.Builder.create()
+						.perFaceMap(Map.of(
+							Direction.NORTH, BlockProvider.create().addBlockState(RCBlocks.IVY.get().getDefaultState().with(ConnectingBlock.SOUTH, true)),
+							Direction.SOUTH, BlockProvider.create().addBlockState(RCBlocks.IVY.get().getDefaultState().with(ConnectingBlock.NORTH, true)),
+							Direction.EAST, BlockProvider.create().addBlockState(RCBlocks.IVY.get().getDefaultState().with(ConnectingBlock.WEST, true)),
+							Direction.WEST, BlockProvider.create().addBlockState(RCBlocks.IVY.get().getDefaultState().with(ConnectingBlock.EAST, true))))
+						.onCondition(
+							ConditionBoolean.And.of(
+								ConditionIsBlock.of(Blocks.AIR),
+								ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN))).build()).build());
 		register(DecayEntry.Builder.create()
 				.name("gravel_shuffle")
 				.condition(

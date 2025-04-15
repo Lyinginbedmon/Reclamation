@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.lying.Reclamation;
+import com.lying.decay.conditions.DecayCondition;
 import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayFunctions;
 import com.lying.utility.BlockProvider;
@@ -41,72 +42,50 @@ public class FunctionSprout extends DecayFunction
 		super(idIn);
 	}
 	
-	public static FunctionSprout of(BlockProvider solo)
-	{
-		FunctionSprout func = (FunctionSprout)RCDecayFunctions.SPROUT.get();
-		func.resultMap = new SproutMap(Optional.of(solo), Optional.empty(), Optional.empty());
-		return func;
-	}
-	
-	public static FunctionSprout of(BlockProvider solo, EnumSet<Direction> onFaces)
-	{
-		FunctionSprout func = (FunctionSprout)RCDecayFunctions.SPROUT.get();
-		func.resultMap = new SproutMap(Optional.of(solo), Optional.of(onFaces), Optional.empty());
-		return func;
-	}
-	
-	public static FunctionSprout of(Map<Direction, BlockProvider> mapIn)
-	{
-		FunctionSprout func = (FunctionSprout)RCDecayFunctions.SPROUT.get();
-		func.resultMap = new SproutMap(Optional.empty(), Optional.empty(), Optional.of(mapIn));
-		return func;
-	}
-	
-	public FunctionSprout count(int countIn)
-	{
-		count = countIn < 1 ? Optional.empty() : Optional.of(Math.min(countIn, 6));
-		return this;
-	}
-	
-	public FunctionSprout ignorePlacement(boolean ignoreIn)
-	{
-		force = ignoreIn ? Optional.of(ignoreIn) : Optional.empty();
-		return this;
-	}
-	
 	protected void applyTo(DecayContext context)
 	{
 		if(resultMap.isEmpty())
 			return;
 		
 		Random random = context.random;
-		context.execute((pos, world) -> 
+		ServerWorld serverWorld = context.world;
+		BlockPos currentPos = context.currentPos();
+		List<Direction> faces = Lists.newArrayList(resultMap.keySet());
+		int placings = count.orElse(faces.size());
+		while(!faces.isEmpty())
 		{
-			List<Direction> faces = Lists.newArrayList(resultMap.keySet());
-			int placings = count.orElse(faces.size());
-			while(!faces.isEmpty())
+			Direction face = faces.remove(random.nextInt(faces.size()));
+			BlockPos offset = currentPos.offset(face);
+			
+			if(resultMap.condition.isPresent())
 			{
-				Direction face = faces.remove(random.nextInt(faces.size()));
-				BlockPos offset = pos.offset(face);
-				boolean waterLogged = world.getFluidState(offset).isOf(Fluids.WATER);
-				Optional<BlockState> growth = resultMap.get(face, random);
-				if(growth.isPresent())
+				DecayCondition condition = resultMap.condition.get();
+				BlockState stateAt = context.getBlockState(offset);
+				if(!condition.test(serverWorld, offset, stateAt))
 				{
-					BlockState state = growth.get();
-					if(force.orElse(false) || canPlaceAt(state, world, offset))
+					continue;
+				}
+			}
+			
+			boolean waterLogged = serverWorld.getFluidState(offset).isOf(Fluids.WATER);
+			Optional<BlockState> growth = resultMap.get(face, random);
+			if(growth.isPresent())
+			{
+				BlockState state = growth.get();
+				if(force.orElse(false) || canPlaceAt(state, serverWorld, offset))
+					context.execute((pos, world) -> 
 					{
 						world.setBlockState(offset, 
 							state.getBlock().getStateManager().getProperty(Properties.WATERLOGGED.getName()) != null && waterLogged ? state.with(Properties.WATERLOGGED, waterLogged) : state);
 						
 						if(!force.orElse(false))
 							state.getBlock().onPlaced(world, offset, state, null, new ItemStack(state.getBlock().asItem()));
-					}
-					
-					if(--placings == 0)
-						return;
-				}
+					});
+				
+				if(--placings == 0)
+					return;
 			}
-		});
+		}
 	}
 	
 	public boolean canPlaceAt(BlockState state, ServerWorld world, BlockPos pos)
@@ -129,26 +108,89 @@ public class FunctionSprout extends DecayFunction
 		force = obj.has("ignore_contents") ? Optional.of(obj.get("ignore_contents").getAsBoolean()) : Optional.empty();
 	}
 	
+	public static class Builder
+	{
+		Optional<Integer> count = Optional.empty();
+		Optional<Boolean> force = Optional.empty();
+		
+		Optional<DecayCondition> condition = Optional.empty();
+		Optional<EnumSet<Direction>> directionSet = Optional.empty();
+		Optional<BlockProvider> soloGetter = Optional.empty();
+		Optional<Map<Direction, BlockProvider>> resultByFaceMap = Optional.empty();
+		
+		protected Builder() { }
+		
+		public static Builder create() { return new Builder(); }
+		
+		public Builder soloProvider(BlockProvider solo)
+		{
+			soloGetter = Optional.of(solo);
+			return this;
+		}
+		
+		public Builder faceSet(EnumSet<Direction> onFaces)
+		{
+			directionSet = Optional.of(onFaces);
+			return this;
+		}
+		
+		public Builder perFaceMap(Map<Direction, BlockProvider> mapIn)
+		{
+			resultByFaceMap = Optional.of(mapIn);
+			return this;
+		}
+		
+		public Builder onCondition(DecayCondition conditionIn)
+		{
+			condition = Optional.of(conditionIn);
+			return this;
+		}
+		
+		public Builder maxPlace(int total)
+		{
+			count = Optional.of(total);
+			return this;
+		}
+		
+		public Builder ignoreContents()
+		{
+			force = Optional.of(true);
+			return this;
+		}
+		
+		public FunctionSprout build()
+		{
+			FunctionSprout func = (FunctionSprout)RCDecayFunctions.SPROUT.get();
+			func.resultMap = new SproutMap(soloGetter, directionSet, condition, resultByFaceMap);
+			func.count = count;
+			func.force = force;
+			return func;
+		}
+	}
+	
 	@SuppressWarnings("serial")
 	private static class SproutMap extends HashMap<Direction, BlockProvider>
 	{
 		public static final Codec<SproutMap> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 				BlockProvider.CODEC.optionalFieldOf("growth").forGetter(s -> s.soloGetter),
 				SerializedFaceSet.CODEC.optionalFieldOf("face").forGetter(s -> s.directionSet),
+				DecayCondition.CODEC.optionalFieldOf("must_be").forGetter(s -> s.condition),
 				SerializedFaceGetterMap.CODEC.optionalFieldOf("growth_by_face").forGetter(s -> s.resultByFaceMap))
-				.apply(instance, (a, b, c) -> new SproutMap(a, b, c)));
+				.apply(instance, (growth, face, condition, map) -> new SproutMap(growth, face, condition, map)));
 		
+		private final Optional<DecayCondition> condition;
 		private final Optional<EnumSet<Direction>> directionSet;
 		private final Optional<BlockProvider> soloGetter;
 		private final Optional<Map<Direction, BlockProvider>> resultByFaceMap;
 		
 		public SproutMap()
 		{
-			this(Optional.empty(), Optional.empty(), Optional.empty());
+			this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 		}
 		
-		protected SproutMap(Optional<BlockProvider> soloGetterIn, Optional<EnumSet<Direction>> facesIn, Optional<Map<Direction, BlockProvider>> cloneIn)
+		protected SproutMap(Optional<BlockProvider> soloGetterIn, Optional<EnumSet<Direction>> facesIn, Optional<DecayCondition> conditionIn, Optional<Map<Direction, BlockProvider>> cloneIn)
 		{
+			condition = conditionIn;
 			directionSet = facesIn;
 			soloGetter = soloGetterIn;
 			resultByFaceMap = cloneIn;

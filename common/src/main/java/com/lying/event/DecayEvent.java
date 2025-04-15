@@ -1,8 +1,8 @@
 package com.lying.event;
 
-import com.lying.decay.DecayEntry;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.DecayContext.DecayType;
+import com.lying.decay.handler.DecayEntry;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
