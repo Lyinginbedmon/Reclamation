@@ -21,7 +21,7 @@ public class RCMacroProvider implements DataProvider
 	
 	public RCMacroProvider(FabricDataOutput generator, CompletableFuture<WrapperLookup> managerIn)
 	{
-		this.path = generator.getResolver(OutputType.DATA_PACK, "decay_macro/");
+		this.path = generator.getResolver(OutputType.DATA_PACK, "decay_macros/");
 		this.wrapperLookup = managerIn;
 	}
 	

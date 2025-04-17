@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.lying.command.RCCommands;
 import com.lying.config.ServerConfig;
 import com.lying.decay.DecayLibrary;
+import com.lying.decay.DecayMacros;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.DecayContext.DecayType;
 import com.lying.decay.handler.DecayEntry;
@@ -51,6 +52,7 @@ public final class Reclamation
         RCItems.init();
         RCDecayConditions.init();
         RCDecayFunctions.init();
+        DecayMacros.init();
         DecayLibrary.init();
         registerServerEvents();
     }

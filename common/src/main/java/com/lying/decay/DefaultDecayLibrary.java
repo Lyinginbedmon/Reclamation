@@ -18,12 +18,10 @@ import com.lying.decay.handler.DecayEntry;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
 import com.lying.init.RCDecayFunctions;
-import com.lying.utility.BlockProvider;
 import com.lying.utility.BlockSaturationCalculator;
 import com.lying.utility.BlockSaturationCalculator.Mode;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.state.property.Properties;
@@ -82,13 +80,13 @@ public class DefaultDecayLibrary
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.CRACKED_STONE_BRICKS).build()))
 				.name("stone_brick_to_cracked_stone_brick")
 				.condition(ConditionIsBlock.of(Blocks.STONE_BRICKS))
-				.function(FunctionConvert.to(Blocks.CRACKED_STONE_BRICKS)).build());
+				.function(FunctionConvert.toBlock(Blocks.CRACKED_STONE_BRICKS)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.1F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.MOSSY_STONE_BRICKS).build()))
 				.name("stone_brick_to_mossy_stone_brick")
 				.condition(ConditionIsBlock.of(Blocks.STONE_BRICKS))
-				.function(FunctionConvert.to(Blocks.MOSSY_STONE_BRICKS)).build());
+				.function(FunctionConvert.toBlock(Blocks.MOSSY_STONE_BRICKS)).build());
 		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.15F)
@@ -96,7 +94,7 @@ public class DefaultDecayLibrary
 				.name("mossy_stone_brick_to_mossy_stone_brick_stairs")
 				.condition(ConditionIsBlock.of(Blocks.MOSSY_STONE_BRICKS))
 				.function(
-					FunctionConvert.to(Blocks.MOSSY_STONE_BRICK_STAIRS),
+					FunctionConvert.toBlock(Blocks.MOSSY_STONE_BRICK_STAIRS),
 					FunctionBlockState.RandomValue.of(Properties.HORIZONTAL_FACING)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.15F)
@@ -104,7 +102,7 @@ public class DefaultDecayLibrary
 				.name("mossy_stone_brick_stairs_to_mossy_stone_brick_slab")
 				.condition(ConditionIsBlock.of(Blocks.MOSSY_STONE_BRICK_STAIRS))
 				.function(
-					FunctionConvert.to(Blocks.MOSSY_STONE_BRICK_SLAB),
+					FunctionConvert.toBlock(Blocks.MOSSY_STONE_BRICK_SLAB),
 					FunctionBlockState.RandomValue.of(Properties.SLAB_TYPE)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.15F)
@@ -112,7 +110,7 @@ public class DefaultDecayLibrary
 				.name("mossy_stone_brick_slab_vanish")
 				.condition(ConditionIsBlock.of(Blocks.MOSSY_STONE_BRICK_SLAB))
 				.function(
-					FunctionConvert.to(Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState().with(Properties.SLAB_TYPE, SlabType.BOTTOM)),
+					FunctionConvert.toBlockState(Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState().with(Properties.SLAB_TYPE, SlabType.BOTTOM)),
 					RCDecayFunctions.FALL.get(),
 					RCDecayFunctions.TO_AIR.get()).build());
 		
@@ -122,7 +120,7 @@ public class DefaultDecayLibrary
 				.name("cracked_stone_brick_to_cracked_stone_brick_stairs")
 				.condition(ConditionIsBlock.of(Blocks.CRACKED_STONE_BRICKS))
 				.function(
-					FunctionConvert.to(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()),
+					FunctionConvert.toBlock(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()),
 					FunctionBlockState.RandomValue.of(Properties.HORIZONTAL_FACING)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.4F)
@@ -130,7 +128,7 @@ public class DefaultDecayLibrary
 				.name("cracked_stone_brick_stairs_to_cracked_stone_brick_slab")
 				.condition(ConditionIsBlock.of(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()))
 				.function(
-					FunctionConvert.to(RCBlocks.CRACKED_STONE_BRICK_SLAB.get()),
+					FunctionConvert.toBlock(RCBlocks.CRACKED_STONE_BRICK_SLAB.get()),
 					FunctionBlockState.RandomValue.of(Properties.SLAB_TYPE)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.4F)
@@ -139,7 +137,7 @@ public class DefaultDecayLibrary
 				.condition(
 					ConditionIsBlock.of(RCBlocks.CRACKED_STONE_BRICK_SLAB.get()))
 				.function(
-					FunctionConvert.to(Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState().with(Properties.SLAB_TYPE, SlabType.BOTTOM)),
+					FunctionConvert.toBlockState(Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState().with(Properties.SLAB_TYPE, SlabType.BOTTOM)),
 					RCDecayFunctions.FALL.get(),
 					RCDecayFunctions.TO_AIR.get()).build());
 		
@@ -147,16 +145,12 @@ public class DefaultDecayLibrary
 				DecayChance.base(0.2F))
 				.name("grass_sprout")
 				.condition(
-					ConditionIsBlock.of(Blocks.GRASS_BLOCK, Blocks.PODZOL),
+					ConditionIsBlock.of(Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.MYCELIUM),
 					RCDecayConditions.AIR_ABOVE.get(),
 					RCDecayConditions.SKY_ABOVE.get())
 				.function(
 					FunctionSprout.Builder.create()
-						.soloProvider(BlockProvider.create().addBlock(
-							Blocks.POPPY, Blocks.DANDELION, 
-							Blocks.SHORT_GRASS, Blocks.TALL_GRASS, 
-							Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING, 
-							Blocks.BROWN_MUSHROOM, Blocks.RED_MUSHROOM))
+						.soloProvider(DefaultDecayMacros.PLACE_FLOWERS)
 						.faceSet(EnumSet.of(Direction.UP))
 						.maxPlace(1).build()).build());
 		register(DecayEntry.Builder.create(
@@ -169,14 +163,10 @@ public class DefaultDecayLibrary
 					RCDecayConditions.ON_GROUND.get())
 				.function(
 					FunctionSprout.Builder.create()
-						.perFaceMap(Map.of(
-							Direction.NORTH, BlockProvider.create().addBlockState(RCBlocks.IVY.get().getDefaultState().with(ConnectingBlock.SOUTH, true)),
-							Direction.SOUTH, BlockProvider.create().addBlockState(RCBlocks.IVY.get().getDefaultState().with(ConnectingBlock.NORTH, true)),
-							Direction.EAST, BlockProvider.create().addBlockState(RCBlocks.IVY.get().getDefaultState().with(ConnectingBlock.WEST, true)),
-							Direction.WEST, BlockProvider.create().addBlockState(RCBlocks.IVY.get().getDefaultState().with(ConnectingBlock.EAST, true))))
+						.soloProvider(DefaultDecayMacros.PLACE_IVY)
 						.onCondition(
 							ConditionBoolean.And.of(
-								ConditionIsBlock.of(Blocks.AIR),
+								RCDecayConditions.IS_AIR.get(),
 								ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN))).build()).build());
 		register(DecayEntry.Builder.create()
 				.name("gravel_shuffle")
@@ -198,21 +188,21 @@ public class DefaultDecayLibrary
 							RCDecayConditions.IN_RAIN.get()),
 						ConditionNeighbouring.Blocks.of(List.of(RCBlockTags.RUST))),
 					ConditionIsBlock.of(Blocks.IRON_BLOCK))
-				.function(FunctionConvert.to(RCBlocks.EXPOSED_IRON.get())).build());
+				.function(FunctionConvert.toBlock(RCBlocks.EXPOSED_IRON.get())).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0F)
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).tags(RCBlockTags.RUST).build()))
 				.name("exposed_iron_block_to_weathered_iron_block")
 				.condition(
 					ConditionIsBlock.of(RCBlocks.EXPOSED_IRON.get()))
-				.function(FunctionConvert.to(RCBlocks.WEATHERED_IRON.get())).build());
+				.function(FunctionConvert.toBlock(RCBlocks.WEATHERED_IRON.get())).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0F)
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
 				.name("weathered_iron_block_to_rusted_iron_block")
 				.condition(
 					ConditionIsBlock.of(RCBlocks.WEATHERED_IRON.get()))
-				.function(FunctionConvert.to(RCBlocks.RUSTED_IRON.get())).build());
+				.function(FunctionConvert.toBlock(RCBlocks.RUSTED_IRON.get())).build());
 		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.000025F)
@@ -221,7 +211,7 @@ public class DefaultDecayLibrary
 				.condition(
 					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
-				.function(FunctionConvert.to(RCBlocks.TARNISHED_GOLD.get())).build());
+				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
 		
 	}
 }

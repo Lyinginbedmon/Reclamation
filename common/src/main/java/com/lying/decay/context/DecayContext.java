@@ -1,7 +1,9 @@
 package com.lying.decay.context;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 
+import com.google.common.collect.Lists;
 import com.lying.event.DecayEvent;
 
 import net.minecraft.block.BlockState;
@@ -31,6 +33,8 @@ public abstract class DecayContext
 	/** The current condition of the block being acted upon */
 	protected BlockState currentState;
 	
+	protected List<DecayContext> children = Lists.newArrayList();
+	
 	private boolean isBroken = false;
 	
 	protected DecayContext(ServerWorld serverWorld, BlockPos start, BlockState original, Random rand, DecayType typeIn)
@@ -41,6 +45,10 @@ public abstract class DecayContext
 		initialPos = currentPos = start;
 		originalState = currentState = original;
 	}
+	
+	public abstract DecayContext create(ServerWorld serverWorld, BlockPos start, BlockState original);
+	
+	public final void addChild(DecayContext context) { children.add(context); }
 	
 	public void close() { }
 	

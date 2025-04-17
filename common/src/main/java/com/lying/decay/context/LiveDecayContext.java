@@ -20,6 +20,8 @@ public class LiveDecayContext extends DecayContext
 	
 	public static LiveDecayContext supplier(BlockPos pos, ServerWorld world, DecayType type) { return new LiveDecayContext(pos, world, world.getBlockState(pos), type); }
 	
+	public DecayContext create(ServerWorld serverWorld, BlockPos start, BlockState original) { return new LiveDecayContext(start, serverWorld, original, this.type); }
+	
 	public boolean isAir(BlockPos pos) { return world.getBlockState(pos).isAir(); }
 	
 	public FluidState fluidState() { return world.getFluidState(currentPos()); }

@@ -1,13 +1,12 @@
 {
   "conditions": [
+    "reclamation:is_replaceable",
     {
-      "block": "minecraft:air",
-      "id": "reclamation:is_block"
+      "face": "west",
+      "id": "reclamation:supported"
     },
     {
-      "faces": [
-        "down"
-      ],
+      "face": "down",
       "id": "reclamation:adjacent_to",
       "look_for": {
         "block": "minecraft:grass_block"
@@ -29,5 +28,5 @@
     },
     "id": "reclamation:convert"
   },
-  "name": "reclamation:place_ivy_east"
+  "name": "reclamation:place_ivy_west"
 }

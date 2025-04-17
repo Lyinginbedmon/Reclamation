@@ -26,6 +26,8 @@ public class QueuedDecayContext extends DecayContext
 	
 	public static QueuedDecayContext supplier(BlockPos pos, ServerWorld world, DecayType type){ return new QueuedDecayContext(pos, world, world.getBlockState(pos), type); }
 	
+	public DecayContext create(ServerWorld serverWorld, BlockPos start, BlockState original) { return new QueuedDecayContext(start, serverWorld, original, this.type); }
+	
 	public boolean isAir(BlockPos pos) { return world.getBlockState(pos).isAir(); }
 	
 	public FluidState fluidState() { return world.getFluidState(currentPos()); }
@@ -56,5 +58,6 @@ public class QueuedDecayContext extends DecayContext
 	public void close()
 	{
 		enqueuedWork.forEach(c -> c.accept(world));
+		this.children.forEach(DecayContext::close);
 	}
 }

@@ -91,7 +91,7 @@ public class BlockProvider
 	
 	public JsonElement toJson()
 	{
-		return (JsonElement)CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
+		return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
 	}
 	
 	public static BlockProvider fromJson(JsonElement json)

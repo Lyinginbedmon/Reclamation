@@ -5,15 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.lying.Reclamation;
+import com.lying.decay.DecayMacros;
 import com.lying.decay.conditions.DecayCondition;
 import com.lying.decay.context.DecayContext;
+import com.lying.decay.handler.DecayMacro;
 import com.lying.init.RCDecayFunctions;
-import com.lying.utility.BlockProvider;
+import com.lying.utility.RCUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -22,10 +23,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -62,29 +60,19 @@ public class FunctionSprout extends DecayFunction
 				DecayCondition condition = resultMap.condition.get();
 				BlockState stateAt = context.getBlockState(offset);
 				if(!condition.test(serverWorld, offset, stateAt))
-				{
 					continue;
-				}
 			}
 			
-			boolean waterLogged = serverWorld.getFluidState(offset).isOf(Fluids.WATER);
-			Optional<BlockState> growth = resultMap.get(face, random);
-			if(growth.isPresent())
+			DecayContext child = context.create(serverWorld, offset, context.getBlockState(offset));
+			Optional<DecayMacro> macro = DecayMacros.instance().get(resultMap.get(face));
+			if(macro.isPresent() && macro.get().tryToApply(child))
 			{
-				BlockState state = growth.get();
-				if(force.orElse(false) || canPlaceAt(state, serverWorld, offset))
-					context.execute((pos, world) -> 
-					{
-						world.setBlockState(offset, 
-							state.getBlock().getStateManager().getProperty(Properties.WATERLOGGED.getName()) != null && waterLogged ? state.with(Properties.WATERLOGGED, waterLogged) : state);
-						
-						if(!force.orElse(false))
-							state.getBlock().onPlaced(world, offset, state, null, new ItemStack(state.getBlock().asItem()));
-					});
-				
-				if(--placings == 0)
-					return;
+				context.addChild(child);
+				--placings;
 			}
+			
+			if(placings == 0)
+				return;
 		}
 	}
 	
@@ -115,14 +103,14 @@ public class FunctionSprout extends DecayFunction
 		
 		Optional<DecayCondition> condition = Optional.empty();
 		Optional<EnumSet<Direction>> directionSet = Optional.empty();
-		Optional<BlockProvider> soloGetter = Optional.empty();
-		Optional<Map<Direction, BlockProvider>> resultByFaceMap = Optional.empty();
+		Optional<Identifier> soloGetter = Optional.empty();
+		Optional<Map<Direction, Identifier>> resultByFaceMap = Optional.empty();
 		
 		protected Builder() { }
 		
 		public static Builder create() { return new Builder(); }
 		
-		public Builder soloProvider(BlockProvider solo)
+		public Builder soloProvider(Identifier solo)
 		{
 			soloGetter = Optional.of(solo);
 			return this;
@@ -134,7 +122,7 @@ public class FunctionSprout extends DecayFunction
 			return this;
 		}
 		
-		public Builder perFaceMap(Map<Direction, BlockProvider> mapIn)
+		public Builder perFaceMap(Map<Direction, Identifier> mapIn)
 		{
 			resultByFaceMap = Optional.of(mapIn);
 			return this;
@@ -169,26 +157,33 @@ public class FunctionSprout extends DecayFunction
 	}
 	
 	@SuppressWarnings("serial")
-	private static class SproutMap extends HashMap<Direction, BlockProvider>
+	private static class SproutMap extends HashMap<Direction, Identifier>
 	{
 		public static final Codec<SproutMap> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-				BlockProvider.CODEC.optionalFieldOf("growth").forGetter(s -> s.soloGetter),
-				SerializedFaceSet.CODEC.optionalFieldOf("face").forGetter(s -> s.directionSet),
+				Identifier.CODEC.optionalFieldOf("growth").forGetter(s -> s.soloGetter),
+				Direction.CODEC.optionalFieldOf("face").forGetter(s -> s.directionSet.isEmpty() || s.directionSet.get().size() > 1 ? Optional.empty() : s.directionSet.get().stream().findFirst()),
+				RCUtils.DIRECTION_SET_CODEC.optionalFieldOf("faces").forGetter(s -> s.directionSet.isEmpty() || s.directionSet.get().size() == 1 ? Optional.empty() : s.directionSet),
 				DecayCondition.CODEC.optionalFieldOf("must_be").forGetter(s -> s.condition),
 				SerializedFaceGetterMap.CODEC.optionalFieldOf("growth_by_face").forGetter(s -> s.resultByFaceMap))
-				.apply(instance, (growth, face, condition, map) -> new SproutMap(growth, face, condition, map)));
+				.apply(instance, (growth, face, faceSet, condition, map) -> 
+				{
+					EnumSet<Direction> faces = EnumSet.noneOf(Direction.class);
+					face.ifPresent(faces::add);
+					faceSet.ifPresent(s -> s.forEach(faces::add));
+					return new SproutMap(growth, faces.isEmpty() ? Optional.empty() : Optional.of(faces), condition, map);
+				}));
 		
 		private final Optional<DecayCondition> condition;
 		private final Optional<EnumSet<Direction>> directionSet;
-		private final Optional<BlockProvider> soloGetter;
-		private final Optional<Map<Direction, BlockProvider>> resultByFaceMap;
+		private final Optional<Identifier> soloGetter;
+		private final Optional<Map<Direction, Identifier>> resultByFaceMap;
 		
 		public SproutMap()
 		{
 			this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 		}
 		
-		protected SproutMap(Optional<BlockProvider> soloGetterIn, Optional<EnumSet<Direction>> facesIn, Optional<DecayCondition> conditionIn, Optional<Map<Direction, BlockProvider>> cloneIn)
+		protected SproutMap(Optional<Identifier> soloGetterIn, Optional<EnumSet<Direction>> facesIn, Optional<DecayCondition> conditionIn, Optional<Map<Direction, Identifier>> cloneIn)
 		{
 			condition = conditionIn;
 			directionSet = facesIn;
@@ -199,58 +194,34 @@ public class FunctionSprout extends DecayFunction
 				getter -> directionSet.orElse(EnumSet.allOf(Direction.class)).forEach(face -> put(face, getter)), 
 				() -> resultByFaceMap.ifPresent(clone -> clone.entrySet().forEach(entry -> put(entry.getKey(), entry.getValue()))));
 		}
-		
-		public Optional<BlockState> get(Direction face, Random random) { return get(face).getRandom(random); }
-	}
-	
-	private static class SerializedFaceSet
-	{
-		private static final Codec<EnumSet<Direction>> CODEC	= Codec.of(SerializedFaceSet::encode, SerializedFaceSet::decode);
-		
-		private static <T> DataResult<T> encode(final EnumSet<Direction> set, final DynamicOps<T> ops, final T prefix)
-		{
-			T obj;
-			switch(set.size())
-			{
-				case 1:
-					obj = ops.createString(set.toArray(new Direction[0])[0].asString());
-					break;
-				default:
-					obj = ops.createList(set.stream().map(d -> ops.createString(d.asString())));
-					break;
-			}
-			return (DataResult<T>)DataResult.success(obj);
-		}
-		
-		private static <T> DataResult<Pair<EnumSet<Direction>, T>> decode(final DynamicOps<T> ops, final T input)
-		{
-			DataResult<String> string;
-			if((string = ops.getStringValue(input)) != null)
-				return DataResult.success(Pair.of(EnumSet.of(Direction.byName(string.getOrThrow())), input));
-			
-			EnumSet<Direction> set = EnumSet.noneOf(Direction.class);
-			set.addAll(ops.getStream(input).result().orElse(Stream.empty()).map(e -> Direction.byName(ops.getStringValue(e).getOrThrow())).toList());
-			return DataResult.success(Pair.of(set, input));
-		}
 	}
 	
 	private static class SerializedFaceGetterMap
 	{
-		private static final Codec<Map<Direction, BlockProvider>> CODEC	= Codec.of(SerializedFaceGetterMap::encode, SerializedFaceGetterMap::decode);
+		private static final Codec<Map<Direction, Identifier>> CODEC	= Codec.of(SerializedFaceGetterMap::encode, SerializedFaceGetterMap::decode);
 		
-		private static <T> DataResult<T> encode(final Map<Direction, BlockProvider> map, final DynamicOps<T> ops, final T prefix)
+		private static <T> DataResult<T> encode(final Map<Direction, Identifier> map, final DynamicOps<T> ops, final T prefix)
 		{
 			Map<T,T> valueMap = new HashMap<>();
-			map.entrySet().forEach(entry -> valueMap.put(ops.createString(entry.getKey().asString()), BlockProvider.CODEC.encode(entry.getValue(), ops, null).getOrThrow()));
+			map.entrySet().forEach(entry -> 
+			{
+				T face = Direction.CODEC.encodeStart(ops, entry.getKey()).getOrThrow();
+				T macro = Identifier.CODEC.encodeStart(ops, entry.getValue()).getOrThrow();
+				valueMap.put(face, macro);
+			});
 			return DataResult.success(ops.createMap(valueMap));
 		}
 		
-		private static <T> DataResult<Pair<Map<Direction, BlockProvider>, T>> decode(final DynamicOps<T> ops, final T input)
+		private static <T> DataResult<Pair<Map<Direction, Identifier>, T>> decode(final DynamicOps<T> ops, final T input)
 		{
-			Map<Direction, BlockProvider> map = new HashMap<>();
+			Map<Direction, Identifier> map = new HashMap<>();
 			ops.getMap(input).result().ifPresent(m -> 
 				m.entries().forEach(entry -> 
-					map.put(Direction.byName(ops.getStringValue(entry.getFirst()).getOrThrow()), BlockProvider.CODEC.parse(ops, entry.getSecond()).resultOrPartial(Reclamation.LOGGER::error).orElseThrow())));
+				{
+					Direction face = Direction.CODEC.parse(ops, entry.getFirst()).resultOrPartial(Reclamation.LOGGER::error).orElseThrow();
+					Identifier macro = Identifier.CODEC.parse(ops, entry.getSecond()).resultOrPartial(Reclamation.LOGGER::error).orElseThrow();
+					map.put(face, macro);
+				}));
 			return DataResult.success(Pair.of(map, input));
 		}
 	}

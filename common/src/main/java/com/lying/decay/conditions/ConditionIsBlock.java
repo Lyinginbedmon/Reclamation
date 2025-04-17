@@ -80,4 +80,30 @@ public class ConditionIsBlock extends DecayCondition
 	{
 		predicate = BlockPredicate.fromJson(obj);
 	}
+	
+	public static class Air extends DecayCondition
+	{
+		public Air(Identifier idIn)
+		{
+			super(idIn);
+		}
+		
+		protected boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		{
+			return currentState.isAir();
+		}
+	}
+	
+	public static class Replaceable extends DecayCondition
+	{
+		public Replaceable(Identifier idIn)
+		{
+			super(idIn);
+		}
+		
+		protected boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		{
+			return currentState.isReplaceable();
+		}
+	}
 }

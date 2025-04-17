@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.lying.Reclamation;
 import com.lying.decay.DecayChance;
 import com.lying.decay.conditions.DecayCondition;
 import com.lying.decay.functions.DecayFunction;
@@ -64,7 +65,7 @@ public class DecayEntry extends AbstractDecayHandler
 	{
 		if(!json.has("name"))
 			json.addProperty("name", fileName.toString());
-		return CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+		return CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(Reclamation.LOGGER::error).orElseThrow();
 	}
 	
 	/** Returns a value between 0 and 1 representing the chance of a given decay update causing a block to decay */

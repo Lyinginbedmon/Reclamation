@@ -37,6 +37,8 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> ON_GROUND		= register("on_ground", ConditionNeighbouring.OnGround::new);
 	public static final Supplier<DecayCondition> SUPPORTED		= register("supported", ConditionNeighbouring.Supported::new);
 	public static final Supplier<DecayCondition> UNSUPPORTED	= register("unsupported", ConditionNeighbouring.Unsupported::new);
+	public static final Supplier<DecayCondition> IS_AIR			= register("is_air", ConditionIsBlock.Air::new);
+	public static final Supplier<DecayCondition> IS_REPLACEABLE	= register("is_replaceable", ConditionIsBlock.Replaceable::new);
 	
 	private static Supplier<DecayCondition> register(String nameIn, Function<Identifier, DecayCondition> funcIn)
 	{

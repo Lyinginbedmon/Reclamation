@@ -3,7 +3,6 @@ package com.lying.decay;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -22,14 +21,11 @@ import com.lying.decay.handler.DecayMacro;
 import com.lying.reference.Reference;
 
 import dev.architectury.registry.ReloadListenerRegistry;
-import net.minecraft.block.BlockState;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.BlockPos;
 
 public class DecayMacros implements ReloadListener<Map<Identifier, JsonObject>>
 {
@@ -53,12 +49,6 @@ public class DecayMacros implements ReloadListener<Map<Identifier, JsonObject>>
 	
 	private void clear() { DATA.clear(); }
 	
-	/** Returns a list of all decay entries applicable to the given block */
-	public List<DecayMacro> getDecayOptions(ServerWorld world, BlockPos pos, BlockState state)
-	{
-		return DATA.values().stream().filter(d -> d.test(world, pos, state)).toList();
-	}
-	
 	public Optional<DecayMacro> get(Identifier id) { return DATA.containsKey(id) ? Optional.of(DATA.get(id)) : Optional.empty(); }
 	
 	public Collection<Identifier> entries() { return DATA.keySet(); }
@@ -66,7 +56,7 @@ public class DecayMacros implements ReloadListener<Map<Identifier, JsonObject>>
 	public void register(DecayMacro dataIn)
 	{
 		DATA.put(dataIn.packName(), dataIn);
-		Reclamation.LOGGER.info(" #  Loaded decay macro {}", dataIn.packName());
+		Reclamation.LOGGER.info(" #  Loaded {}", dataIn.packName());
 	}
 	
 	public CompletableFuture<Map<Identifier, JsonObject>> load(ResourceManager manager)

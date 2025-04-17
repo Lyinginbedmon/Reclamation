@@ -1,0 +1,19 @@
+{
+  "function": {
+    "convert_to": {
+      "blocks": [
+        "minecraft:poppy",
+        "minecraft:dandelion",
+        "minecraft:short_grass",
+        "minecraft:tall_grass",
+        "minecraft:oak_sapling",
+        "minecraft:spruce_sapling",
+        "minecraft:birch_sapling",
+        "minecraft:brown_mushroom",
+        "minecraft:red_mushroom"
+      ]
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:place_flowers"
+}

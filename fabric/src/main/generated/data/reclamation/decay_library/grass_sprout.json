@@ -6,7 +6,8 @@
     {
       "blocks": [
         "minecraft:grass_block",
-        "minecraft:podzol"
+        "minecraft:podzol",
+        "minecraft:mycelium"
       ],
       "id": "reclamation:is_block"
     },
@@ -18,19 +19,7 @@
     "id": "reclamation:sprout",
     "sprouted": {
       "face": "up",
-      "growth": {
-        "blocks": [
-          "minecraft:poppy",
-          "minecraft:dandelion",
-          "minecraft:short_grass",
-          "minecraft:tall_grass",
-          "minecraft:oak_sapling",
-          "minecraft:spruce_sapling",
-          "minecraft:birch_sapling",
-          "minecraft:brown_mushroom",
-          "minecraft:red_mushroom"
-        ]
-      }
+      "growth": "reclamation:place_flowers"
     }
   },
   "name": "reclamation:grass_sprout"

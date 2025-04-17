@@ -34,67 +34,13 @@
   "function": {
     "id": "reclamation:sprout",
     "sprouted": {
-      "growth_by_face": {
-        "east": {
-          "state": {
-            "Name": "reclamation:ivy",
-            "Properties": {
-              "east": "false",
-              "north": "false",
-              "south": "false",
-              "up": "false",
-              "west": "true"
-            }
-          }
-        },
-        "north": {
-          "state": {
-            "Name": "reclamation:ivy",
-            "Properties": {
-              "east": "false",
-              "north": "false",
-              "south": "true",
-              "up": "false",
-              "west": "false"
-            }
-          }
-        },
-        "south": {
-          "state": {
-            "Name": "reclamation:ivy",
-            "Properties": {
-              "east": "false",
-              "north": "true",
-              "south": "false",
-              "up": "false",
-              "west": "false"
-            }
-          }
-        },
-        "west": {
-          "state": {
-            "Name": "reclamation:ivy",
-            "Properties": {
-              "east": "true",
-              "north": "false",
-              "south": "false",
-              "up": "false",
-              "west": "false"
-            }
-          }
-        }
-      },
+      "growth": "reclamation:place_ivy_main",
       "must_be": {
         "id": "reclamation:and",
         "set": [
+          "reclamation:is_air",
           {
-            "block": "minecraft:air",
-            "id": "reclamation:is_block"
-          },
-          {
-            "faces": [
-              "down"
-            ],
+            "face": "down",
             "id": "reclamation:adjacent_to",
             "look_for": {
               "block": "minecraft:grass_block"
