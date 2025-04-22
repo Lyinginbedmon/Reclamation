@@ -21,6 +21,8 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
+// TODO Add support for detecting fluid contents
+
 /** Utility class for defining a predicate for BlockStates */
 public class BlockPredicate implements Predicate<BlockState>
 {

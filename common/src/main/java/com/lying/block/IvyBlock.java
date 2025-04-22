@@ -1,10 +1,13 @@
 package com.lying.block;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
+import com.lying.Reclamation;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
@@ -14,6 +17,7 @@ import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.MultifaceBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.BlockMirror;
@@ -25,6 +29,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.tick.ScheduledTickView;
 
@@ -47,11 +52,13 @@ public class IvyBlock extends Block
 		.entrySet().stream().filter(e -> e.getKey() != Direction.DOWN).collect(Util.toMap());
 	private final Map<BlockState, VoxelShape> shapesByState;
 	
+	private List<GrowthOption> GROW_OPTIONS = Lists.newArrayList();
+	
 	public MapCodec<IvyBlock> getCodec() { return CODEC; }
 	
 	public IvyBlock(Settings settings)
 	{
-		super(settings);
+		super(settings.ticksRandomly());
 		setDefaultState(getStateManager().getDefaultState()
 			.with(UP, false)
 			.with(NORTH, false)
@@ -62,6 +69,12 @@ public class IvyBlock extends Block
 		shapesByState = Collections.unmodifiableMap(
 				getStateManager().getStates().stream()
 					.collect(Collectors.toMap(Function.identity(), IvyBlock::getShapeForState)));
+		
+		FACING_PROPERTIES.keySet().forEach(d -> 
+		{
+			GROW_OPTIONS.add(expandToFace(d));
+			GROW_OPTIONS.add(basicDirection(d));
+		});
 	}
 	
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
@@ -87,24 +100,24 @@ public class IvyBlock extends Block
 	
 	private BlockState getPlacementShape(BlockState state, BlockView world, BlockPos pos)
 	{
-		BlockPos up = pos.up();
+		BlockPos above = pos.up();
 		if(state.get(UP))
-			state.with(UP, shouldConnectTo(world, up, Direction.DOWN));
+			state = state.with(UP, shouldConnectTo(world, above, Direction.DOWN));
 		
 		BlockState blockState = null;
-		for(Direction face : Direction.Type.HORIZONTAL)
+		for(Direction d : Direction.Type.HORIZONTAL)
 		{
-			BooleanProperty property = FACING_PROPERTIES.get(face);
+			BooleanProperty property = getFacingProperty(d);
 			if(state.get(property))
 			{
-				boolean shouldHave = shouldHaveSide(world, pos, face);
-				if(!shouldHave)
+				boolean flag = shouldHaveSide(world, pos, d);
+				if(!flag)
 				{
 					if(blockState == null)
-						blockState = world.getBlockState(up);
-					shouldHave = blockState.isOf(this) && blockState.get(property);
+						blockState = world.getBlockState(above);
+					flag = blockState.isOf(this) && blockState.get(property);
 				}
-				state = state.with(property, shouldHave);
+				state = state.with(property, flag);
 			}
 		}
 		
@@ -113,10 +126,21 @@ public class IvyBlock extends Block
 	
 	protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighbourPos, BlockState neighbourState, Random random)
 	{
-		if(direction == Direction.DOWN)
-			return super.getStateForNeighborUpdate(neighbourState, world, tickView, pos, direction, neighbourPos, neighbourState, random);
-		BlockState blockState = getPlacementShape(state, world, pos);
-		return !hasAdjacentBlocks(blockState) ? Blocks.AIR.getDefaultState() : blockState;
+		// Ignore if we can't be connected in that direction
+		if(!FACING_PROPERTIES.containsKey(direction))
+			return state;
+		// Ignore if we aren't attached to that direction
+		else if(!state.get(getFacingProperty(direction)))
+			return state;
+		// If we shouldn't be attached to that direction, update accordingly
+		else if(!shouldHaveSide(world, pos, direction))
+		{
+			if(!hasAnyHorizontalSide(world, pos))
+				return Blocks.AIR.getDefaultState();
+			else
+				return state.with(getFacingProperty(direction), false);
+		}
+		return state;
 	}
 	
 	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos)
@@ -126,7 +150,7 @@ public class IvyBlock extends Block
 	
 	private boolean hasAdjacentBlocks(BlockState state)
 	{
-		return getAdjacentBlockCount(state) > 0;
+		return state != null && FACING_PROPERTIES.keySet().stream().anyMatch(d -> state.get(getFacingProperty(d)));
 	}
 	
 	private int getAdjacentBlockCount(BlockState state)
@@ -138,24 +162,17 @@ public class IvyBlock extends Block
 		return tally;
 	}
 	
+	/** Returns true if ivy can grown on the given face of the given position */
 	public static boolean shouldConnectTo(BlockView world, BlockPos pos, Direction direction)
 	{
 		return MultifaceBlock.canGrowOn(world, direction, pos, world.getBlockState(pos));
 	}
 	
+	/** Returns true if ivy can grow on the given interior side of the block */
 	private boolean shouldHaveSide(BlockView world, BlockPos pos, Direction side)
 	{
-		if(side == Direction.DOWN)
-			return false;
-		
 		BlockPos offset = pos.offset(side);
-		if(shouldConnectTo(world, offset, side))
-			return true;
-		if(side.getAxis() == Direction.Axis.Y)
-			return false;
-		BooleanProperty property = FACING_PROPERTIES.get(side);
-		BlockState state = world.getBlockState(pos.up());
-		return state.isOf(this) && state.get(property);
+		return FACING_PROPERTIES.containsKey(side) && shouldConnectTo(world, offset, side);
 	}
 	
 	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context)
@@ -171,6 +188,8 @@ public class IvyBlock extends Block
 		return blockState.isOf(this) ? getAdjacentBlockCount(blockState) < FACING_PROPERTIES.size() : super.canReplace(state, context);
 	}
 	
+	protected BooleanProperty getFacingProperty(Direction face) { return FACING_PROPERTIES.get(face); }
+	
 	public BlockState getPlacementState(ItemPlacementContext context)
 	{
 		BlockState state = context.getWorld().getBlockState(context.getBlockPos());
@@ -179,11 +198,29 @@ public class IvyBlock extends Block
 		for(Direction face : context.getPlacementDirections())
 			if(face != Direction.DOWN)
 			{
-				BooleanProperty property = FACING_PROPERTIES.get(face);
+				BooleanProperty property = getFacingProperty(face);
 				if(!(isIvy && state.get(property)) && shouldHaveSide(context.getWorld(), context.getBlockPos(), face))
 					return state2.with(property, true);
 			}
 		return isIvy ? state2 : null;
+	}
+	
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
+	{
+		if(!world.getGameRules().getBoolean(GameRules.DO_VINES_SPREAD) || random.nextInt(4) > 0)
+			return;
+		
+		GROW_OPTIONS.stream().filter(g -> g.viable(state, pos, world)).findAny().ifPresent(g -> 
+		{
+			Reclamation.LOGGER.info(" # Ivy growing according to {}", g.name());
+			g.enact(state, pos, world); 
+		});
+	}
+	
+	/** Returns true if ivy can connect to any horizontal side at the given position */
+	private boolean hasAnyHorizontalSide(BlockView world, BlockPos pos)
+	{
+		return Direction.Type.HORIZONTAL.stream().anyMatch(d -> shouldHaveSide(world, pos, d));
 	}
 	
 	protected BlockState rotate(BlockState state, BlockRotation rotation)
@@ -228,5 +265,58 @@ public class IvyBlock extends Block
 			default:
 				return super.mirror(state, mirror);	
 		}
+	}
+	
+	private static abstract class GrowthOption
+	{
+		public abstract String name();
+		
+		public abstract boolean viable(BlockState state, BlockPos pos, ServerWorld world);
+		
+		public abstract void enact(BlockState state, BlockPos pos, ServerWorld world);
+	}
+	
+	private GrowthOption basicDirection(Direction direction)
+	{
+		return new GrowthOption() 
+		{
+			public String name() { return "grow_"+direction.asString(); }
+			
+			public boolean viable(BlockState state, BlockPos pos, ServerWorld world)
+			{
+				BlockPos offset = pos.offset(direction);
+				return 
+						!state.get(getFacingProperty(direction)) && 
+						!shouldHaveSide(world, pos, direction) && 
+						world.isAir(offset) && 
+						hasAnyHorizontalSide(world, offset);
+			}
+			
+			public void enact(BlockState state, BlockPos pos, ServerWorld world)
+			{
+				BlockPos offset = pos.offset(direction);
+				for(Direction dir : Direction.Type.HORIZONTAL)
+				{
+					BooleanProperty property = getFacingProperty(dir);
+					if(state.get(property) && shouldHaveSide(world, offset, dir))
+					{
+						world.setBlockState(offset, getDefaultState().with(property, true), 2);
+						return;
+					}
+				}
+			}
+		};
+	}
+	
+	private GrowthOption expandToFace(Direction direction)
+	{
+		return new GrowthOption()
+		{
+			public String name() { return "expand_to_"+direction.asString(); }
+			
+			public boolean viable(BlockState state, BlockPos pos, ServerWorld world) { return !state.get(getFacingProperty(direction)) && shouldHaveSide(world, pos, direction); }
+			
+			public void enact(BlockState state, BlockPos pos, ServerWorld world) { world.setBlockState(pos, state.with(getFacingProperty(direction), true), 2); }
+		};
 	}
 }
