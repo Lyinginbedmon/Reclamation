@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "reclamation:weathered_iron",
+    "minecraft:honeycomb"
+  ],
+  "result": {
+    "count": 1,
+    "id": "reclamation:waxed_weathered_iron"
+  }
+}

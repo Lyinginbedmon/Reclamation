@@ -21,6 +21,7 @@ import com.lying.init.RCDecayFunctions;
 import com.lying.utility.BlockSaturationCalculator;
 import com.lying.utility.BlockSaturationCalculator.Mode;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
@@ -41,6 +42,26 @@ public class DefaultDecayLibrary
 	
 	static
 	{
+		final Map<Block,Block> TERRACOTTA = new HashMap<>();
+		TERRACOTTA.put(Blocks.BLACK_GLAZED_TERRACOTTA, Blocks.BLACK_TERRACOTTA);
+		TERRACOTTA.put(Blocks.BLUE_GLAZED_TERRACOTTA, Blocks.BLUE_TERRACOTTA);
+		TERRACOTTA.put(Blocks.BROWN_GLAZED_TERRACOTTA, Blocks.BROWN_TERRACOTTA);
+		TERRACOTTA.put(Blocks.CYAN_GLAZED_TERRACOTTA, Blocks.CYAN_TERRACOTTA);
+		TERRACOTTA.put(Blocks.GRAY_GLAZED_TERRACOTTA, Blocks.GRAY_TERRACOTTA);
+		TERRACOTTA.put(Blocks.GREEN_GLAZED_TERRACOTTA, Blocks.GREEN_TERRACOTTA);
+		TERRACOTTA.put(Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA);
+		TERRACOTTA.put(Blocks.LIGHT_GRAY_GLAZED_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA);
+		TERRACOTTA.put(Blocks.LIME_GLAZED_TERRACOTTA, Blocks.LIME_TERRACOTTA);
+		TERRACOTTA.put(Blocks.MAGENTA_GLAZED_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA);
+		TERRACOTTA.put(Blocks.ORANGE_GLAZED_TERRACOTTA, Blocks.ORANGE_TERRACOTTA);
+		TERRACOTTA.put(Blocks.PINK_GLAZED_TERRACOTTA, Blocks.PINK_TERRACOTTA);
+		TERRACOTTA.put(Blocks.PURPLE_GLAZED_TERRACOTTA, Blocks.PURPLE_TERRACOTTA);
+		TERRACOTTA.put(Blocks.RED_GLAZED_TERRACOTTA, Blocks.RED_TERRACOTTA);
+		TERRACOTTA.put(Blocks.WHITE_GLAZED_TERRACOTTA, Blocks.WHITE_TERRACOTTA);
+		TERRACOTTA.put(Blocks.YELLOW_GLAZED_TERRACOTTA, Blocks.YELLOW_TERRACOTTA);
+		
+		TERRACOTTA.entrySet().forEach(entry -> register(ofTerracotta(entry.getKey(), entry.getValue())));
+		
 		register(DecayEntry.Builder.create(DecayChance.base(0.3F))
 				.name("rain_interaction_with_waterlogging")
 				.condition(
@@ -212,6 +233,18 @@ public class DefaultDecayLibrary
 					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
 				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
-		
+	}
+	
+	private static DecayEntry ofTerracotta(Block glazed, Block blank)
+	{
+		return DecayEntry.Builder.create(
+				DecayChance.base(0.1F)
+					.addModifier(0.03F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(Blocks.AIR).build())
+					.addModifier(0.03F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().searchRange(1).blockCap(8).blocks(blank).build()))
+				.name(glazed.arch$registryName().getPath()+"_to_"+blank.arch$registryName().getPath())
+				.condition(
+					RCDecayConditions.EXPOSED.get(),
+					ConditionIsBlock.of(glazed))
+				.function(FunctionConvert.toBlock(blank)).build();
 	}
 }

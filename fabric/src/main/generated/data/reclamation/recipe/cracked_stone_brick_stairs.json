@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "b": "minecraft:cracked_stone_bricks"
+  },
+  "pattern": [
+    "b  ",
+    "bb ",
+    "bbb"
+  ],
+  "result": {
+    "count": 4,
+    "id": "reclamation:cracked_stone_brick_stairs"
+  }
+}

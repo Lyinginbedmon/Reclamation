@@ -1,3 +1,6 @@
 {
-  "parent": "reclamation:block/ivy"
+"parent": "minecraft:item/generated",
+"textures": {
+  "layer0": "reclamation:block/ivy"
+}
 }

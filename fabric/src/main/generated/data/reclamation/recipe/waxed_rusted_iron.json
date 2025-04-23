@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "reclamation:rusted_iron",
+    "minecraft:honeycomb"
+  ],
+  "result": {
+    "count": 1,
+    "id": "reclamation:waxed_rusted_iron"
+  }
+}
