@@ -54,7 +54,21 @@ public class IvyBlock extends Block
 		.entrySet().stream().filter(e -> e.getKey() != Direction.DOWN).collect(Util.toMap());
 	private final Map<BlockState, VoxelShape> shapesByState;
 	
-	private List<GrowthOption> GROW_OPTIONS = Lists.newArrayList();
+	private static List<GrowthOption> GROW_OPTIONS = Lists.newArrayList();
+	static
+	{
+		FACING_PROPERTIES.keySet().forEach(d -> 
+		{
+			GROW_OPTIONS.add(growOnFace(d));
+			GROW_OPTIONS.add(growInDirection(d));
+			
+			if(d.getHorizontalQuarterTurns() >= 0)
+			{
+				GROW_OPTIONS.add(growClockwise(d));
+				GROW_OPTIONS.add(growCounterClockwise(d));
+			}
+		});
+	}
 	
 	public MapCodec<IvyBlock> getCodec() { return CODEC; }
 	
@@ -71,18 +85,6 @@ public class IvyBlock extends Block
 		shapesByState = Collections.unmodifiableMap(
 				getStateManager().getStates().stream()
 					.collect(Collectors.toMap(Function.identity(), IvyBlock::getShapeForState)));
-		
-		FACING_PROPERTIES.keySet().forEach(d -> 
-		{
-			GROW_OPTIONS.add(growOnFace(d));
-			GROW_OPTIONS.add(growInDirection(d));
-			
-			if(d.getHorizontalQuarterTurns() >= 0)
-			{
-				GROW_OPTIONS.add(growClockwise(d));
-				GROW_OPTIONS.add(growCounterClockwise(d));
-			}
-		});
 	}
 	
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)

@@ -1,0 +1,31 @@
+{
+  "chance": {
+    "base_chance": 0.0,
+    "modifier": {
+      "amount": 0.01,
+      "multiplier": {
+        "search": {
+          "capacity": 10,
+          "looking_for": {
+            "tag": "#reclamation:faded_terracotta"
+          },
+          "range": 2
+        },
+        "use_tally_as": "flat_value"
+      },
+      "operation": "add_value"
+    }
+  },
+  "conditions": [
+    "reclamation:exposed",
+    {
+      "id": "reclamation:is_block",
+      "tag": "#reclamation:faded_terracotta"
+    }
+  ],
+  "function": {
+    "id": "reclamation:macro",
+    "macro": "reclamation:blank_terracotta_main"
+  },
+  "name": "reclamation:faded_terracotta_to_blank_terracotta"
+}

@@ -66,7 +66,6 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 	public void register(DecayEntry dataIn)
 	{
 		DATA.put(dataIn.packName(), dataIn);
-		Reclamation.LOGGER.info(" #  Loaded {}", dataIn.packName());
 	}
 	
 	public CompletableFuture<Map<Identifier, JsonObject>> load(ResourceManager manager)
@@ -106,6 +105,7 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 			clear();
 			for(Entry<Identifier, JsonObject> prep : data.entrySet())
 				register(DecayEntry.readFromJson(prep.getKey(), prep.getValue()));
+			Reclamation.LOGGER.info(" # -Loaded {} decay entries", DATA.size());
 		});
 	}
 }

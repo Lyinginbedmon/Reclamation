@@ -56,7 +56,6 @@ public class DecayMacros implements ReloadListener<Map<Identifier, JsonObject>>
 	public void register(DecayMacro dataIn)
 	{
 		DATA.put(dataIn.packName(), dataIn);
-		Reclamation.LOGGER.info(" #  Loaded {}", dataIn.packName());
 	}
 	
 	public CompletableFuture<Map<Identifier, JsonObject>> load(ResourceManager manager)
@@ -96,6 +95,7 @@ public class DecayMacros implements ReloadListener<Map<Identifier, JsonObject>>
 			clear();
 			for(Entry<Identifier, JsonObject> prep : data.entrySet())
 				register(DecayMacro.readFromJson(prep.getKey(), prep.getValue()));
+			Reclamation.LOGGER.info(" # -Loaded {} decay macros", DATA.size());
 		});
 	}
 }

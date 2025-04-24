@@ -36,11 +36,30 @@ public class RCRecipeProvider extends FabricRecipeProvider
 						ShapedRecipeJsonBuilder.create(Registries.ITEM, RecipeCategory.BUILDING_BLOCKS, RCItems.CRACKED_STONE_BRICK_SLAB.get(), 6)
 							.pattern("bbb").input('b', Blocks.CRACKED_STONE_BRICKS)
 							.criterion(hasItem(Blocks.CRACKED_STONE_BRICKS), conditionsFromItem(Blocks.CRACKED_STONE_BRICKS)).offerTo(exporter);
+						offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, RCBlocks.CRACKED_STONE_BRICK_SLAB.get(), Blocks.CRACKED_STONE_BRICKS, 2);
 						
 						ShapedRecipeJsonBuilder.create(Registries.ITEM, RecipeCategory.BUILDING_BLOCKS, RCItems.CRACKED_STONE_BRICK_STAIRS.get(), 4)
 							.pattern("b  ").pattern("bb ").pattern("bbb")
 							.input('b', Blocks.CRACKED_STONE_BRICKS)
 							.criterion(hasItem(Blocks.CRACKED_STONE_BRICKS), conditionsFromItem(Blocks.CRACKED_STONE_BRICKS)).offerTo(exporter);
+						offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS);
+						
+						ShapelessRecipeJsonBuilder.create(Registries.ITEM, RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_COBBLESTONE)
+							.group("mossy_cobblestone")
+							.input(Blocks.COBBLESTONE).input(RCBlocks.IVY.get())
+							.criterion(hasItem(Blocks.COBBLESTONE), conditionsFromItem(Blocks.COBBLESTONE))
+							.criterion(hasItem(RCBlocks.IVY.get()), conditionsFromItem(RCBlocks.IVY.get())).offerTo(exporter);
+						
+						ShapelessRecipeJsonBuilder.create(Registries.ITEM, RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_STONE_BRICKS)
+							.group("mossy_stone_bricks")
+							.input(Blocks.STONE_BRICKS).input(RCBlocks.IVY.get())
+							.criterion(hasItem(Blocks.STONE_BRICKS), conditionsFromItem(Blocks.STONE_BRICKS))
+							.criterion(hasItem(RCBlocks.IVY.get()), conditionsFromItem(RCBlocks.IVY.get())).offerTo(exporter);
+						
+						ShapelessRecipeJsonBuilder.create(Registries.ITEM, RecipeCategory.DECORATIONS, Items.BORDURE_INDENTED_BANNER_PATTERN)
+							.input(Items.PAPER).input(RCBlocks.IVY.get())
+							.criterion(hasItem(Items.PAPER), conditionsFromItem(Items.PAPER))
+							.criterion(hasItem(RCBlocks.IVY.get()), conditionsFromItem(RCBlocks.IVY.get())).offerTo(exporter);
 						
 						waxingRecipe(Blocks.IRON_BLOCK, RCBlocks.WAXED_IRON_BLOCK.get()).offerTo(exporter);
 						waxingRecipe(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WAXED_EXPOSED_IRON.get()).offerTo(exporter);

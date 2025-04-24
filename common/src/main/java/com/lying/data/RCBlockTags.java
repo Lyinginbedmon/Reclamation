@@ -8,5 +8,6 @@ import net.minecraft.registry.tag.TagKey;
 
 public class RCBlockTags
 {
-	public static final TagKey<Block> RUST	= TagKey.of(RegistryKeys.BLOCK, prefix("rust_block"));
+	public static final TagKey<Block> RUST				= TagKey.of(RegistryKeys.BLOCK, prefix("rust_block"));
+	public static final TagKey<Block> FADED_TERRACOTTA	= TagKey.of(RegistryKeys.BLOCK, prefix("faded_terracotta"));
 }

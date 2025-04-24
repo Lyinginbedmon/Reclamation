@@ -1,5 +1,6 @@
 package com.lying.utility;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
@@ -185,9 +186,15 @@ public class BlockSaturationCalculator
 			return this;
 		}
 		
-		public Builder tags(TagKey<Block> tagsIn)
+		public Builder tag(TagKey<Block> tagsIn)
 		{
 			predicate.addBlockTag(tagsIn);
+			return this;
+		}
+		
+		public Builder tags(List<TagKey<Block>> tagsIn)
+		{
+			tagsIn.forEach(predicate::addBlockTag);
 			return this;
 		}
 		

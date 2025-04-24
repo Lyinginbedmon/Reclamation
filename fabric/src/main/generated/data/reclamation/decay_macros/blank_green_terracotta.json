@@ -1,0 +1,13 @@
+{
+  "condition": {
+    "block": "reclamation:green_faded_terracotta",
+    "id": "reclamation:is_block"
+  },
+  "function": {
+    "convert_to": {
+      "block": "minecraft:green_terracotta"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:blank_green_terracotta"
+}

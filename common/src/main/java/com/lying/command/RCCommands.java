@@ -12,10 +12,12 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
 import com.lying.decay.DecayLibrary;
+import com.lying.decay.DecayMacros;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.DecayContext.DecayType;
-import com.lying.decay.handler.DecayEntry;
 import com.lying.decay.context.QueuedDecayContext;
+import com.lying.decay.handler.DecayEntry;
+import com.lying.decay.handler.DecayMacro;
 import com.lying.init.RCGameRules;
 import com.lying.reference.Reference;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -49,6 +51,7 @@ public class RCCommands
 			(maxCount, count) -> Text.stringifiedTranslatable("commands.fill.toobig", maxCount, count)
 		);
 	public static final SuggestionProvider<ServerCommandSource> DECAY_ENTRY_IDS = SuggestionProviders.register(Identifier.of("decay_entries"), (context, builder) -> CommandSource.suggestIdentifiers(DecayLibrary.instance().entries(), builder));
+	public static final SuggestionProvider<ServerCommandSource> DECAY_MACRO_IDS = SuggestionProviders.register(Identifier.of("decay_macros"), (context, builder) -> CommandSource.suggestIdentifiers(DecayMacros.instance().entries(), builder));
 	
 	private static SimpleCommandExceptionType make(String name)
 	{
@@ -93,6 +96,9 @@ public class RCCommands
 							.executes(context -> tryDecayRegion(BlockBox.create(BlockPosArgumentType.getBlockPos(context, "from"), BlockPosArgumentType.getBlockPos(context, "to")), context.getSource()))
 							.then(argument("entry", IdentifierArgumentType.identifier()).suggests(DECAY_ENTRY_IDS)
 								.executes(context -> tryDecayRegionSpecifically(BlockBox.create(BlockPosArgumentType.getBlockPos(context, "from"), BlockPosArgumentType.getBlockPos(context, "to")), IdentifierArgumentType.getIdentifier(context, "entry"), context.getSource()))
+								)
+							.then(argument("macro", IdentifierArgumentType.identifier()).suggests(DECAY_MACRO_IDS)
+								.executes(context -> tryMacroRegion(BlockBox.create(BlockPosArgumentType.getBlockPos(context, "from"), BlockPosArgumentType.getBlockPos(context, "to")), IdentifierArgumentType.getIdentifier(context, "macro"), context.getSource()))
 								)
 							)
 						)
@@ -193,6 +199,32 @@ public class RCCommands
 		List<DecayContext> queue = Lists.newArrayList();
 		for(BlockPos pos : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
 			Reclamation.tryToDecay(world, entry.get(), false, QueuedDecayContext.supplier(pos, world, DecayType.ARTIFICIAL)).ifPresent(context -> queue.add(context));
+		queue.forEach(DecayContext::close);
+		
+		final int decayed = queue.size();
+		source.sendFeedback(() -> translate("command", "decay_region", totalBlocks, decayed), true);
+		return 15;
+	}
+	
+	private static int tryMacroRegion(BlockBox region, Identifier entryType, ServerCommandSource source) throws CommandSyntaxException
+	{
+		ServerWorld world = source.getWorld();
+		int totalBlocks = region.getBlockCountX() * region.getBlockCountY() * region.getBlockCountZ();
+		int limit = world.getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
+		if(totalBlocks > limit)
+			throw TOO_BIG_EXCEPTION.create(limit, totalBlocks);
+		
+		Optional<DecayMacro> entry = DecayMacros.instance().get(entryType);
+		if(entry.isEmpty())
+			throw FAILED_UNKNOWN_ENTRY.create();
+		
+		List<DecayContext> queue = Lists.newArrayList();
+		for(BlockPos pos : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
+		{
+			DecayContext context = QueuedDecayContext.supplier(pos, world, DecayType.ARTIFICIAL);
+			if(entry.get().tryToApply(context))
+				queue.add(context);
+		}
 		queue.forEach(DecayContext::close);
 		
 		final int decayed = queue.size();

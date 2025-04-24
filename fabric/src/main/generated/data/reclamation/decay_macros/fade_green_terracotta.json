@@ -1,0 +1,21 @@
+{
+  "condition": {
+    "block": "minecraft:green_glazed_terracotta",
+    "id": "reclamation:is_block"
+  },
+  "functions": [
+    {
+      "convert_to": {
+        "block": "reclamation:green_faded_terracotta"
+      },
+      "id": "reclamation:convert"
+    },
+    {
+      "id": "reclamation:copy_blockstate_value",
+      "properties": [
+        "facing"
+      ]
+    }
+  ],
+  "name": "reclamation:fade_green_terracotta"
+}

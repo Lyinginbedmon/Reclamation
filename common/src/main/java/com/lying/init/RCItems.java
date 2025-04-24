@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
 public class RCItems
@@ -48,8 +49,29 @@ public class RCItems
 	// Broken glass variants
 	// Rotten plank variants
 	// Rotten log variants
+	public static final RegistrySupplier<Item> BLACK_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.BLACK);
+	public static final RegistrySupplier<Item> BLUE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.BLUE);
+	public static final RegistrySupplier<Item> BROWN_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.BROWN);
+	public static final RegistrySupplier<Item> CYAN_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.CYAN);
+	public static final RegistrySupplier<Item> GRAY_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.GRAY);
+	public static final RegistrySupplier<Item> GREEN_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.GREEN);
+	public static final RegistrySupplier<Item> LIGHT_BLUE_FADED_TERRACOTTA	= registerTerracottaBlock(DyeColor.LIGHT_BLUE);
+	public static final RegistrySupplier<Item> LIGHT_GRAY_FADED_TERRACOTTA	= registerTerracottaBlock(DyeColor.LIGHT_GRAY);
+	public static final RegistrySupplier<Item> LIME_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.LIME);
+	public static final RegistrySupplier<Item> MAGENTA_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.MAGENTA);
+	public static final RegistrySupplier<Item> ORANGE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.ORANGE);
+	public static final RegistrySupplier<Item> PINK_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.PINK);
+	public static final RegistrySupplier<Item> PURPLE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.PURPLE);
+	public static final RegistrySupplier<Item> RED_FADED_TERRACOTTA			= registerTerracottaBlock(DyeColor.RED);
+	public static final RegistrySupplier<Item> WHITE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.WHITE);
+	public static final RegistrySupplier<Item> YELLOW_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.YELLOW);
 	
 	public static final RegistrySupplier<Item> WITHERING_DUST	= register("withering_dust", settings -> new Item(settings));
+	
+	private static RegistrySupplier<Item> registerTerracottaBlock(DyeColor color)
+	{
+		return registerBlock(color.asString()+"_faded_terracotta", (RegistrySupplier<Block>)RCBlocks.DYE_TO_TERRACOTTA.get(color).faded());
+	}
 	
 	private static RegistrySupplier<Item> registerBlock(String nameIn, RegistrySupplier<Block> blockIn)
 	{

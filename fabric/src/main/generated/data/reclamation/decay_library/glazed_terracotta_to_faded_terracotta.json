@@ -1,0 +1,33 @@
+{
+  "chance": {
+    "base_chance": 0.03,
+    "modifier": {
+      "amount": 0.03,
+      "multiplier": {
+        "search": {
+          "capacity": 8,
+          "looking_for": {
+            "tags": [
+              "#reclamation:faded_terracotta",
+              "#minecraft:terracotta"
+            ]
+          },
+          "range": 1
+        }
+      },
+      "operation": "add_value"
+    }
+  },
+  "conditions": [
+    "reclamation:exposed",
+    {
+      "id": "reclamation:is_block",
+      "tag": "#c:glazed_terracotta"
+    }
+  ],
+  "function": {
+    "id": "reclamation:macro",
+    "macro": "reclamation:fade_terracotta_main"
+  },
+  "name": "reclamation:glazed_terracotta_to_faded_terracotta"
+}

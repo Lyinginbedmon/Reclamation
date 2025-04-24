@@ -2,10 +2,10 @@
   "function": {
     "id": "reclamation:macro",
     "macros": [
-      "reclamation:place_ivy_west",
       "reclamation:place_ivy_south",
-      "reclamation:place_ivy_east",
-      "reclamation:place_ivy_north"
+      "reclamation:place_ivy_north",
+      "reclamation:place_ivy_west",
+      "reclamation:place_ivy_east"
     ]
   },
   "name": "reclamation:place_ivy_main"
