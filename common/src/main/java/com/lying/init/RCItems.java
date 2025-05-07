@@ -66,6 +66,9 @@ public class RCItems
 	public static final RegistrySupplier<Item> WHITE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.WHITE);
 	public static final RegistrySupplier<Item> YELLOW_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.YELLOW);
 	
+	public static final RegistrySupplier<Item> DOUSED_TORCH					= registerBlock("doused_torch", RCBlocks.DOUSED_TORCH);
+	public static final RegistrySupplier<Item> DOUSED_LANTERN				= registerBlock("doused_lantern", RCBlocks.DOUSED_LANTERN);
+	
 	public static final RegistrySupplier<Item> WITHERING_DUST	= register("withering_dust", settings -> new Item(settings));
 	
 	private static RegistrySupplier<Item> registerTerracottaBlock(DyeColor color)

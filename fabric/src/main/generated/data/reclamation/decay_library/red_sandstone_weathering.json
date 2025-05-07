@@ -1,0 +1,39 @@
+{
+  "chance": {
+    "base_chance": 0.002,
+    "modifier": {
+      "amount": 0.001,
+      "multiplier": {
+        "search": {
+          "looking_for": {
+            "blocks": [
+              "minecraft:red_sandstone",
+              "minecraft:sand",
+              "minecraft:red_sand"
+            ]
+          },
+          "range": 2
+        },
+        "use_tally_as": "flat_value"
+      },
+      "operation": "add_value"
+    }
+  },
+  "conditions": [
+    {
+      "blocks": [
+        "minecraft:chiseled_red_sandstone",
+        "minecraft:cut_red_sandstone"
+      ],
+      "id": "reclamation:is_block"
+    },
+    "reclamation:exposed"
+  ],
+  "function": {
+    "convert_to": {
+      "block": "minecraft:red_sandstone"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:red_sandstone_weathering"
+}

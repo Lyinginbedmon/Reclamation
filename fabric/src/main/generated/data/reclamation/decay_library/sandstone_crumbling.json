@@ -1,0 +1,30 @@
+{
+  "chance": {
+    "base_chance": 0.3
+  },
+  "conditions": [
+    {
+      "block": "minecraft:sandstone",
+      "id": "reclamation:is_block"
+    },
+    {
+      "at_least": 3,
+      "faces": [
+        "down",
+        "up",
+        "north",
+        "south",
+        "west",
+        "east"
+      ],
+      "id": "reclamation:exposed"
+    }
+  ],
+  "function": {
+    "convert_to": {
+      "block": "minecraft:sand"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:sandstone_crumbling"
+}

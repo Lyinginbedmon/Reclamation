@@ -3,8 +3,8 @@
     "id": "reclamation:macro",
     "macros": [
       "reclamation:place_ivy_south",
-      "reclamation:place_ivy_north",
       "reclamation:place_ivy_west",
+      "reclamation:place_ivy_north",
       "reclamation:place_ivy_east"
     ]
   },

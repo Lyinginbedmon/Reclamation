@@ -30,6 +30,8 @@
 	"block.reclamation.red_faded_terracotta": "Red Faded Terracotta",
 	"block.reclamation.white_faded_terracotta": "White Faded Terracotta",
 	"block.reclamation.yellow_faded_terracotta": "Yellow Faded Terracotta",
+	"block.reclamation.doused_lantern": "Doused Lantern",
+	"block.reclamation.doused_torch": "Doused Torch",
 	// Items
 	"item.reclamation.withering_dust": "Withering Dust",
 	// Status effects

@@ -29,7 +29,7 @@ public abstract class AbstractDecayHandler
 		functions.addAll(functionsIn);
 	}
 	
-	public final Identifier packName() { return packName.orElse(Reference.ModInfo.prefix("unknown_macro")); }
+	public final Identifier packName() { return packName.orElse(Reference.ModInfo.prefix("unknown_decay_handler")); }
 	
 	public final boolean hasName() { return packName.isPresent(); }
 	

@@ -1,12 +1,16 @@
 {
   "conditions": [
     {
-      "block": "minecraft:gravel",
+      "blocks": [
+        "minecraft:gravel",
+        "minecraft:sand",
+        "minecraft:red_sand"
+      ],
       "id": "reclamation:is_block"
     },
     "reclamation:on_ground",
     "reclamation:air_above"
   ],
   "function": "reclamation:shuffle",
-  "name": "reclamation:gravel_shuffle"
+  "name": "reclamation:particulate_shuffle"
 }

@@ -23,6 +23,7 @@ import com.lying.utility.BlockSaturationCalculator;
 import com.lying.utility.BlockSaturationCalculator.Mode;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LanternBlock;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.registry.RegistryKeys;
@@ -62,6 +63,22 @@ public class DefaultDecayLibrary
 				RCDecayConditions.EXPOSED.get(),
 				ConditionIsBlock.of(RCBlockTags.FADED_TERRACOTTA))
 			.function(FunctionMacro.of(DefaultDecayMacros.BLANK_TERRACOTTA)).build());
+		
+		register(DecayEntry.Builder.create(/*
+				DecayChance.base(0.3F)*/)
+				.name("torch_burnout")
+				.condition(ConditionIsBlock.of(Blocks.TORCH, Blocks.WALL_TORCH))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_TORCH.get()),
+					FunctionBlockState.CopyValue.of(Properties.FACING)).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.2F))
+				.name("lantern_burnout")
+				.condition(ConditionIsBlock.of(Blocks.LANTERN))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_LANTERN.get()),
+					FunctionBlockState.CopyValue.of(LanternBlock.HANGING)).build());
 		
 		register(DecayEntry.Builder.create(DecayChance.base(0.3F))
 				.name("rain_interaction_with_waterlogging")
@@ -191,9 +208,9 @@ public class DefaultDecayLibrary
 								RCDecayConditions.IS_AIR.get(),
 								ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN))).build()).build());
 		register(DecayEntry.Builder.create()
-				.name("gravel_shuffle")
+				.name("particulate_shuffle")
 				.condition(
-					ConditionIsBlock.of(Blocks.GRAVEL),
+					ConditionIsBlock.of(Blocks.GRAVEL, Blocks.SAND, Blocks.RED_SAND),
 					RCDecayConditions.ON_GROUND.get(),
 					RCDecayConditions.AIR_ABOVE.get())
 				.function(
@@ -234,5 +251,37 @@ public class DefaultDecayLibrary
 					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
 				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.002F)
+					.addModifier(0.001F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blocks(Blocks.SANDSTONE, Blocks.SAND, Blocks.RED_SAND).build()))
+				.name("sandstone_weathering")
+				.condition(
+					ConditionIsBlock.of(Blocks.CHISELED_SANDSTONE, Blocks.CUT_SANDSTONE),
+					RCDecayConditions.EXPOSED.get())
+				.function(FunctionConvert.toBlock(Blocks.SANDSTONE)).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.002F))
+				.name("sandstone_crumbling")
+				.condition(
+					ConditionIsBlock.of(Blocks.SANDSTONE),
+					ConditionNeighbouring.Exposed.face(Direction.values()).threshold(3))
+				.function(FunctionConvert.toBlock(Blocks.SAND)).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.002F)
+					.addModifier(0.001F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blocks(Blocks.RED_SANDSTONE, Blocks.SAND, Blocks.RED_SAND).build()))
+				.name("red_sandstone_weathering")
+				.condition(
+					ConditionIsBlock.of(Blocks.CHISELED_RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE),
+					RCDecayConditions.EXPOSED.get())
+				.function(FunctionConvert.toBlock(Blocks.RED_SANDSTONE)).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.002F))
+				.name("red_sandstone_crumbling")
+				.condition(
+					ConditionIsBlock.of(Blocks.RED_SANDSTONE),
+					ConditionNeighbouring.Exposed.face(Direction.values()).threshold(3))
+				.function(FunctionConvert.toBlock(Blocks.RED_SAND)).build());
 	}
 }

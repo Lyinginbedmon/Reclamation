@@ -1,6 +1,7 @@
 package com.lying.decay.functions;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -172,9 +173,19 @@ public abstract class FunctionBlockState extends DecayFunction
 				context.setBlockState(current);
 		}
 		
-		private static <T extends Comparable<T>> BlockState copyValue(Property<T> property, BlockState original, BlockState current)
+		@SuppressWarnings("unchecked")
+		private static <T extends Comparable<T>> BlockState copyValue(Property<T> p1, BlockState s1, BlockState s2)
 		{
-			return current.get(property) != null ? current.with(property, original.get(property)) : current;
+			StateManager<Block, BlockState> stateManager = s2.getBlock().getStateManager();
+			Property<T> p2 = (Property<T>)stateManager.getProperty(p1.getName());
+			return p2 == null ? s2 : copyValue(p1, p2, s1, s2);
+		}
+		
+		private static <T extends Comparable<T>, U extends Comparable<U>> BlockState copyValue(Property<T> p1, Property<U> p2, BlockState s1, BlockState s2)
+		{
+			String name = p1.name(s1.get(p1));
+			Optional<U> value = p2.parse(name);
+			return value.isPresent() ? s2.with(p2, value.get()) : s2;
 		}
 	}
 	

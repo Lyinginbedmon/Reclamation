@@ -1,0 +1,24 @@
+{
+  "condition": {
+    "blocks": [
+      "minecraft:torch",
+      "minecraft:wall_torch"
+    ],
+    "id": "reclamation:is_block"
+  },
+  "functions": [
+    {
+      "convert_to": {
+        "block": "reclamation:doused_torch"
+      },
+      "id": "reclamation:convert"
+    },
+    {
+      "id": "reclamation:copy_blockstate_value",
+      "properties": [
+        "facing"
+      ]
+    }
+  ],
+  "name": "reclamation:torch_burnout"
+}
