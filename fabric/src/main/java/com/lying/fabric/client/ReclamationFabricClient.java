@@ -18,5 +18,8 @@ public final class ReclamationFabricClient implements ClientModInitializer
     private static void registerBlockColors()
     {
     	ColorProviderRegistry.BLOCK.register(ReclamationClient.GRASS_COLOR, RCBlocks.IVY.get());
+    	ColorProviderRegistry.BLOCK.register(ReclamationClient.GRASS_COLOR, RCBlocks.TINTED_LEAF_PILES);
+    	ColorProviderRegistry.BLOCK.register(ReclamationClient.BIRCH_COLOR, RCBlocks.BIRCH_LEAF_PILE.get());
+    	ColorProviderRegistry.BLOCK.register(ReclamationClient.SPRUCE_COLOR, RCBlocks.SPRUCE_LEAF_PILE.get());
     }
 }

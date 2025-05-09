@@ -5,6 +5,9 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.lying.Reclamation;
+import com.lying.data.RCBlockTags;
+
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -58,7 +61,7 @@ public class ScrapeableBlock extends Block
 	
 	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
 	{
-		if(canScrape(stack, hand, player.shouldCancelInteraction()))
+		if((!state.isIn(RCBlockTags.RUST) || Reclamation.config.isRustScrapeable()) && canScrape(stack, hand, player.shouldCancelInteraction()))
 		{
 			Optional<BlockState> revertState = revertState();
 			revertState.ifPresent(revert -> 

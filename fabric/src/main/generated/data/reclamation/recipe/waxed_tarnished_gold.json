@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "reclamation:tarnished_gold",
+    "minecraft:honeycomb"
+  ],
+  "result": {
+    "count": 1,
+    "id": "reclamation:waxed_tarnished_gold"
+  }
+}

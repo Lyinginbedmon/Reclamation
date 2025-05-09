@@ -1,0 +1,6 @@
+{
+  "parent": "reclamation:block/template_leaf_pile",
+  "textures": {
+    "leaf": "minecraft:block/spruce_leaves"
+  }
+}

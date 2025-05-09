@@ -5,7 +5,7 @@ license = "CC0-1.0"
 
 [[mods]]
 modId = "reclamation"
-version = "0.1"
+version = "0.6"
 displayName = "Reclamation"
 authors = "Lying"
 description = '''

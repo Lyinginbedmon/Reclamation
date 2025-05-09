@@ -64,13 +64,34 @@ public class DefaultDecayLibrary
 				ConditionIsBlock.of(RCBlockTags.FADED_TERRACOTTA))
 			.function(FunctionMacro.of(DefaultDecayMacros.BLANK_TERRACOTTA)).build());
 		
-		register(DecayEntry.Builder.create(/*
-				DecayChance.base(0.3F)*/)
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.3F))
 				.name("torch_burnout")
 				.condition(ConditionIsBlock.of(Blocks.TORCH, Blocks.WALL_TORCH))
 				.function(
 					FunctionConvert.toBlock(RCBlocks.DOUSED_TORCH.get()),
 					FunctionBlockState.CopyValue.of(Properties.FACING)).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.3F))
+				.name("soul_torch_burnout")
+				.condition(ConditionIsBlock.of(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_SOUL_TORCH.get()),
+					FunctionBlockState.CopyValue.of(Properties.FACING)).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.15F))
+				.name("lantern_burnout")
+				.condition(ConditionIsBlock.of(Blocks.LANTERN))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_LANTERN.get()),
+					FunctionBlockState.CopyValue.of(LanternBlock.HANGING)).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.15F))
+				.name("soul_lantern_burnout")
+				.condition(ConditionIsBlock.of(Blocks.SOUL_LANTERN))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_SOUL_LANTERN.get()),
+					FunctionBlockState.CopyValue.of(LanternBlock.HANGING)).build());
 		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.2F))

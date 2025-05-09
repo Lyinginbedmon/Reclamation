@@ -146,7 +146,7 @@ public class IvyBlock extends Block
 		else if(!shouldHaveSide(world, pos, direction))
 		{
 			state = state.with(getFacingProperty(direction), false);
-			if(!FACING_PROPERTIES.values().stream().anyMatch(state::get))
+			if(FACING_PROPERTIES.values().stream().noneMatch(state::get))
 				return Blocks.AIR.getDefaultState();
 		}
 		return state;
@@ -164,11 +164,7 @@ public class IvyBlock extends Block
 	
 	private int getAdjacentBlockCount(BlockState state)
 	{
-		int tally = 0;
-		for(BooleanProperty property : FACING_PROPERTIES.values())
-			if(state.get(property))
-				tally++;
-		return tally;
+		return (int)FACING_PROPERTIES.values().stream().filter(state::get).count();
 	}
 	
 	/** Returns true if ivy can grown on the given face of the given position */
@@ -219,11 +215,7 @@ public class IvyBlock extends Block
 		if(!world.getGameRules().getBoolean(GameRules.DO_VINES_SPREAD) || random.nextInt(4) > 0)
 			return;
 		
-		GROW_OPTIONS.stream().filter(g -> g.viable(state, pos, world)).findAny().ifPresent(g -> 
-		{
-//			Reclamation.LOGGER.info(" # Ivy growing according to {} at {}", g.name(), pos.toShortString());
-			g.enact(state, pos, world); 
-		});
+		GROW_OPTIONS.stream().filter(g -> g.viable(state, pos, world)).findAny().ifPresent(g -> g.enact(state, pos, world));
 	}
 	
 	protected BlockState rotate(BlockState state, BlockRotation rotation)

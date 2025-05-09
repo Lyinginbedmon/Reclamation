@@ -1,0 +1,155 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        },
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:ivy",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "east": "true"
+              }
+            }
+          ],
+          "name": "reclamation:ivy"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        },
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:ivy",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "north": "true"
+              }
+            }
+          ],
+          "name": "reclamation:ivy"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        },
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:ivy",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "south": "true"
+              }
+            }
+          ],
+          "name": "reclamation:ivy"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        },
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:ivy",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "west": "true"
+              }
+            }
+          ],
+          "name": "reclamation:ivy"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        },
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:ivy",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "up": "true"
+              }
+            }
+          ],
+          "name": "reclamation:ivy"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}

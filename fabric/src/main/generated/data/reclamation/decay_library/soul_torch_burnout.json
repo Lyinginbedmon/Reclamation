@@ -1,0 +1,27 @@
+{
+  "chance": {
+    "base_chance": 0.3
+  },
+  "condition": {
+    "blocks": [
+      "minecraft:soul_torch",
+      "minecraft:soul_wall_torch"
+    ],
+    "id": "reclamation:is_block"
+  },
+  "functions": [
+    {
+      "convert_to": {
+        "block": "reclamation:doused_soul_torch"
+      },
+      "id": "reclamation:convert"
+    },
+    {
+      "id": "reclamation:copy_blockstate_value",
+      "properties": [
+        "facing"
+      ]
+    }
+  ],
+  "name": "reclamation:soul_torch_burnout"
+}

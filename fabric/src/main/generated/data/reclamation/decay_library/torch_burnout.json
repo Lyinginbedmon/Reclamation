@@ -1,4 +1,7 @@
 {
+  "chance": {
+    "base_chance": 0.3
+  },
   "condition": {
     "blocks": [
       "minecraft:torch",

@@ -9,6 +9,7 @@ public class ServerConfig extends Config
 	
 	private int rate = 3;
 	private int radius = 50;
+	private boolean scrapeableRust = false;
 	
 	public ServerConfig(String fileIn)
 	{
@@ -21,12 +22,14 @@ public class ServerConfig extends Config
 	{
 		rate = parseIntOr(valuesIn.getProperty("NaturalDecaySpeed"), 3);
 		radius = parseIntOr(valuesIn.getProperty("NaturalDecayRadius"), 50);
+		scrapeableRust = parseBoolOr(valuesIn.getProperty("ScrapeableRust"), false);
 	}
 	
 	protected void writeValues(FileWriter writer)
 	{
 		writeInt(writer, "NaturalDecaySpeed", rate);
 		writeInt(writer, "NaturalDecayRadius", radius);
+		writeBool(writer, "ScrapeableRust", scrapeableRust);
 	}
 	
 	/** How many blocks are tested for natural decay each tick */
@@ -34,6 +37,9 @@ public class ServerConfig extends Config
 	
 	/** How far away from a player a block updated by natural decay can be */
 	public int naturalDecayRadius() { return radius; }
+	
+	/** Whether rust can be scraped off of rusted blocks */
+	public boolean isRustScrapeable() { return scrapeableRust; }
 	
 	static
 	{

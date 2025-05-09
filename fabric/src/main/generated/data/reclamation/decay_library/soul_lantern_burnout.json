@@ -1,0 +1,24 @@
+{
+  "chance": {
+    "base_chance": 0.15
+  },
+  "condition": {
+    "block": "minecraft:soul_lantern",
+    "id": "reclamation:is_block"
+  },
+  "functions": [
+    {
+      "convert_to": {
+        "block": "reclamation:doused_soul_lantern"
+      },
+      "id": "reclamation:convert"
+    },
+    {
+      "id": "reclamation:copy_blockstate_value",
+      "properties": [
+        "hanging"
+      ]
+    }
+  ],
+  "name": "reclamation:soul_lantern_burnout"
+}

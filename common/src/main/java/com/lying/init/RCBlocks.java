@@ -8,19 +8,21 @@ import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
+import com.lying.block.DousedLanternBlock;
 import com.lying.block.DousedTorchBlock;
 import com.lying.block.IvyBlock;
+import com.lying.block.LeafPileBlock;
 import com.lying.block.ScrapeableBlock;
+import com.lying.block.SootBlock;
 import com.lying.reference.Reference;
+import com.lying.utility.WoodType;
 
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CarpetBlock;
 import net.minecraft.block.GlazedTerracottaBlock;
-import net.minecraft.block.LanternBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
@@ -36,30 +38,40 @@ public class RCBlocks
 {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Reference.ModInfo.MOD_ID, RegistryKeys.BLOCK);
 	
-	// FIXME Implement block loot tables
-	
-	public static final List<RegistrySupplier<Block>> SOLID_CUBES = Lists.newArrayList();
+	public static final List<RegistrySupplier<Block>> ALL_BLOCKS = Lists.newArrayList(), SOLID_CUBES = Lists.newArrayList();
+	public static LeafPileBlock[] TINTED_LEAF_PILES = new LeafPileBlock[0];
 	
 	public static final Map<DyeColor, Terracotta> DYE_TO_TERRACOTTA = new HashMap<>();
-	private static int tally = 0;
+	public static final Map<RegistrySupplier<Block>, Block> LEAF_PILE_TO_LEAVES = new HashMap<>();
 	
 	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank) { }
 	
 	public static final RegistrySupplier<Block> WAXED_IRON_BLOCK		= registerSolidCube("waxed_iron_block", settings -> new ScrapeableBlock(() -> Blocks.IRON_BLOCK, settings.mapColor(MapColor.IRON_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresTool().strength(5F, 6F).sounds(BlockSoundGroup.METAL)));
-	public static final RegistrySupplier<Block> WAXED_EXPOSED_IRON		= registerSolidCube("waxed_exposed_iron", settings -> new ScrapeableBlock(RCBlocks.EXPOSED_IRON, settings.mapColor(MapColor.LIGHT_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
-	public static final RegistrySupplier<Block> WAXED_WEATHERED_IRON	= registerSolidCube("waxed_weathered_iron", settings -> new ScrapeableBlock(RCBlocks.WEATHERED_IRON, settings.mapColor(MapColor.DULL_PINK).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
-	public static final RegistrySupplier<Block> WAXED_RUSTED_IRON		= registerSolidCube("waxed_rusted_iron", settings -> new ScrapeableBlock(RCBlocks.RUSTED_IRON, settings.mapColor(MapColor.ORANGE).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> WAXED_EXPOSED_IRON		= registerSolidCube("waxed_exposed_iron", settings -> new ScrapeableBlock(RCBlocks.EXPOSED_IRON, settings.mapColor(MapColor.LIGHT_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresTool().strength(4.0F, 6.0F).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> WAXED_WEATHERED_IRON	= registerSolidCube("waxed_weathered_iron", settings -> new ScrapeableBlock(RCBlocks.WEATHERED_IRON, settings.mapColor(MapColor.DULL_PINK).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> WAXED_RUSTED_IRON		= registerSolidCube("waxed_rusted_iron", settings -> new ScrapeableBlock(RCBlocks.RUSTED_IRON, settings.mapColor(MapColor.ORANGE).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresTool().strength(2.0F, 6.0F).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> WAXED_GOLD_BLOCK		= registerSolidCube("waxed_gold_block", settings -> new ScrapeableBlock(() -> Blocks.GOLD_BLOCK, settings.mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> WAXED_TARNISHED_GOLD	= registerSolidCube("waxed_tarnished_gold", settings -> new ScrapeableBlock(RCBlocks.TARNISHED_GOLD, settings.mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.METAL)));
 	
-	public static final RegistrySupplier<Block> EXPOSED_IRON			= registerSolidCube("exposed_iron", settings -> new ScrapeableBlock(() -> Blocks.IRON_BLOCK, WAXED_EXPOSED_IRON, settings.mapColor(MapColor.LIGHT_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
-	public static final RegistrySupplier<Block> WEATHERED_IRON			= registerSolidCube("weathered_iron", settings -> new ScrapeableBlock(RCBlocks.EXPOSED_IRON, WAXED_WEATHERED_IRON, settings.mapColor(MapColor.DULL_PINK).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
-	public static final RegistrySupplier<Block> RUSTED_IRON				= registerSolidCube("rusted_iron", settings -> new ScrapeableBlock(RCBlocks.WEATHERED_IRON, WAXED_RUSTED_IRON, settings.mapColor(MapColor.ORANGE).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> EXPOSED_IRON			= registerSolidCube("exposed_iron", settings -> new ScrapeableBlock(() -> Blocks.IRON_BLOCK, WAXED_EXPOSED_IRON, settings.requiresTool().strength(4.0F, 6.0F).mapColor(MapColor.LIGHT_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> WEATHERED_IRON			= registerSolidCube("weathered_iron", settings -> new ScrapeableBlock(RCBlocks.EXPOSED_IRON, WAXED_WEATHERED_IRON, settings.requiresTool().strength(3.0F, 6.0F).mapColor(MapColor.DULL_PINK).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> RUSTED_IRON				= registerSolidCube("rusted_iron", settings -> new ScrapeableBlock(RCBlocks.WEATHERED_IRON, WAXED_RUSTED_IRON, settings.requiresTool().strength(2.0F, 6.0F).mapColor(MapColor.ORANGE).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
+	public static final RegistrySupplier<Block> TARNISHED_GOLD			= registerSolidCube("tarnished_gold", settings -> new ScrapeableBlock(() -> Blocks.GOLD_BLOCK, settings.requiresTool().strength(3.0F, 6.0F).mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.METAL)));
 	
-	public static final RegistrySupplier<Block> TARNISHED_GOLD			= registerSolidCube("tarnished_gold", settings -> new ScrapeableBlock(() -> Blocks.GOLD_BLOCK, settings.mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.METAL)));
-	public static final RegistrySupplier<Block> LEAF_PILE				= register("leaf_pile", settings -> new CarpetBlock(settings.mapColor(MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.MOSS_CARPET).pistonBehavior(PistonBehavior.DESTROY)));
-	public static final RegistrySupplier<Block> IVY						= register("ivy", settings -> new IvyBlock(settings.mapColor(MapColor.DARK_GREEN).replaceable().noCollision().strength(0.2F).sounds(BlockSoundGroup.VINE).burnable().pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> SOOT						= register("soot", settings -> new SootBlock(settings.mapColor(MapColor.BLACK).requiresTool().strength(0.1F).sounds(BlockSoundGroup.SNOW).pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> IVY							= register("ivy", settings -> new IvyBlock(settings.mapColor(MapColor.DARK_GREEN).replaceable().noCollision().strength(0.2F).sounds(BlockSoundGroup.VINE).burnable().pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> CRACKED_STONE_BRICK_SLAB	= register("cracked_stone_brick_slab", settings -> new SlabBlock(settings.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)));
 	public static final RegistrySupplier<Block> CRACKED_STONE_BRICK_STAIRS	= register("cracked_stone_brick_stairs", settings -> new StairsBlock(Blocks.CRACKED_STONE_BRICKS.getDefaultState(), settings.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)));
-
+	public static final RegistrySupplier<Block> OAK_LEAF_PILE				= registerLeafPile(WoodType.OAK);
+	public static final RegistrySupplier<Block> ACACIA_LEAF_PILE			= registerLeafPile(WoodType.ACACIA);
+	public static final RegistrySupplier<Block> BIRCH_LEAF_PILE				= registerLeafPile(WoodType.BIRCH);
+	public static final RegistrySupplier<Block> CHERRY_LEAF_PILE			= registerLeafPile(WoodType.CHERRY);
+	public static final RegistrySupplier<Block> DARK_OAK_LEAF_PILE			= registerLeafPile(WoodType.DARK_OAK);
+	public static final RegistrySupplier<Block> JUNGLE_LEAF_PILE			= registerLeafPile(WoodType.JUNGLE);
+	public static final RegistrySupplier<Block> MANGROVE_LEAF_PILE			= registerLeafPile(WoodType.MANGROVE);
+	public static final RegistrySupplier<Block> PALE_LEAF_PILE				= registerLeafPile(WoodType.PALE);
+	public static final RegistrySupplier<Block> SPRUCE_LEAF_PILE			= registerLeafPile(WoodType.SPRUCE);
+	
 	public static final RegistrySupplier<Block> BLACK_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.BLACK);
 	public static final RegistrySupplier<Block> BLUE_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.BLUE);
 	public static final RegistrySupplier<Block> BROWN_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.BROWN);
@@ -79,7 +91,16 @@ public class RCBlocks
 	
 	public static final RegistrySupplier<Block> DOUSED_TORCH			= register("doused_torch", settings -> new DousedTorchBlock(Blocks.TORCH, Blocks.WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_SOUL_TORCH		= register("doused_soul_torch", settings -> new DousedTorchBlock(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
-	public static final RegistrySupplier<Block> DOUSED_LANTERN			= register("doused_lantern", settings -> new LanternBlock(settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> DOUSED_LANTERN			= register("doused_lantern", settings -> new DousedLanternBlock(() -> Blocks.LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> DOUSED_SOUL_LANTERN		= register("doused_soul_lantern", settings -> new DousedLanternBlock(() -> Blocks.SOUL_LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
+	
+	private static RegistrySupplier<Block> registerLeafPile(WoodType typeIn)
+	{
+		RegistrySupplier<Block> registry = register(typeIn.asString()+"_leaf_pile", settings -> 
+			new LeafPileBlock(typeIn.leaves, settings.mapColor(MapColor.GREEN).nonOpaque().strength(0.1F).sounds(BlockSoundGroup.MOSS_CARPET).burnable().pistonBehavior(PistonBehavior.DESTROY)));
+		LEAF_PILE_TO_LEAVES.put(registry, typeIn.leaves);
+		return registry;
+	}
 	
 	private static RegistrySupplier<Block> registerFadedTerracotta(DyeColor color)
 	{
@@ -101,17 +122,18 @@ public class RCBlocks
 	
 	private static RegistrySupplier<Block> register(String nameIn, Function<AbstractBlock.Settings, Block> supplierIn)
 	{
-		tally++;
 		Identifier id = Reference.ModInfo.prefix(nameIn);
 		RegistryKey<Block> key = RegistryKey.of(RegistryKeys.BLOCK, id);
 		AbstractBlock.Settings settings = AbstractBlock.Settings.create().registryKey(key);
-		return BLOCKS.register(id, () -> supplierIn.apply(settings));
+		RegistrySupplier<Block> registry = BLOCKS.register(id, () -> supplierIn.apply(settings));
+		ALL_BLOCKS.add(registry);
+		return registry;
 	}
 	
 	public static void init()
 	{
 		BLOCKS.register();
-		Reclamation.LOGGER.info("# Initialised {} blocks", tally);
+		Reclamation.LOGGER.info("# Initialised {} blocks", ALL_BLOCKS.size());
 		
 		DYE_TO_TERRACOTTA.put(DyeColor.BLACK, new Terracotta(() -> Blocks.BLACK_GLAZED_TERRACOTTA, RCBlocks.BLACK_FADED_TERRACOTTA, () -> Blocks.BLACK_TERRACOTTA));
 		DYE_TO_TERRACOTTA.put(DyeColor.BLUE, new Terracotta(() -> Blocks.BLUE_GLAZED_TERRACOTTA, RCBlocks.BLUE_FADED_TERRACOTTA, () -> Blocks.BLUE_TERRACOTTA));
@@ -129,5 +151,13 @@ public class RCBlocks
 		DYE_TO_TERRACOTTA.put(DyeColor.RED, new Terracotta(() -> Blocks.RED_GLAZED_TERRACOTTA, RCBlocks.RED_FADED_TERRACOTTA, () -> Blocks.RED_TERRACOTTA));
 		DYE_TO_TERRACOTTA.put(DyeColor.WHITE, new Terracotta(() -> Blocks.WHITE_GLAZED_TERRACOTTA, RCBlocks.WHITE_FADED_TERRACOTTA, () -> Blocks.WHITE_TERRACOTTA));
 		DYE_TO_TERRACOTTA.put(DyeColor.YELLOW, new Terracotta(() -> Blocks.YELLOW_GLAZED_TERRACOTTA, RCBlocks.YELLOW_FADED_TERRACOTTA, () -> Blocks.YELLOW_TERRACOTTA));
+		
+		TINTED_LEAF_PILES = List.of(
+				ACACIA_LEAF_PILE,
+				DARK_OAK_LEAF_PILE,
+				JUNGLE_LEAF_PILE,
+				MANGROVE_LEAF_PILE,
+				OAK_LEAF_PILE
+				).stream().map(Supplier::get).map(b -> (LeafPileBlock)b).toList().toArray(new LeafPileBlock[0]);
 	}
 }

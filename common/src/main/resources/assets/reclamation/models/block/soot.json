@@ -1,0 +1,21 @@
+{
+    "ambientocclusion": false,
+	"textures": {
+		"particle": "reclamation:block/soot",
+		"soot": "reclamation:block/soot"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 1],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#soot"},
+				"east": {"uv": [0, 0, 1, 16], "texture": "#soot"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#soot"},
+				"west": {"uv": [15, 0, 16, 16], "texture": "#soot"},
+				"up": {"uv": [0, 0, 16, 1], "texture": "#soot"},
+				"down": {"uv": [0, 15, 16, 16], "texture": "#soot"}
+			}
+		}
+	]
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "reclamation:block/doused_soul_lantern"
+    },
+    "hanging=true": {
+      "model": "reclamation:block/doused_soul_lantern_hanging"
+    }
+  }
+}

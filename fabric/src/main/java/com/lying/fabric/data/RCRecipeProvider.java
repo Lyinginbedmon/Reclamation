@@ -65,6 +65,8 @@ public class RCRecipeProvider extends FabricRecipeProvider
 						waxingRecipe(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WAXED_EXPOSED_IRON.get()).offerTo(exporter);
 						waxingRecipe(RCBlocks.WEATHERED_IRON.get(), RCBlocks.WAXED_WEATHERED_IRON.get()).offerTo(exporter);
 						waxingRecipe(RCBlocks.RUSTED_IRON.get(), RCBlocks.WAXED_RUSTED_IRON.get()).offerTo(exporter);
+						waxingRecipe(Blocks.GOLD_BLOCK, RCBlocks.WAXED_GOLD_BLOCK.get()).offerTo(exporter);
+						waxingRecipe(RCBlocks.TARNISHED_GOLD.get(), RCBlocks.WAXED_TARNISHED_GOLD.get()).offerTo(exporter);
 					}
 					
 					private ShapelessRecipeJsonBuilder waxingRecipe(ItemConvertible item, ItemConvertible output)

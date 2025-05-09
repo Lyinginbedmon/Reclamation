@@ -27,5 +27,8 @@ public class ReclamationNeoForgeClient
     	MinecraftClient client = MinecraftClient.getInstance();
     	BlockColors colors = client.getBlockColors();
     	colors.registerColorProvider(ReclamationClient.GRASS_COLOR, RCBlocks.IVY.get());
+    	colors.registerColorProvider(ReclamationClient.GRASS_COLOR, RCBlocks.TINTED_LEAF_PILES);
+    	colors.registerColorProvider(ReclamationClient.BIRCH_COLOR, RCBlocks.BIRCH_LEAF_PILE.get());
+    	colors.registerColorProvider(ReclamationClient.SPRUCE_COLOR, RCBlocks.SPRUCE_LEAF_PILE.get());
     }
 }
