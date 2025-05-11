@@ -198,6 +198,13 @@ public abstract class FunctionBlockState extends DecayFunction
 			super(idIn);
 		}
 		
+		public static SetValue of(PropertyMap map)
+		{
+			SetValue func = (SetValue)RCDecayFunctions.SET_STATE_VALUE.get();
+			func.properties = map;
+			return func;
+		}
+		
 		protected void applyTo(DecayContext context)
 		{
 			BlockState state = properties.applyTo(context.currentState());

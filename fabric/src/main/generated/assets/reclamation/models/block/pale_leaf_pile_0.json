@@ -1,0 +1,6 @@
+{
+  "parent": "reclamation:block/template_layered_0",
+  "textures": {
+    "all": "minecraft:block/pale_oak_leaves"
+  }
+}

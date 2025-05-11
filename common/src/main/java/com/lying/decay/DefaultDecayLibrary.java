@@ -21,8 +21,10 @@ import com.lying.init.RCDecayConditions;
 import com.lying.init.RCDecayFunctions;
 import com.lying.utility.BlockSaturationCalculator;
 import com.lying.utility.BlockSaturationCalculator.Mode;
+import com.lying.utility.PropertyMap;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.LanternBlock;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
@@ -44,97 +46,8 @@ public class DefaultDecayLibrary
 	
 	public static Collection<DecayEntry> getDefaults() { return DATA.values(); }
 	
-	static
+	private static void registerStoneBrick()
 	{
-		register(DecayEntry.Builder.create(
-			DecayChance.base(0.03F)
-				.addModifier(0.03F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().searchRange(1).blockCap(8).tags(List.of(RCBlockTags.FADED_TERRACOTTA, BlockTags.TERRACOTTA)).build()))
-			.name("glazed_terracotta_to_faded_terracotta")
-			.condition(
-				RCDecayConditions.EXPOSED.get(),
-				ConditionIsBlock.of(TagKey.of(RegistryKeys.BLOCK, Identifier.of("c","glazed_terracotta"))))
-			.function(FunctionMacro.of(DefaultDecayMacros.FADE_TERRACOTTA)).build());
-		
-		register(DecayEntry.Builder.create(
-			DecayChance.base(0F)
-				.addModifier(0.01F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(10).tag(RCBlockTags.FADED_TERRACOTTA).build()))
-			.name("faded_terracotta_to_blank_terracotta")
-			.condition(
-				RCDecayConditions.EXPOSED.get(),
-				ConditionIsBlock.of(RCBlockTags.FADED_TERRACOTTA))
-			.function(FunctionMacro.of(DefaultDecayMacros.BLANK_TERRACOTTA)).build());
-		
-		register(DecayEntry.Builder.create(
-				DecayChance.base(0.3F))
-				.name("torch_burnout")
-				.condition(ConditionIsBlock.of(Blocks.TORCH, Blocks.WALL_TORCH))
-				.function(
-					FunctionConvert.toBlock(RCBlocks.DOUSED_TORCH.get()),
-					FunctionBlockState.CopyValue.of(Properties.FACING)).build());
-		register(DecayEntry.Builder.create(
-				DecayChance.base(0.3F))
-				.name("soul_torch_burnout")
-				.condition(ConditionIsBlock.of(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH))
-				.function(
-					FunctionConvert.toBlock(RCBlocks.DOUSED_SOUL_TORCH.get()),
-					FunctionBlockState.CopyValue.of(Properties.FACING)).build());
-		register(DecayEntry.Builder.create(
-				DecayChance.base(0.15F))
-				.name("lantern_burnout")
-				.condition(ConditionIsBlock.of(Blocks.LANTERN))
-				.function(
-					FunctionConvert.toBlock(RCBlocks.DOUSED_LANTERN.get()),
-					FunctionBlockState.CopyValue.of(LanternBlock.HANGING)).build());
-		register(DecayEntry.Builder.create(
-				DecayChance.base(0.15F))
-				.name("soul_lantern_burnout")
-				.condition(ConditionIsBlock.of(Blocks.SOUL_LANTERN))
-				.function(
-					FunctionConvert.toBlock(RCBlocks.DOUSED_SOUL_LANTERN.get()),
-					FunctionBlockState.CopyValue.of(LanternBlock.HANGING)).build());
-		
-		register(DecayEntry.Builder.create(
-				DecayChance.base(0.2F))
-				.name("lantern_burnout")
-				.condition(ConditionIsBlock.of(Blocks.LANTERN))
-				.function(
-					FunctionConvert.toBlock(RCBlocks.DOUSED_LANTERN.get()),
-					FunctionBlockState.CopyValue.of(LanternBlock.HANGING)).build());
-		
-		register(DecayEntry.Builder.create(DecayChance.base(0.3F))
-				.name("rain_interaction_with_waterlogging")
-				.condition(
-					RCDecayConditions.SKY_ABOVE.get(),
-					ConditionBoolean.Or.of(
-						ConditionBoolean.And.of(
-							ConditionHasProperty.of(Map.of(Properties.WATERLOGGED, false)),
-							RCDecayConditions.IN_RAIN.get()).named("dry_block_in_rain"),
-						ConditionBoolean.And.of(
-							ConditionHasProperty.of(Map.of(Properties.WATERLOGGED, true)),
-							RCDecayConditions.IN_RAIN.get().invert()).named("wet_block_in_sun")))
-				.function(
-					FunctionBlockState.CycleValue.of(Properties.WATERLOGGED)).build());
-		register(DecayEntry.Builder.create()
-				.name("unsupported_blocks_fall")
-				.condition(
-					((ConditionNeighbouring)RCDecayConditions.SUPPORTED.get()).threshold(2).invert(),
-					ConditionBoolean.Or.of(
-						ConditionIsBlock.of(
-							Blocks.STONE_BRICKS,
-							Blocks.BRICKS,
-							Blocks.CRACKED_STONE_BRICKS,
-							Blocks.MOSSY_STONE_BRICKS).named("brick_blocks"),
-						ConditionIsBlock.of(
-							Blocks.STONE_BRICK_STAIRS,
-							Blocks.BRICK_STAIRS,
-							RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()).named("stairs_blocks"),
-						ConditionIsBlock.of(
-							Blocks.BRICK_SLAB,
-							Blocks.STONE_BRICK_SLAB,
-							Blocks.MOSSY_STONE_BRICK_SLAB,
-							RCBlocks.CRACKED_STONE_BRICK_SLAB.get()).named("slabs")))
-				.function(RCDecayFunctions.FALL.get()).build());
-		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.2F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.CRACKED_STONE_BRICKS).build()))
@@ -200,43 +113,10 @@ public class DefaultDecayLibrary
 					FunctionConvert.toBlockState(Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState().with(Properties.SLAB_TYPE, SlabType.BOTTOM)),
 					RCDecayFunctions.FALL.get(),
 					RCDecayFunctions.TO_AIR.get()).build());
-		
-		register(DecayEntry.Builder.create(
-				DecayChance.base(0.2F))
-				.name("grass_sprout")
-				.condition(
-					ConditionIsBlock.of(Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.MYCELIUM),
-					RCDecayConditions.AIR_ABOVE.get(),
-					RCDecayConditions.SKY_ABOVE.get())
-				.function(
-					FunctionSprout.Builder.create()
-						.soloProvider(DefaultDecayMacros.PLACE_FLOWERS)
-						.faceSet(EnumSet.of(Direction.UP))
-						.maxPlace(1).build()).build());
-		register(DecayEntry.Builder.create(
-				DecayChance.base(0F)
-					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(1).searchRange(1).blocks(Blocks.GRASS_BLOCK).build()))
-				.name("ivy_sprout")
-				.condition(
-					ConditionIsBlock.of(Blocks.STONE_BRICKS),
-					ConditionNeighbouring.Exposed.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST),
-					RCDecayConditions.ON_GROUND.get())
-				.function(
-					FunctionSprout.Builder.create()
-						.soloProvider(DefaultDecayMacros.PLACE_IVY)
-						.onCondition(
-							ConditionBoolean.And.of(
-								RCDecayConditions.IS_AIR.get(),
-								ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN))).build()).build());
-		register(DecayEntry.Builder.create()
-				.name("particulate_shuffle")
-				.condition(
-					ConditionIsBlock.of(Blocks.GRAVEL, Blocks.SAND, Blocks.RED_SAND),
-					RCDecayConditions.ON_GROUND.get(),
-					RCDecayConditions.AIR_ABOVE.get())
-				.function(
-					RCDecayFunctions.SHUFFLE.get()).build());
-		
+	}
+	
+	private static void registerIronRust()
+	{
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.0025F)
 					.addModifier(0.4F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(3).tag(RCBlockTags.RUST).build()))
@@ -263,16 +143,52 @@ public class DefaultDecayLibrary
 				.condition(
 					ConditionIsBlock.of(RCBlocks.WEATHERED_IRON.get()))
 				.function(FunctionConvert.toBlock(RCBlocks.RUSTED_IRON.get())).build());
+	}
+	
+	private static void registerTorchLanternCampfire()
+	{
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.3F))
+				.name("torch_burnout")
+				.condition(ConditionIsBlock.of(Blocks.TORCH, Blocks.WALL_TORCH))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_TORCH.get()),
+					FunctionBlockState.CopyValue.of(Properties.FACING)).build());
 		
 		register(DecayEntry.Builder.create(
-				DecayChance.base(0.000025F)
-					.addModifier(0.15F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).blockCap(6).searchRange(1).blocks(RCBlocks.TARNISHED_GOLD.get()).build()))
-				.name("gold_to_tarnished_gold")
-				.condition(
-					RCDecayConditions.EXPOSED.get(),
-					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
-				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
+				DecayChance.base(0.3F))
+				.name("soul_torch_burnout")
+				.condition(ConditionIsBlock.of(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_SOUL_TORCH.get()),
+					FunctionBlockState.CopyValue.of(Properties.FACING)).build());
 		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.15F))
+				.name("lantern_burnout")
+				.condition(ConditionIsBlock.of(Blocks.LANTERN))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_LANTERN.get()),
+					FunctionBlockState.CopyValue.of(LanternBlock.HANGING)).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.15F))
+				.name("soul_lantern_burnout")
+				.condition(ConditionIsBlock.of(Blocks.SOUL_LANTERN))
+				.function(
+					FunctionConvert.toBlock(RCBlocks.DOUSED_SOUL_LANTERN.get()),
+					FunctionBlockState.CopyValue.of(LanternBlock.HANGING)).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.2F))
+				.name("campfire_burnout")
+				.condition(ConditionIsBlock.of(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE))
+				.function(
+					FunctionBlockState.SetValue.of(PropertyMap.create().add(CampfireBlock.LIT, false))).build());
+	}
+	
+	private static void registerSandWeathering()
+	{
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.002F)
 					.addModifier(0.001F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blocks(Blocks.SANDSTONE, Blocks.SAND, Blocks.RED_SAND).build()))
@@ -281,6 +197,7 @@ public class DefaultDecayLibrary
 					ConditionIsBlock.of(Blocks.CHISELED_SANDSTONE, Blocks.CUT_SANDSTONE),
 					RCDecayConditions.EXPOSED.get())
 				.function(FunctionConvert.toBlock(Blocks.SANDSTONE)).build());
+		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.002F))
 				.name("sandstone_crumbling")
@@ -297,6 +214,7 @@ public class DefaultDecayLibrary
 					ConditionIsBlock.of(Blocks.CHISELED_RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE),
 					RCDecayConditions.EXPOSED.get())
 				.function(FunctionConvert.toBlock(Blocks.RED_SANDSTONE)).build());
+		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.002F))
 				.name("red_sandstone_crumbling")
@@ -304,5 +222,117 @@ public class DefaultDecayLibrary
 					ConditionIsBlock.of(Blocks.RED_SANDSTONE),
 					ConditionNeighbouring.Exposed.face(Direction.values()).threshold(3))
 				.function(FunctionConvert.toBlock(Blocks.RED_SAND)).build());
+	}
+	
+	private static void registerTerracotta()
+	{
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.03F)
+					.addModifier(0.03F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().searchRange(1).blockCap(8).tags(List.of(RCBlockTags.FADED_TERRACOTTA, BlockTags.TERRACOTTA)).build()))
+				.name("glazed_terracotta_to_faded_terracotta")
+				.condition(
+					RCDecayConditions.EXPOSED.get(),
+					ConditionIsBlock.of(TagKey.of(RegistryKeys.BLOCK, Identifier.of("c","glazed_terracotta"))))
+				.function(FunctionMacro.of(DefaultDecayMacros.FADE_TERRACOTTA)).build());
+			
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0F)
+					.addModifier(0.01F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(10).tag(RCBlockTags.FADED_TERRACOTTA).build()))
+				.name("faded_terracotta_to_blank_terracotta")
+				.condition(
+					RCDecayConditions.EXPOSED.get(),
+					ConditionIsBlock.of(RCBlockTags.FADED_TERRACOTTA))
+				.function(FunctionMacro.of(DefaultDecayMacros.BLANK_TERRACOTTA)).build());
+	}
+	
+	static
+	{
+		registerStoneBrick();
+		registerIronRust();
+		registerTorchLanternCampfire();
+		registerSandWeathering();
+		registerTerracotta();
+		
+		register(DecayEntry.Builder.create(DecayChance.base(0.3F))
+				.name("rain_interaction_with_waterlogging")
+				.condition(
+					RCDecayConditions.SKY_ABOVE.get(),
+					ConditionBoolean.Or.of(
+						ConditionBoolean.And.of(
+							ConditionHasProperty.of(Map.of(Properties.WATERLOGGED, false)),
+							RCDecayConditions.IN_RAIN.get()).named("dry_block_in_rain"),
+						ConditionBoolean.And.of(
+							ConditionHasProperty.of(Map.of(Properties.WATERLOGGED, true)),
+							RCDecayConditions.IN_RAIN.get().invert()).named("wet_block_in_sun")))
+				.function(
+					FunctionBlockState.CycleValue.of(Properties.WATERLOGGED)).build());
+		
+		register(DecayEntry.Builder.create()
+				.name("unsupported_blocks_fall")
+				.condition(
+					((ConditionNeighbouring)RCDecayConditions.SUPPORTED.get()).threshold(2).invert(),
+					ConditionBoolean.Or.of(
+						ConditionIsBlock.of(
+							Blocks.STONE_BRICKS,
+							Blocks.BRICKS,
+							Blocks.CRACKED_STONE_BRICKS,
+							Blocks.MOSSY_STONE_BRICKS).named("brick_blocks"),
+						ConditionIsBlock.of(
+							Blocks.STONE_BRICK_STAIRS,
+							Blocks.BRICK_STAIRS,
+							RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()).named("stairs_blocks"),
+						ConditionIsBlock.of(
+							Blocks.BRICK_SLAB,
+							Blocks.STONE_BRICK_SLAB,
+							Blocks.MOSSY_STONE_BRICK_SLAB,
+							RCBlocks.CRACKED_STONE_BRICK_SLAB.get()).named("slabs")))
+				.function(RCDecayFunctions.FALL.get()).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.2F))
+				.name("grass_sprout")
+				.condition(
+					ConditionIsBlock.of(Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.MYCELIUM),
+					RCDecayConditions.AIR_ABOVE.get(),
+					RCDecayConditions.SKY_ABOVE.get())
+				.function(
+					FunctionSprout.Builder.create()
+						.soloProvider(DefaultDecayMacros.PLACE_FLOWERS)
+						.faceSet(EnumSet.of(Direction.UP))
+						.maxPlace(1).build()).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0F)
+					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(1).searchRange(1).blocks(Blocks.GRASS_BLOCK).build()))
+				.name("ivy_sprout")
+				.condition(
+					ConditionIsBlock.of(Blocks.STONE_BRICKS),
+					ConditionNeighbouring.Exposed.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST),
+					RCDecayConditions.ON_GROUND.get())
+				.function(
+					FunctionSprout.Builder.create()
+						.soloProvider(DefaultDecayMacros.PLACE_IVY)
+						.onCondition(
+							ConditionBoolean.And.of(
+								RCDecayConditions.IS_AIR.get(),
+								ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN))).build()).build());
+		
+		register(DecayEntry.Builder.create()
+				.name("particulate_shuffle")
+				.condition(
+					ConditionIsBlock.of(Blocks.GRAVEL, Blocks.SAND, Blocks.RED_SAND),
+					RCDecayConditions.ON_GROUND.get(),
+					RCDecayConditions.AIR_ABOVE.get())
+				.function(
+					RCDecayFunctions.SHUFFLE.get()).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.000025F)
+					.addModifier(0.15F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).blockCap(6).searchRange(1).blocks(RCBlocks.TARNISHED_GOLD.get()).build()))
+				.name("gold_to_tarnished_gold")
+				.condition(
+					RCDecayConditions.EXPOSED.get(),
+					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
+				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
 	}
 }

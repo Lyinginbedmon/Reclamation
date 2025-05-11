@@ -1,0 +1,19 @@
+{
+  "chance": {
+    "base_chance": 0.2
+  },
+  "condition": {
+    "blocks": [
+      "minecraft:campfire",
+      "minecraft:soul_campfire"
+    ],
+    "id": "reclamation:is_block"
+  },
+  "function": {
+    "id": "reclamation:set_blockstate_value",
+    "properties": {
+      "lit": "false"
+    }
+  },
+  "name": "reclamation:campfire_burnout"
+}

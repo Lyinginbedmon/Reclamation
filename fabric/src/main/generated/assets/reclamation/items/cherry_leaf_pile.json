@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "reclamation:item/cherry_leaf_pile"
+    "model": "reclamation:block/cherry_leaf_pile_0"
   }
 }

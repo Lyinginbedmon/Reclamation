@@ -1,7 +1,6 @@
 package com.lying.client;
 
-import java.util.function.Supplier;
-
+import com.lying.block.LeafPileBlock;
 import com.lying.init.RCBlocks;
 
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
@@ -26,5 +25,5 @@ public class ReclamationClient
 	public static void clientInit()
 	{
 		RenderTypeRegistry.register(RenderLayer.getCutout(), RCBlocks.IVY.get());
-		RenderTypeRegistry.register(RenderLayer.getCutoutMipped(), RCBlocks.LEAF_PILE_TO_LEAVES.keySet().stream().map(Supplier::get).toList().toArray(new Block[0]));	}
+		RenderTypeRegistry.register(RenderLayer.getCutoutMipped(), LeafPileBlock.LEAF_PILE_TO_LEAVES.keySet().stream().toList().toArray(new Block[0]));	}
 }

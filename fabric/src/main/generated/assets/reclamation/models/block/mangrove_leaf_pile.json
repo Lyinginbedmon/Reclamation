@@ -1,6 +1,0 @@
-{
-  "parent": "reclamation:block/template_leaf_pile",
-  "textures": {
-    "leaf": "minecraft:block/mangrove_leaves"
-  }
-}

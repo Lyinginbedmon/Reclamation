@@ -1,0 +1,6 @@
+{
+  "parent": "reclamation:block/template_layered_1",
+  "textures": {
+    "all": "minecraft:block/mangrove_leaves"
+  }
+}

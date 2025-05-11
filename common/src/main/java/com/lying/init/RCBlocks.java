@@ -42,7 +42,6 @@ public class RCBlocks
 	public static LeafPileBlock[] TINTED_LEAF_PILES = new LeafPileBlock[0];
 	
 	public static final Map<DyeColor, Terracotta> DYE_TO_TERRACOTTA = new HashMap<>();
-	public static final Map<RegistrySupplier<Block>, Block> LEAF_PILE_TO_LEAVES = new HashMap<>();
 	
 	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank) { }
 	
@@ -97,8 +96,14 @@ public class RCBlocks
 	private static RegistrySupplier<Block> registerLeafPile(WoodType typeIn)
 	{
 		RegistrySupplier<Block> registry = register(typeIn.asString()+"_leaf_pile", settings -> 
-			new LeafPileBlock(typeIn.leaves, settings.mapColor(MapColor.GREEN).nonOpaque().strength(0.1F).sounds(BlockSoundGroup.MOSS_CARPET).burnable().pistonBehavior(PistonBehavior.DESTROY)));
-		LEAF_PILE_TO_LEAVES.put(registry, typeIn.leaves);
+			new LeafPileBlock(typeIn.leaves, settings
+					.mapColor(MapColor.GREEN)
+					.nonOpaque()
+					.noCollision()
+					.strength(0.1F)
+					.sounds(BlockSoundGroup.GRASS)
+					.burnable()
+					.pistonBehavior(PistonBehavior.DESTROY)));
 		return registry;
 	}
 	

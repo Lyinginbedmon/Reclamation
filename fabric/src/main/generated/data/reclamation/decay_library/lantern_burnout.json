@@ -1,6 +1,6 @@
 {
   "chance": {
-    "base_chance": 0.2
+    "base_chance": 0.15
   },
   "condition": {
     "block": "minecraft:lantern",

@@ -1,0 +1,6 @@
+{
+  "parent": "reclamation:block/template_layered_2",
+  "textures": {
+    "all": "minecraft:block/cherry_leaves"
+  }
+}

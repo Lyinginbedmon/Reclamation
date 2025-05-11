@@ -17,6 +17,7 @@ import net.minecraft.client.data.BlockStateModelGenerator;
 import net.minecraft.client.data.BlockStateVariant;
 import net.minecraft.client.data.BlockStateVariantMap;
 import net.minecraft.client.data.ItemModelGenerator;
+import net.minecraft.client.data.ItemModels;
 import net.minecraft.client.data.Model;
 import net.minecraft.client.data.Models;
 import net.minecraft.client.data.TextureKey;
@@ -35,11 +36,18 @@ import net.minecraft.util.math.Direction;
 
 public class RCModelProvider extends FabricModelProvider
 {
-	public static final TextureKey LEAF_KEY = TextureKey.of("leaf");
-	public static final Model TEMPLATE_LEAF_PILE = new Model(
-			Optional.of(Reference.ModInfo.prefix("block/template_leaf_pile")), 
-			Optional.empty(), 
-			LEAF_KEY);
+	public static final Model TEMPLATE_LAYER_0 = new Model(
+			Optional.of(Reference.ModInfo.prefix("block/template_layered_0")),
+			Optional.of("_0"),
+			TextureKey.ALL);
+	public static final Model TEMPLATE_LAYER_1 = new Model(
+			Optional.of(Reference.ModInfo.prefix("block/template_layered_1")),
+			Optional.of("_1"),
+			TextureKey.ALL);
+	public static final Model TEMPLATE_LAYER_2 = new Model(
+			Optional.of(Reference.ModInfo.prefix("block/template_layered_2")),
+			Optional.of("_2"),
+			TextureKey.ALL);
 	
 	public RCModelProvider(FabricDataOutput output)
 	{
@@ -49,14 +57,11 @@ public class RCModelProvider extends FabricModelProvider
 	public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator)
 	{
 		RCBlocks.SOLID_CUBES.forEach(entry -> blockStateModelGenerator.registerSimpleCubeAll(entry.get()));
-		registerTorchModel(RCBlocks.DOUSED_TORCH.get(), blockStateModelGenerator);
-		registerTorchModel(RCBlocks.DOUSED_SOUL_TORCH.get(), blockStateModelGenerator);
-		registerLanternModel(RCBlocks.DOUSED_LANTERN.get(), blockStateModelGenerator);
-		registerLanternModel(RCBlocks.DOUSED_SOUL_LANTERN.get(), blockStateModelGenerator);
+		DousedLights.register(blockStateModelGenerator);
+		LeafPile.register(blockStateModelGenerator);
 		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
 		registerSlab(RCBlocks.CRACKED_STONE_BRICK_SLAB.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		registerStairs(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
-		registerLeafPiles(blockStateModelGenerator);
 		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
 	}
 	
@@ -64,30 +69,6 @@ public class RCModelProvider extends FabricModelProvider
 	{
 		RCItems.BASIC_BLOCK_ITEMS.stream().map(e -> (BlockItem)e.get()).forEach(entry -> registerBlockModel(entry, itemModelGenerator));
 		itemModelGenerator.register(RCItems.WITHERING_DUST.get(), Models.GENERATED);
-	}
-	
-	private static TextureMap leafPile(Block parentLeaf)
-	{
-		Identifier leafTexture = Registries.BLOCK.getId(parentLeaf);
-		leafTexture = Identifier.of(leafTexture.getNamespace(), "block/"+leafTexture.getPath());
-		return new TextureMap().put(LEAF_KEY, leafTexture);
-	}
-	
-	private static TexturedModel.Factory leafPile(Block leaf, Block parent)
-	{
-		Identifier leafTexture = Registries.BLOCK.getId(parent);
-		leafTexture = Identifier.of(leafTexture.getNamespace(), "block/"+leafTexture.getPath());
-		return TexturedModel.makeFactory(b -> leafPile(parent), TEMPLATE_LEAF_PILE);
-	}
-	
-	private static void registerLeafPiles(BlockStateModelGenerator blockStateModelGenerator)
-	{
-		blockStateModelGenerator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(RCBlocks.CHERRY_LEAF_PILE.get(), TEMPLATE_LEAF_PILE.upload(RCBlocks.CHERRY_LEAF_PILE.get(), leafPile(Blocks.CHERRY_LEAVES), blockStateModelGenerator.modelCollector)));
-		blockStateModelGenerator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(RCBlocks.PALE_LEAF_PILE.get(), TEMPLATE_LEAF_PILE.upload(RCBlocks.PALE_LEAF_PILE.get(), leafPile(Blocks.PALE_OAK_LEAVES), blockStateModelGenerator.modelCollector)));
-		blockStateModelGenerator.registerTintedBlockAndItem(RCBlocks.SPRUCE_LEAF_PILE.get(), leafPile(RCBlocks.SPRUCE_LEAF_PILE.get(), Blocks.SPRUCE_LEAVES), ReclamationClient.SPRUCE_LEAF);
-		blockStateModelGenerator.registerTintedBlockAndItem(RCBlocks.BIRCH_LEAF_PILE.get(), leafPile(RCBlocks.BIRCH_LEAF_PILE.get(), Blocks.BIRCH_LEAVES), ReclamationClient.BIRCH_LEAF);
-		for(LeafPileBlock pile : RCBlocks.TINTED_LEAF_PILES)
-			blockStateModelGenerator.registerTintedBlockAndItem(pile, leafPile(pile, pile.leaves()), ReclamationClient.BASE_LEAF);
 	}
 	
 	private static void registerBlockModel(BlockItem item, ItemModelGenerator itemModelGenerator)
@@ -128,33 +109,84 @@ public class RCModelProvider extends FabricModelProvider
 		blockStateModelGenerator.registerMultifaceBlockModel(block);
 	}
 	
-	private static void registerTorchModel(Block torch, BlockStateModelGenerator blockStateModelGenerator)
-	{
-		Identifier reg = Registries.BLOCK.getId(torch);
-		Identifier wallReg = Identifier.of(reg.getNamespace(), "block/wall_"+reg.getPath());
-		TextureMap map = TextureMap.torch(torch);
-		Identifier floorModel = Models.TEMPLATE_TORCH.upload(torch, map, blockStateModelGenerator.modelCollector);
-		Identifier wallModel = Models.TEMPLATE_TORCH_WALL.upload(wallReg, map, blockStateModelGenerator.modelCollector);
-		blockStateModelGenerator.blockStateCollector.accept(
-				VariantsBlockStateSupplier.create(torch)
-					.coordinate(BlockStateVariantMap.create(DousedTorchBlock.FACING)
-						.register(Direction.UP, BlockStateVariant.create().put(VariantSettings.MODEL, floorModel))
-						.register(Direction.NORTH, BlockStateVariant.create().put(VariantSettings.MODEL, wallModel).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-						.register(Direction.EAST, BlockStateVariant.create().put(VariantSettings.MODEL, wallModel))
-						.register(Direction.SOUTH, BlockStateVariant.create().put(VariantSettings.MODEL, wallModel).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-						.register(Direction.WEST, BlockStateVariant.create().put(VariantSettings.MODEL, wallModel).put(VariantSettings.Y, VariantSettings.Rotation.R180))));
-	}
-	
-	private static void registerLanternModel(Block lantern, BlockStateModelGenerator blockStateModelGenerator)
-	{
-		Identifier identifier = TexturedModel.TEMPLATE_LANTERN.upload(lantern, blockStateModelGenerator.modelCollector);
-		Identifier identifier2 = TexturedModel.TEMPLATE_HANGING_LANTERN.upload(lantern, blockStateModelGenerator.modelCollector);
-		blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(lantern).coordinate(createBooleanModelMap(Properties.HANGING, identifier2, identifier)));
-	}
-	
 	private static BlockStateVariantMap createBooleanModelMap(BooleanProperty property, Identifier trueModel, Identifier falseModel) {
 		return BlockStateVariantMap.create(property)
 			.register(true, BlockStateVariant.create().put(VariantSettings.MODEL, trueModel))
 			.register(false, BlockStateVariant.create().put(VariantSettings.MODEL, falseModel));
+	}
+	
+	private static class DousedLights
+	{
+		private static void register(BlockStateModelGenerator blockStateModelGenerator)
+		{
+			for(Block torch : new Block[] {
+					RCBlocks.DOUSED_TORCH.get(), 
+					RCBlocks.DOUSED_SOUL_TORCH.get()})
+				registerTorchModel(torch, blockStateModelGenerator);
+			
+			for(Block lantern : new Block[] {
+					RCBlocks.DOUSED_LANTERN.get(), 
+					RCBlocks.DOUSED_SOUL_LANTERN.get()})
+				registerLanternModel(lantern, blockStateModelGenerator);
+		}
+		
+		private static void registerTorchModel(Block torch, BlockStateModelGenerator blockStateModelGenerator)
+		{
+			Identifier reg = Registries.BLOCK.getId(torch);
+			Identifier wallReg = Identifier.of(reg.getNamespace(), "block/wall_"+reg.getPath());
+			TextureMap tex = TextureMap.torch(torch);
+			Identifier floorModel = Models.TEMPLATE_TORCH.upload(torch, tex, blockStateModelGenerator.modelCollector);
+			Identifier wallModel = Models.TEMPLATE_TORCH_WALL.upload(wallReg, tex, blockStateModelGenerator.modelCollector);
+			blockStateModelGenerator.blockStateCollector.accept(
+					VariantsBlockStateSupplier.create(torch)
+						.coordinate(BlockStateVariantMap.create(DousedTorchBlock.FACING)
+							.register(Direction.UP, BlockStateVariant.create().put(VariantSettings.MODEL, floorModel))
+							.register(Direction.NORTH, BlockStateVariant.create().put(VariantSettings.MODEL, wallModel).put(VariantSettings.Y, VariantSettings.Rotation.R270))
+							.register(Direction.EAST, BlockStateVariant.create().put(VariantSettings.MODEL, wallModel))
+							.register(Direction.SOUTH, BlockStateVariant.create().put(VariantSettings.MODEL, wallModel).put(VariantSettings.Y, VariantSettings.Rotation.R90))
+							.register(Direction.WEST, BlockStateVariant.create().put(VariantSettings.MODEL, wallModel).put(VariantSettings.Y, VariantSettings.Rotation.R180))));
+		}
+		
+		private static void registerLanternModel(Block lantern, BlockStateModelGenerator blockStateModelGenerator)
+		{
+			Identifier identifier = TexturedModel.TEMPLATE_LANTERN.upload(lantern, blockStateModelGenerator.modelCollector);
+			Identifier identifier2 = TexturedModel.TEMPLATE_HANGING_LANTERN.upload(lantern, blockStateModelGenerator.modelCollector);
+			blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(lantern).coordinate(createBooleanModelMap(Properties.HANGING, identifier2, identifier)));
+		}
+	}
+	
+	private static class LeafPile
+	{
+		private static TextureMap leafPileTex(Block parentLeaf)
+		{
+			Identifier leafTexture = Registries.BLOCK.getId(parentLeaf);
+			leafTexture = Identifier.of(leafTexture.getNamespace(), "block/"+leafTexture.getPath());
+			return new TextureMap().put(TextureKey.ALL, leafTexture);
+		}
+		
+		private static void register(BlockStateModelGenerator blockStateModelGenerator)
+		{
+			makeBlockState(RCBlocks.CHERRY_LEAF_PILE.get(), Blocks.CHERRY_LEAVES, Optional.empty(), blockStateModelGenerator);
+			makeBlockState(RCBlocks.PALE_LEAF_PILE.get(), Blocks.PALE_OAK_LEAVES, Optional.empty(), blockStateModelGenerator);
+			makeBlockState(RCBlocks.SPRUCE_LEAF_PILE.get(), Blocks.SPRUCE_LEAVES, Optional.of(ReclamationClient.SPRUCE_LEAF), blockStateModelGenerator);
+			makeBlockState(RCBlocks.BIRCH_LEAF_PILE.get(), Blocks.BIRCH_LEAVES, Optional.of(ReclamationClient.BIRCH_LEAF), blockStateModelGenerator);
+			for(LeafPileBlock pile : RCBlocks.TINTED_LEAF_PILES)
+				makeBlockState(pile, pile.leaves(), Optional.of(ReclamationClient.BASE_LEAF), blockStateModelGenerator);
+		}
+		
+		private static void makeBlockState(Block pile, Block leaves, Optional<Integer> itemTint, BlockStateModelGenerator generator)
+		{
+			TextureMap tex = leafPileTex(leaves);
+			Identifier model0 = TEMPLATE_LAYER_0.upload(pile, tex, generator.modelCollector);
+			BlockStateVariantMap map = BlockStateVariantMap.create(LeafPileBlock.LAYERS)
+					.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, model0))
+					.register(2, BlockStateVariant.create().put(VariantSettings.MODEL, TEMPLATE_LAYER_1.upload(pile, tex, generator.modelCollector)))
+					.register(3, BlockStateVariant.create().put(VariantSettings.MODEL, TEMPLATE_LAYER_2.upload(pile, tex, generator.modelCollector)));
+			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(pile).coordinate(map));
+			
+			itemTint.ifPresentOrElse(
+					tint -> generator.itemModelOutput.accept(pile.asItem(), ItemModels.tinted(model0, new ConstantTintSource(tint))), 
+					() -> generator.registerParentedItemModel(pile, model0));
+		}
 	}
 }

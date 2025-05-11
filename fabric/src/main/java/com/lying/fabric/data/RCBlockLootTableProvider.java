@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 import com.lying.block.IvyBlock;
+import com.lying.block.LeafPileBlock;
 import com.lying.block.SootBlock;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCBlocks.Terracotta;
@@ -41,7 +42,6 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 			RCBlocks.WAXED_RUSTED_IRON,
 			RCBlocks.WAXED_TARNISHED_GOLD,
 			RCBlocks.TARNISHED_GOLD,
-			RCBlocks.SOOT,
 			RCBlocks.CRACKED_STONE_BRICK_SLAB,
 			RCBlocks.CRACKED_STONE_BRICK_STAIRS,
 			RCBlocks.DOUSED_LANTERN,
@@ -59,6 +59,7 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 	{
 		DROP_SELF.stream().map(Supplier::get).forEach(this::addDrop);
 		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).map(Supplier::get).forEach(this::addDrop);
+		LeafPileBlock.LEAF_PILES.forEach(l -> addLeafPileDrops(l));
 		
 		addRustDrops(RCBlocks.EXPOSED_IRON.get(), Items.IRON_INGOT, 4, 7);
 		addRustDrops(RCBlocks.WEATHERED_IRON.get(), Items.IRON_INGOT, 2, 5);
@@ -81,6 +82,11 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 						)
 					)
 			);
+	}
+	
+	private void addLeafPileDrops(Block block)
+	{
+		addDrop(block, LootTable.builder().pool(LootPool.builder().conditionally(this.createWithShearsCondition()).rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(block))));
 	}
 	
 	private void addIvyDrops(Block block)

@@ -29,7 +29,9 @@ public class RCItems
 	public static final DeferredRegister<ItemGroup> TABS = DeferredRegister.create(Reference.ModInfo.MOD_ID, RegistryKeys.ITEM_GROUP);
 	private static int itemTally = 0;
 	
+	protected static final List<RegistrySupplier<Item>> ALL_BLOCKS	= Lists.newArrayList();
 	public static List<RegistrySupplier<Item>> BASIC_BLOCK_ITEMS = Lists.newArrayList();
+	
 	
 	public static final RegistrySupplier<ItemGroup> RECLAMATION_TAB = TABS.register(Reference.ModInfo.MOD_ID, () -> CreativeTabRegistry.create(
 			Text.translatable("itemGroup."+Reference.ModInfo.MOD_ID+".item_group"), 
@@ -47,14 +49,14 @@ public class RCItems
 	public static final RegistrySupplier<Item> WAXED_GOLD_BLOCK				= registerBlock("waxed_gold_block", RCBlocks.WAXED_GOLD_BLOCK);
 	public static final RegistrySupplier<Item> TARNISHED_GOLD				= registerBlock("tarnished_gold", RCBlocks.TARNISHED_GOLD);
 	public static final RegistrySupplier<Item> WAXED_TARNISHED_GOLD			= registerBlock("waxed_tarnished_gold", RCBlocks.WAXED_TARNISHED_GOLD);
-	public static final RegistrySupplier<Item> OAK_LEAF_PILE				= registerBlockNoItem("oak_leaf_pile", RCBlocks.OAK_LEAF_PILE);
 	public static final RegistrySupplier<Item> ACACIA_LEAF_PILE				= registerBlockNoItem("acacia_leaf_pile", RCBlocks.ACACIA_LEAF_PILE);
 	public static final RegistrySupplier<Item> BIRCH_LEAF_PILE				= registerBlockNoItem("birch_leaf_pile", RCBlocks.BIRCH_LEAF_PILE);
-	public static final RegistrySupplier<Item> CHERRY_LEAF_PILE				= registerBlock("cherry_leaf_pile", RCBlocks.CHERRY_LEAF_PILE);
+	public static final RegistrySupplier<Item> CHERRY_LEAF_PILE				= registerBlockNoItem("cherry_leaf_pile", RCBlocks.CHERRY_LEAF_PILE);
 	public static final RegistrySupplier<Item> DARK_OAK_LEAF_PILE			= registerBlockNoItem("dark_oak_leaf_pile", RCBlocks.DARK_OAK_LEAF_PILE);
 	public static final RegistrySupplier<Item> JUNGLE_LEAF_PILE				= registerBlockNoItem("jungle_leaf_pile", RCBlocks.JUNGLE_LEAF_PILE);
 	public static final RegistrySupplier<Item> MANGROVE_LEAF_PILE			= registerBlockNoItem("mangrove_leaf_pile", RCBlocks.MANGROVE_LEAF_PILE);
-	public static final RegistrySupplier<Item> PALE_LEAF_PILE				= registerBlock("pale_leaf_pile", RCBlocks.PALE_LEAF_PILE);
+	public static final RegistrySupplier<Item> OAK_LEAF_PILE				= registerBlockNoItem("oak_leaf_pile", RCBlocks.OAK_LEAF_PILE);
+	public static final RegistrySupplier<Item> PALE_LEAF_PILE				= registerBlockNoItem("pale_leaf_pile", RCBlocks.PALE_LEAF_PILE);
 	public static final RegistrySupplier<Item> SPRUCE_LEAF_PILE				= registerBlockNoItem("spruce_leaf_pile", RCBlocks.SPRUCE_LEAF_PILE);
 	public static final RegistrySupplier<Item> SOOT							= registerBlockNoItem("soot", RCBlocks.SOOT);
 	public static final RegistrySupplier<Item> IVY							= registerBlockNoItem("ivy", RCBlocks.IVY);
@@ -98,7 +100,9 @@ public class RCItems
 		Identifier id = Reference.ModInfo.prefix(nameIn);
 		RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
 		Item.Settings settings = new Item.Settings().useBlockPrefixedTranslationKey().registryKey(key).arch$tab(RECLAMATION_TAB);
-		return register(id, () -> new BlockItem(blockIn.get(), settings));
+		RegistrySupplier<Item> registry = register(id, () -> new BlockItem(blockIn.get(), settings));
+		ALL_BLOCKS.add(registry);
+		return registry;
 	}
 	
 	private static RegistrySupplier<Item> register(String nameIn, Function<Settings,Item> supplierIn)
@@ -119,6 +123,6 @@ public class RCItems
 	{
 		TABS.register();
 		ITEMS.register();
-		Reclamation.LOGGER.info("# Initialised {} items ({} block items)", itemTally, BASIC_BLOCK_ITEMS.size());
+		Reclamation.LOGGER.info("# Initialised {} items ({} block items)", itemTally, ALL_BLOCKS.size());
 	}
 }

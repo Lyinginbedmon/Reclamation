@@ -41,6 +41,14 @@ public class PropertyMap extends HashMap<String, String>
 		return DataResult.success(Pair.of(map, input));
 	}
 	
+	public static PropertyMap create() { return new PropertyMap(); }
+	
+	public <T extends Comparable<T>> PropertyMap add(Property<T> property, T value)
+	{
+		put(property.getName(), property.name(value));
+		return this;
+	}
+	
 	public JsonElement toJson()
 	{
 		return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
