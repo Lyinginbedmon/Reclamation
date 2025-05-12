@@ -51,7 +51,7 @@ public class RCDecayConditions
 	/** Succeeds if the block is replaceable, such as vines or grass */
 	public static final Supplier<DecayCondition> IS_REPLACEABLE	= register("is_replaceable", ConditionIsBlock.Replaceable::new);
 	
-	/*
+	/**
 	 * TODO Add more conditions
 	 * Snow
 	 * Storming
@@ -59,13 +59,19 @@ public class RCDecayConditions
 	 * Climate humidity
 	 * Specific biome
 	 * Entity scan
-	 * Altitude
-	 * World position
+	 * Altitude (distance to first block below that has a solid vertical face)
+	 * World position {@link PositionPredicate}
 	 */
 	
+	/** Registers the given condition under the Reclamation namespace and creates a supplier */
 	private static Supplier<DecayCondition> register(String nameIn, Function<Identifier, DecayCondition> funcIn)
 	{
-		Identifier id = Reference.ModInfo.prefix(nameIn);
+		return register(Reference.ModInfo.prefix(nameIn), funcIn);
+	}
+	
+	/** Registers the given condition and creates a supplier */
+	public static Supplier<DecayCondition> register(Identifier id, Function<Identifier, DecayCondition> funcIn)
+	{
 		Supplier<DecayCondition> supplier = () -> funcIn.apply(id);
 		FUNCTIONS.put(id, supplier);
 		return supplier;
