@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.lying.Reclamation;
 import com.lying.block.DousedLanternBlock;
 import com.lying.block.DousedTorchBlock;
+import com.lying.block.FadedTerracottaBlock;
 import com.lying.block.IvyBlock;
 import com.lying.block.LeafPileBlock;
 import com.lying.block.ScrapeableBlock;
@@ -22,7 +23,6 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.GlazedTerracottaBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
@@ -109,8 +109,8 @@ public class RCBlocks
 	
 	private static RegistrySupplier<Block> registerFadedTerracotta(DyeColor color)
 	{
-		return registerSolidCube(color.asString()+"_faded_terracotta", settings -> 
-			new GlazedTerracottaBlock(settings
+		return register(color.asString()+"_faded_terracotta", settings -> 
+			new FadedTerracottaBlock(color, settings
 					.mapColor(color)
 					.instrument(NoteBlockInstrument.BASEDRUM)
 					.requiresTool()

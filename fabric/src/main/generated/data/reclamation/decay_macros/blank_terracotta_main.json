@@ -2,22 +2,22 @@
   "function": {
     "id": "reclamation:macro",
     "macros": [
-      "reclamation:blank_orange_terracotta",
-      "reclamation:blank_blue_terracotta",
-      "reclamation:blank_gray_terracotta",
       "reclamation:blank_light_gray_terracotta",
-      "reclamation:blank_red_terracotta",
       "reclamation:blank_purple_terracotta",
       "reclamation:blank_cyan_terracotta",
-      "reclamation:blank_green_terracotta",
+      "reclamation:blank_gray_terracotta",
       "reclamation:blank_lime_terracotta",
-      "reclamation:blank_black_terracotta",
+      "reclamation:blank_green_terracotta",
+      "reclamation:blank_orange_terracotta",
+      "reclamation:blank_red_terracotta",
       "reclamation:blank_yellow_terracotta",
       "reclamation:blank_pink_terracotta",
-      "reclamation:blank_white_terracotta",
-      "reclamation:blank_brown_terracotta",
       "reclamation:blank_light_blue_terracotta",
-      "reclamation:blank_magenta_terracotta"
+      "reclamation:blank_blue_terracotta",
+      "reclamation:blank_brown_terracotta",
+      "reclamation:blank_magenta_terracotta",
+      "reclamation:blank_black_terracotta",
+      "reclamation:blank_white_terracotta"
     ]
   },
   "name": "reclamation:blank_terracotta_main"

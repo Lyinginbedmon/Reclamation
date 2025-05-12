@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "leaves_to_leaf_piles",
+  "ingredients": [
+    "minecraft:spruce_leaves"
+  ],
+  "result": {
+    "count": 8,
+    "id": "reclamation:spruce_leaf_pile"
+  }
+}

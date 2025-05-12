@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "leaves_to_leaf_piles",
+  "ingredients": [
+    "minecraft:dark_oak_leaves"
+  ],
+  "result": {
+    "count": 8,
+    "id": "reclamation:dark_oak_leaf_pile"
+  }
+}

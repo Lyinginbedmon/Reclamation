@@ -59,6 +59,8 @@ public class RCDecayConditions
 	 * Climate humidity
 	 * Specific biome
 	 * Entity scan
+	 * Altitude
+	 * World position
 	 */
 	
 	private static Supplier<DecayCondition> register(String nameIn, Function<Identifier, DecayCondition> funcIn)

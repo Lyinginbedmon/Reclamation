@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "reclamation:block/purple_faded_terracotta"
-  }
-}

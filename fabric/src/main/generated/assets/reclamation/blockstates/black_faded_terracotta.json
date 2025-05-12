@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "reclamation:block/black_faded_terracotta",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "reclamation:block/black_faded_terracotta",
+      "y": 180
+    },
+    "facing=south": {
       "model": "reclamation:block/black_faded_terracotta"
+    },
+    "facing=west": {
+      "model": "reclamation:block/black_faded_terracotta",
+      "y": 90
     }
   }
 }

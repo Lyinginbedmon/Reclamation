@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "leaves_to_leaf_piles",
+  "ingredients": [
+    "minecraft:acacia_leaves"
+  ],
+  "result": {
+    "count": 8,
+    "id": "reclamation:acacia_leaf_pile"
+  }
+}

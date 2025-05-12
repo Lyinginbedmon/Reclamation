@@ -6,6 +6,7 @@ import com.lying.block.DousedTorchBlock;
 import com.lying.block.LeafPileBlock;
 import com.lying.client.ReclamationClient;
 import com.lying.init.RCBlocks;
+import com.lying.init.RCBlocks.Terracotta;
 import com.lying.init.RCItems;
 import com.lying.reference.Reference;
 
@@ -57,6 +58,7 @@ public class RCModelProvider extends FabricModelProvider
 	public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator)
 	{
 		RCBlocks.SOLID_CUBES.forEach(entry -> blockStateModelGenerator.registerSimpleCubeAll(entry.get()));
+		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).forEach(b -> blockStateModelGenerator.registerSouthDefaultHorizontalFacing(TexturedModel.TEMPLATE_GLAZED_TERRACOTTA, b.get()));
 		DousedLights.register(blockStateModelGenerator);
 		LeafPile.register(blockStateModelGenerator);
 		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);

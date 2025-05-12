@@ -5,16 +5,84 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "condition": "minecraft:match_tool",
-          "predicate": {
-            "items": "minecraft:shears"
-          }
+          "condition": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {}
         }
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "reclamation:birch_leaf_pile"
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "block": "reclamation:birch_leaf_pile",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "layers": "1"
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "add": false,
+                  "count": 1.0,
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "reclamation:birch_leaf_pile"
+            },
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "block": "reclamation:birch_leaf_pile",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "layers": "2"
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "add": false,
+                  "count": 2.0,
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "reclamation:birch_leaf_pile"
+            },
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "block": "reclamation:birch_leaf_pile",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "layers": "3"
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "add": false,
+                  "count": 3.0,
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "reclamation:birch_leaf_pile"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "minecraft:match_tool",
+              "predicate": {
+                "items": "minecraft:shears"
+              }
+            }
+          ]
         }
       ],
       "rolls": 1.0

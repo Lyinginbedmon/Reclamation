@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "leaf_pile_to_leaves",
+  "ingredients": [
+    "reclamation:birch_leaf_pile",
+    "reclamation:birch_leaf_pile",
+    "reclamation:birch_leaf_pile",
+    "reclamation:birch_leaf_pile",
+    "reclamation:birch_leaf_pile",
+    "reclamation:birch_leaf_pile",
+    "reclamation:birch_leaf_pile",
+    "reclamation:birch_leaf_pile"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:birch_leaves"
+  }
+}

@@ -26,6 +26,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class ScrapeableBlock extends Block
@@ -69,7 +70,7 @@ public class ScrapeableBlock extends Block
 				if(player instanceof ServerPlayerEntity)
 					Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)player, pos, stack);
 				
-				replaceBlock(pos, world, state, previous.get().getDefaultState(), player, 3005);
+				replaceBlock(pos, world, state, previous.get().getDefaultState(), player, WorldEvents.BLOCK_SCRAPED);
 				if(player != null)
 					stack.damage(1, player, LivingEntity.getSlotForHand(hand));
 			});
@@ -84,7 +85,7 @@ public class ScrapeableBlock extends Block
 				if(player instanceof ServerPlayerEntity)
 					Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)player, pos, stack);
 				
-				replaceBlock(pos, world, state, waxed, player, 3003);
+				replaceBlock(pos, world, state, waxed, player, WorldEvents.BLOCK_WAXED);
 				stack.decrementUnlessCreative(1, player);
 			});
 			if(waxedState.isPresent())

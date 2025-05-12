@@ -12,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CarpetBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -52,13 +53,17 @@ public class LeafPileBlock extends CarpetBlock
 	
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
 	{
-		builder.add(LAYERS, STEPPED_ON);
+		builder.add(LAYERS, STEPPED_ON, INERT);
 	}
 	
 	public final Block leaves() { return parentLeaf; }
 	
 	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos)
 	{
+		BlockState stateAt = world.getBlockState(pos);
+		if(stateAt.isOf(this) && getPlacementShape(pos, world) != null)
+			return true;
+		
 		BlockPos below = pos.down();
 		BlockState surface = world.getBlockState(below);
 		return Block.isFaceFullSquare(surface.getSidesShape(world, below), Direction.UP);
@@ -73,6 +78,30 @@ public class LeafPileBlock extends CarpetBlock
 	protected VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) { return LAYERS_TO_SHAPE[layerIndex(state)]; }
 	
 	protected VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) { return LAYERS_TO_SHAPE[layerIndex(state)]; }
+	
+	public BlockState getPlacementState(ItemPlacementContext context)
+	{
+		return getPlacementShape(context.getBlockPos(), context.getWorld());
+	}
+	
+	private BlockState getPlacementShape(BlockPos position, WorldView world)
+	{
+		BlockState state = world.getBlockState(position);
+		if(state.isOf(this))
+		{
+			if(state.get(LAYERS) < 3)
+				return state.with(LAYERS, state.get(LAYERS) + 1);
+			else
+				return null;
+		}
+		else
+			return getDefaultState();
+	}
+	
+	protected boolean canReplace(BlockState state, ItemPlacementContext context)
+	{
+		return state.isReplaceable() && context.canReplaceExisting() || state.isOf(this) && state.get(LAYERS) < 3;
+	}
 	
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity)
 	{

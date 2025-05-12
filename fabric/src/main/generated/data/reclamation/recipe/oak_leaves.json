@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "leaf_pile_to_leaves",
+  "ingredients": [
+    "reclamation:oak_leaf_pile",
+    "reclamation:oak_leaf_pile",
+    "reclamation:oak_leaf_pile",
+    "reclamation:oak_leaf_pile",
+    "reclamation:oak_leaf_pile",
+    "reclamation:oak_leaf_pile",
+    "reclamation:oak_leaf_pile",
+    "reclamation:oak_leaf_pile"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:oak_leaves"
+  }
+}

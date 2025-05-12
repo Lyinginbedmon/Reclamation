@@ -16,10 +16,14 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
@@ -86,13 +90,31 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 	
 	private void addLeafPileDrops(Block block)
 	{
-		addDrop(block, LootTable.builder().pool(LootPool.builder().conditionally(this.createWithShearsCondition()).rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(block))));
+		addDrop(
+				block, LootTable.builder()
+					// Drop 1 pile per layer when harvested with shears
+					.pool(
+							LootPool.builder()
+							.conditionally(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
+							.with(
+									AlternativeEntry.builder(
+										LeafPileBlock.LAYERS.getValues(),
+										integer -> ItemEntry.builder(block)
+												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(integer.floatValue())))
+												.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(LeafPileBlock.LAYERS, integer)))
+												)
+										.conditionally(createWithShearsCondition())
+									)
+							)
+					
+					);
 	}
 	
 	private void addIvyDrops(Block block)
 	{
 		addDrop(
 				block, LootTable.builder()
+					// Drop 1 ivy per covered face when harvested with shears
 					.pool(boolConditionalPool(block, IvyBlock.EAST, true).conditionally(createWithShearsCondition()))
 					.pool(boolConditionalPool(block, IvyBlock.NORTH, true).conditionally(createWithShearsCondition()))
 					.pool(boolConditionalPool(block, IvyBlock.SOUTH, true).conditionally(createWithShearsCondition()))
@@ -105,6 +127,12 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 	{
 		addDrop(
 				block, LootTable.builder()
+					// Drop 0-1 charcoal when harvested without silk touch
+					.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1F)).with(
+							ofItem(Items.CHARCOAL)
+							.conditionally(createWithoutSilkTouchCondition())
+							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0, 1)))))
+					// Drop 1 soot per covered face when harvested with silk touch
 					.pool(boolConditionalPool(block, SootBlock.EAST, true).conditionally(createSilkTouchCondition()))
 					.pool(boolConditionalPool(block, SootBlock.NORTH, true).conditionally(createSilkTouchCondition()))
 					.pool(boolConditionalPool(block, SootBlock.SOUTH, true).conditionally(createSilkTouchCondition()))
@@ -121,9 +149,14 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 				LootPool.builder()
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
-						ItemEntry.builder(drop)
+						ofItem(drop)
 							.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(north, b)))
 					)
 			);
+	}
+	
+	private static ItemEntry.Builder<?> ofItem(ItemConvertible item)
+	{
+		return ItemEntry.builder(item);
 	}
 }

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "leaves_to_leaf_piles",
+  "ingredients": [
+    "minecraft:jungle_leaves"
+  ],
+  "result": {
+    "count": 8,
+    "id": "reclamation:jungle_leaf_pile"
+  }
+}
