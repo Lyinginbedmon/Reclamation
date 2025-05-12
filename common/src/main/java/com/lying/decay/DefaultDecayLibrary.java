@@ -11,6 +11,7 @@ import com.lying.decay.conditions.ConditionBoolean;
 import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
+import com.lying.decay.conditions.ConditionPosition;
 import com.lying.decay.functions.FunctionBlockState;
 import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionMacro;
@@ -270,22 +271,9 @@ public class DefaultDecayLibrary
 		register(DecayEntry.Builder.create()
 				.name("unsupported_blocks_fall")
 				.condition(
-					((ConditionNeighbouring)RCDecayConditions.SUPPORTED.get()).threshold(2).invert(),
-					ConditionBoolean.Or.of(
-						ConditionIsBlock.of(
-							Blocks.STONE_BRICKS,
-							Blocks.BRICKS,
-							Blocks.CRACKED_STONE_BRICKS,
-							Blocks.MOSSY_STONE_BRICKS).named("brick_blocks"),
-						ConditionIsBlock.of(
-							Blocks.STONE_BRICK_STAIRS,
-							Blocks.BRICK_STAIRS,
-							RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()).named("stairs_blocks"),
-						ConditionIsBlock.of(
-							Blocks.BRICK_SLAB,
-							Blocks.STONE_BRICK_SLAB,
-							Blocks.MOSSY_STONE_BRICK_SLAB,
-							RCBlocks.CRACKED_STONE_BRICK_SLAB.get()).named("slabs")))
+					RCDecayConditions.IS_SOLID.get(),
+					ConditionNeighbouring.Unsupported.create().threshold(2),
+					ConditionPosition.Altitude.of(5))
 				.function(RCDecayFunctions.FALL.get()).build());
 		
 		register(DecayEntry.Builder.create(

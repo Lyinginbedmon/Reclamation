@@ -3,9 +3,10 @@ package com.lying.decay.conditions;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lying.init.RCDecayConditions;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
@@ -14,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 
 public abstract class ConditionBoolean extends DecayCondition
 {
+	protected static final Codec<List<DecayCondition>> CODEC	= DecayCondition.CODEC.listOf();
+	
 	protected List<DecayCondition> subConditions = Lists.newArrayList();
 	
 	public ConditionBoolean(Identifier idIn)
@@ -31,11 +34,7 @@ public abstract class ConditionBoolean extends DecayCondition
 	protected JsonObject write(JsonObject obj)
 	{
 		if(!subConditions.isEmpty())
-		{
-			JsonArray list = new JsonArray();
-			subConditions.forEach(c -> list.add(c.toJson()));
-			obj.add("set", list);
-		}
+			obj.add("set", CODEC.encodeStart(JsonOps.INSTANCE, subConditions).getOrThrow());
 		return obj;
 	}
 	
@@ -43,12 +42,7 @@ public abstract class ConditionBoolean extends DecayCondition
 	{
 		subConditions.clear();
 		if(obj.has("set"))
-			obj.getAsJsonArray("set").forEach(element -> 
-			{
-				DecayCondition condition = DecayCondition.fromJson(element);
-				if(condition != null)
-					subConditions.add(condition);
-			});
+			subConditions = CODEC.parse(JsonOps.INSTANCE, obj.get("set")).getOrThrow();
 	}
 	
 	public static class Or extends ConditionBoolean

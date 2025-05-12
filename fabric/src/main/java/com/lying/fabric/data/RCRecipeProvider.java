@@ -20,6 +20,7 @@ import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.tag.ItemTags;
 
 public class RCRecipeProvider extends FabricRecipeProvider
 {
@@ -38,6 +39,14 @@ public class RCRecipeProvider extends FabricRecipeProvider
 				{
 					public void generate()
 					{
+						ShapelessRecipeJsonBuilder.create(Registries.ITEM, RecipeCategory.MISC, new ItemStack(RCItems.WITHERING_DUST.get(), 6))
+							.input(Items.WITHER_ROSE)
+							.input(Items.NETHER_STAR)
+							.input(ItemTags.SAND)
+							.input(Items.WITHER_ROSE)
+							.criterion(hasItem(Items.WITHER_ROSE), conditionsFromItem(Items.WITHER_ROSE))
+							.criterion(hasItem(Items.NETHER_STAR), conditionsFromItem(Items.NETHER_STAR)).offerTo(exporter);
+						
 						ShapedRecipeJsonBuilder.create(Registries.ITEM, RecipeCategory.BUILDING_BLOCKS, RCItems.CRACKED_STONE_BRICK_SLAB.get(), 6)
 							.pattern("bbb").input('b', Blocks.CRACKED_STONE_BRICKS)
 							.criterion(hasItem(Blocks.CRACKED_STONE_BRICKS), conditionsFromItem(Blocks.CRACKED_STONE_BRICKS)).offerTo(exporter);

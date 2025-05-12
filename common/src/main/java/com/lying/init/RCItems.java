@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
+import com.lying.item.DecayDustItem;
 import com.lying.reference.Reference;
 
 import dev.architectury.registry.CreativeTabRegistry;
@@ -32,12 +33,11 @@ public class RCItems
 	protected static final List<RegistrySupplier<Item>> ALL_BLOCKS	= Lists.newArrayList();
 	public static List<RegistrySupplier<Item>> BASIC_BLOCK_ITEMS = Lists.newArrayList();
 	
-	
 	public static final RegistrySupplier<ItemGroup> RECLAMATION_TAB = TABS.register(Reference.ModInfo.MOD_ID, () -> CreativeTabRegistry.create(
 			Text.translatable("itemGroup."+Reference.ModInfo.MOD_ID+".item_group"), 
 			() -> new ItemStack(RCItems.WEATHERED_IRON.get())));
 	
-	public static final RegistrySupplier<Item> WITHERING_DUST	= register("withering_dust", settings -> new Item(settings));
+	public static final RegistrySupplier<Item> WITHERING_DUST				= register("withering_dust", settings -> new DecayDustItem(settings));
 	
 	public static final RegistrySupplier<Item> RUSTED_IRON					= registerBlock("rusted_iron", RCBlocks.RUSTED_IRON);
 	public static final RegistrySupplier<Item> WEATHERED_IRON				= registerBlock("weathered_iron", RCBlocks.WEATHERED_IRON);

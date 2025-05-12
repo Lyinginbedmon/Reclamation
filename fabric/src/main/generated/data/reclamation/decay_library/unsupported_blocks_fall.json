@@ -1,43 +1,13 @@
 {
   "conditions": [
+    "reclamation:is_solid_block",
     {
       "at_least": 2,
-      "id": "reclamation:supported",
-      "inverted": true
+      "id": "reclamation:unsupported"
     },
     {
-      "id": "reclamation:or",
-      "set": [
-        {
-          "blocks": [
-            "minecraft:stone_bricks",
-            "minecraft:bricks",
-            "minecraft:cracked_stone_bricks",
-            "minecraft:mossy_stone_bricks"
-          ],
-          "id": "reclamation:is_block",
-          "name": "brick_blocks"
-        },
-        {
-          "blocks": [
-            "minecraft:stone_brick_stairs",
-            "minecraft:brick_stairs",
-            "reclamation:cracked_stone_brick_stairs"
-          ],
-          "id": "reclamation:is_block",
-          "name": "stairs_blocks"
-        },
-        {
-          "blocks": [
-            "minecraft:brick_slab",
-            "minecraft:stone_brick_slab",
-            "minecraft:mossy_stone_brick_slab",
-            "reclamation:cracked_stone_brick_slab"
-          ],
-          "id": "reclamation:is_block",
-          "name": "slabs"
-        }
-      ]
+      "Threshold": 5,
+      "id": "reclamation:altitude"
     }
   ],
   "function": "reclamation:fall",

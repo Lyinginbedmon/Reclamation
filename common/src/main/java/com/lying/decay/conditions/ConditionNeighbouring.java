@@ -182,6 +182,8 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			super(idIn);
 		}
 		
+		public static Supported create() { return (Supported)RCDecayConditions.SUPPORTED.get(); }
+		
 		public static Supported onFaces(Direction... facesIn)
 		{
 			Supported condition = (Supported)RCDecayConditions.SUPPORTED.get();
@@ -217,6 +219,8 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			super(idIn);
 		}
 		
+		public static Unsupported create() { return (Unsupported)RCDecayConditions.UNSUPPORTED.get(); }
+		
 		protected boolean isMatch(BlockState state, BlockPos neighbour, Direction face, BlockPos pos, ServerWorld world)
 		{
 			return !super.isMatch(state, neighbour, face, pos, world);
@@ -241,7 +245,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		
 		protected boolean isMatch(BlockState state, BlockPos neighbour, Direction face, BlockPos pos, ServerWorld world)
 		{
-			return state.isAir();	// TODO Improve occlusion check
+			return !state.isSideSolidFullSquare(world, pos, face.getOpposite());
 		}
 	}
 }

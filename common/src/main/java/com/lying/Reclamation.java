@@ -13,8 +13,8 @@ import com.lying.decay.DecayLibrary;
 import com.lying.decay.DecayMacros;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.DecayContext.DecayType;
-import com.lying.decay.handler.DecayEntry;
 import com.lying.decay.context.LiveDecayContext;
+import com.lying.decay.handler.DecayEntry;
 import com.lying.event.DecayEvent;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
@@ -144,17 +144,23 @@ public final class Reclamation
 		return ignoreConditions || entry.test(world, context.currentPos(), context.currentState()) ? decay(world, entry, context) : Optional.empty();
     }
     
-	private static Optional<DecayContext> decay(ServerWorld world, DecayEntry entry, DecayContext context)
+    /** Applies the given DecayEntry to the given DecayContext, respecting probability */
+	public static Optional<DecayContext> decay(ServerWorld world, DecayEntry entry, DecayContext context)
     {
     	if(context.random.nextFloat() <= entry.chance(context.currentPos(), world))
-    	{
-			DecayEvent.BEFORE_BLOCK_DECAY_EVENT.invoker().onBlockDecay(context, entry);
-			entry.apply(context);
-			DecayEvent.AFTER_BLOCK_DECAY_EVENT.invoker().onBlockDecay(context, entry);
-			return Optional.of(context);
-    	}
-    	return Optional.empty();
+    		return Optional.of(applyDecay(world, entry, context));
+    	else
+    		return Optional.empty();
     }
+	
+	/** Applies the given DecayEntry to the given DecayContext, without checking odds */
+	public static DecayContext applyDecay(ServerWorld world, DecayEntry entry, DecayContext context)
+	{
+		DecayEvent.BEFORE_BLOCK_DECAY_EVENT.invoker().onBlockDecay(context, entry);
+		entry.apply(context);
+		DecayEvent.AFTER_BLOCK_DECAY_EVENT.invoker().onBlockDecay(context, entry);
+		return context;
+	}
 	
 	public static boolean canBlockDecay(BlockPos pos, ServerWorld world, Optional<ServerCommandSource> source)
 	{

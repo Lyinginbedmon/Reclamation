@@ -7,8 +7,11 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.lying.Reclamation;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.StringIdentifiable;
@@ -28,7 +31,7 @@ public class PositionPredicate
 				return predicate;
 			}));
 	
-	private List<Property> values = Lists.newArrayList();
+	private final List<Property> values = Lists.newArrayList();
 	
 	protected PositionPredicate() { }
 	
@@ -45,6 +48,16 @@ public class PositionPredicate
 		return values.isEmpty() || values.stream().allMatch(v -> v.matches(pos));
 	}
 	
+	public JsonElement toJson()
+	{
+		return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
+	}
+	
+	public static PositionPredicate fromJson(JsonObject obj)
+	{
+		return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow();
+	}
+	
 	public static record Property(int value, Axis axis, Comparison operation)
 	{
 		public static final Codec<Property> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
@@ -53,6 +66,8 @@ public class PositionPredicate
 				Comparison.CODEC.fieldOf("Operation").forGetter(Property::operation)
 				)
 				.apply(instance, (v,s,o) -> new Property(v, s, o)));
+		
+		public static Property of(int value, Axis axis, Comparison operation) { return new Property(value, axis, operation); }
 		
 		public boolean matches(BlockPos pos)
 		{
@@ -96,13 +111,17 @@ public class PositionPredicate
 		
 		public String asString() { return name; }
 		
+		public JsonElement toJson() { return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow(); }
+		
+		public static Comparison fromJson(JsonElement obj) { return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow(); }
+		
 		public static Comparison fromString(String name)
 		{
 			for(Comparison op : values())
 				if(op.asString().equalsIgnoreCase(name))
 					return op;
 			
-			Reclamation.LOGGER.warn("Failed to parse position predicate operator {}, treating as = instead", name);
+			Reclamation.LOGGER.warn("Failed to parse position predicate operator '{}', treating as = instead", name);
 			return EQUAL;
 		}
 	}
