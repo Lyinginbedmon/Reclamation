@@ -108,6 +108,8 @@ public abstract class FunctionBlockState extends DecayFunction
 	
 	public static class RandomValue extends CycleValue
 	{
+		// TODO Implement specification of value options
+		
 		public RandomValue(Identifier idIn)
 		{
 			super(idIn);

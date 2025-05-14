@@ -16,10 +16,8 @@
     }
   },
   "conditions": [
-    {
-      "block": "minecraft:stone_bricks",
-      "id": "reclamation:is_block"
-    },
+    "reclamation:is_solid_block",
+    "reclamation:on_ground",
     {
       "faces": [
         "north",
@@ -28,12 +26,17 @@
         "east"
       ],
       "id": "reclamation:exposed"
-    },
-    "reclamation:on_ground"
+    }
   ],
   "function": {
     "id": "reclamation:sprout",
     "sprouted": {
+      "faces": [
+        "north",
+        "south",
+        "west",
+        "east"
+      ],
       "growth": "reclamation:place_ivy_main",
       "must_be": {
         "id": "reclamation:and",

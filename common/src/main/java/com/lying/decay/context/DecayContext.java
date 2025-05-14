@@ -80,6 +80,7 @@ public abstract class DecayContext
 	/** Changes this block to the given block state */
 	public final void setBlockState(BlockState state)
 	{
+		// FIXME Spawn particles & sound without breaking
 		if(!isAir())
 			breakBlock();
 		setStateInWorld(currentPos, state);

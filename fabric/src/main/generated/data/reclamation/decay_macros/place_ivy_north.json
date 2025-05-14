@@ -1,18 +1,8 @@
 {
-  "conditions": [
-    "reclamation:is_replaceable",
-    {
-      "face": "north",
-      "id": "reclamation:supported"
-    },
-    {
-      "face": "down",
-      "id": "reclamation:adjacent_to",
-      "look_for": {
-        "block": "minecraft:grass_block"
-      }
-    }
-  ],
+  "condition": {
+    "face": "north",
+    "id": "reclamation:supported"
+  },
   "function": {
     "convert_to": {
       "state": {

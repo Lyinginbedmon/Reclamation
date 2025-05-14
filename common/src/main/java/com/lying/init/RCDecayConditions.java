@@ -40,7 +40,7 @@ public class RCDecayConditions
 	/** Succeeds if the block is a solid cube */
 	public static final Supplier<DecayCondition> IS_SOLID		= register("is_solid_block", ConditionIsBlock.Solid::new);
 	/** Succeeds if the block is replaceable, such as vines or grass */
-	public static final Supplier<DecayCondition> IS_REPLACEABLE	= register("is_replaceable", ConditionIsBlock.Solid::new);
+	public static final Supplier<DecayCondition> IS_REPLACEABLE	= register("is_replaceable", ConditionIsBlock.Replaceable::new);
 	/** Succeeds if the block is air */
 	public static final Supplier<DecayCondition> IS_AIR			= register("is_air", ConditionIsBlock.Air::new);
 	/** Succeeds if the block meets a specified {@link PropertyMap} */

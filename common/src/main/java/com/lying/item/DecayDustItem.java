@@ -3,19 +3,25 @@ package com.lying.item;
 import java.util.List;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.lying.Reclamation;
 import com.lying.decay.DecayLibrary;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.DecayContext.DecayType;
 import com.lying.decay.context.LiveDecayContext;
 import com.lying.decay.handler.DecayEntry;
+import com.lying.init.RCDataComponentTypes;
+import com.lying.init.RCSoundEvents;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,7 +29,8 @@ public class DecayDustItem extends Item
 {
 	public DecayDustItem(Settings settings)
 	{
-		super(settings);
+		super(settings
+				.component(RCDataComponentTypes.DECAY_ENTRY.get(), null));
 	}
 	
 	public ActionResult useOnBlock(ItemUsageContext context)
@@ -35,9 +42,10 @@ public class DecayDustItem extends Item
 			{
 				ServerWorld serverWorld = (ServerWorld)world;
 				BlockPos position = context.getBlockPos();
-				Optional<DecayContext> cxt = tryGuaranteedDecay(serverWorld, LiveDecayContext.supplier(position, serverWorld, DecayType.ARTIFICIAL));
+				Optional<DecayContext> cxt = tryGuaranteedDecay(serverWorld, context.getStack().get(RCDataComponentTypes.DECAY_ENTRY.get()), LiveDecayContext.supplier(position, serverWorld, DecayType.ARTIFICIAL));
 				if(cxt.isPresent())
 				{
+					serverWorld.playSound(null, position, RCSoundEvents.WITHERING_DUST.get(), SoundCategory.PLAYERS);
 					cxt.get().close();
 					ItemStack stack = context.getStack();
 					if(!context.getPlayer().isCreative())
@@ -52,7 +60,7 @@ public class DecayDustItem extends Item
 		return super.useOnBlock(context);
 	}
 	
-	public static Optional<DecayContext> tryGuaranteedDecay(ServerWorld world, DecayContext context)
+	public static Optional<DecayContext> tryGuaranteedDecay(ServerWorld world, @Nullable Identifier entry, DecayContext context)
 	{
     	BlockPos pos = context.initialPos;
     	if(!Reclamation.canBlockDecay(pos, world, Optional.empty()))
@@ -63,8 +71,24 @@ public class DecayDustItem extends Item
 			return Optional.empty();
 		
 		BlockState state = context.originalState;
-		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
-		DecayEntry decay = decayOptions.size() > 1 ? decayOptions.get(context.random.nextInt(decayOptions.size())) : decayOptions.get(0);
-		return Optional.of(Reclamation.applyDecay(world, decay, context));
+		DecayEntry decay = null;
+		if(entry != null)
+		{
+			Optional<DecayEntry> citation = DecayLibrary.instance().get(entry);
+			if(citation.isPresent() && citation.get().test(context))
+				decay = citation.get();
+		}
+		else
+		{
+			List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
+			decay = decayOptions.size() > 1 ? decayOptions.get(context.random.nextInt(decayOptions.size())) : decayOptions.get(0);
+		}
+		
+		if(decay != null)
+		{
+			Reclamation.LOGGER.info("Applied decay entry {} with withering dust", decay.packName().toString());
+			return Optional.of(Reclamation.applyDecay(world, decay, context));
+		}
+		return Optional.empty();
 	}
 }

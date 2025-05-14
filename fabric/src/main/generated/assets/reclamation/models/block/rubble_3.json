@@ -1,0 +1,6 @@
+{
+  "parent": "reclamation:block/template_rubble_3",
+  "textures": {
+    "all": "minecraft:block/cobblestone"
+  }
+}

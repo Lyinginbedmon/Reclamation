@@ -272,7 +272,7 @@ public class DefaultDecayLibrary
 				.name("unsupported_blocks_fall")
 				.condition(
 					RCDecayConditions.IS_SOLID.get(),
-					ConditionNeighbouring.Unsupported.create().threshold(2),
+					ConditionNeighbouring.Supported.create().threshold(2).invert(),
 					ConditionPosition.Altitude.of(5))
 				.function(RCDecayFunctions.FALL.get()).build());
 		
@@ -294,11 +294,12 @@ public class DefaultDecayLibrary
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(1).searchRange(1).blocks(Blocks.GRASS_BLOCK).build()))
 				.name("ivy_sprout")
 				.condition(
-					ConditionIsBlock.of(Blocks.STONE_BRICKS),
-					ConditionNeighbouring.Exposed.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST),
-					RCDecayConditions.ON_GROUND.get())
+					RCDecayConditions.IS_SOLID.get(),
+					RCDecayConditions.ON_GROUND.get(),
+					ConditionNeighbouring.Exposed.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST))
 				.function(
 					FunctionSprout.Builder.create()
+						.faceSet(EnumSet.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST))
 						.soloProvider(DefaultDecayMacros.PLACE_IVY)
 						.onCondition(
 							ConditionBoolean.And.of(

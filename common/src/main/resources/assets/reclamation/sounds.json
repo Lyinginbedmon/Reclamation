@@ -1,0 +1,10 @@
+{
+	"withering_dust": {
+		"subtitle": "sound.reclamation.withering_dust",
+		"sounds": [
+			"reclamation:withering_dust_0",
+			"reclamation:withering_dust_1",
+			"reclamation:withering_dust_2"
+		]
+	}
+}

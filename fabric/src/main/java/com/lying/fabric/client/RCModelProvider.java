@@ -1,9 +1,13 @@
 package com.lying.fabric.client;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
+import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedTorchBlock;
 import com.lying.block.LeafPileBlock;
+import com.lying.block.RubbleBlock;
 import com.lying.client.ReclamationClient;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCBlocks.Terracotta;
@@ -14,12 +18,15 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.enums.SlabType;
 import net.minecraft.client.data.BlockStateModelGenerator;
 import net.minecraft.client.data.BlockStateVariant;
 import net.minecraft.client.data.BlockStateVariantMap;
 import net.minecraft.client.data.ItemModelGenerator;
 import net.minecraft.client.data.ItemModels;
 import net.minecraft.client.data.Model;
+import net.minecraft.client.data.ModelIds;
 import net.minecraft.client.data.Models;
 import net.minecraft.client.data.TextureKey;
 import net.minecraft.client.data.TextureMap;
@@ -59,12 +66,15 @@ public class RCModelProvider extends FabricModelProvider
 	{
 		RCBlocks.SOLID_CUBES.forEach(entry -> blockStateModelGenerator.registerSimpleCubeAll(entry.get()));
 		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).forEach(b -> blockStateModelGenerator.registerSouthDefaultHorizontalFacing(TexturedModel.TEMPLATE_GLAZED_TERRACOTTA, b.get()));
+		RCBlocks.DYE_TO_CONCRETE.values().stream().map(Supplier::get).forEach(b -> CrackedConcrete.makeBlockState(b, blockStateModelGenerator));
 		DousedLights.register(blockStateModelGenerator);
 		LeafPile.register(blockStateModelGenerator);
 		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
 		registerSlab(RCBlocks.CRACKED_STONE_BRICK_SLAB.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		registerStairs(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
+		
+		Rubble.makeBlockState(RCBlocks.RUBBLE.get(), blockStateModelGenerator);
 	}
 	
 	public void generateItemModels(ItemModelGenerator itemModelGenerator)
@@ -97,11 +107,15 @@ public class RCModelProvider extends FabricModelProvider
 	
 	private static void registerSlab(Block slab, Block full, BlockStateModelGenerator blockStateModelGenerator)
 	{
-		Identifier id = Registries.BLOCK.getId(full);
 		TexturedModel textured = TexturedModel.CUBE_ALL.get(full);
 		Identifier bottomModel = Models.SLAB.upload(slab, textured.getTextures(), blockStateModelGenerator.modelCollector);
 		Identifier topModel = Models.SLAB_TOP.upload(slab, textured.getTextures(), blockStateModelGenerator.modelCollector);
-		blockStateModelGenerator.blockStateCollector.accept(BlockStateModelGenerator.createSlabBlockState(slab, bottomModel, topModel, id));
+		Identifier fullModel = ModelIds.getBlockModelId(full);
+		BlockStateVariantMap map = BlockStateVariantMap.create(SlabBlock.TYPE)
+				.register(SlabType.BOTTOM, BlockStateVariant.create().put(VariantSettings.MODEL, bottomModel))
+				.register(SlabType.TOP, BlockStateVariant.create().put(VariantSettings.MODEL, topModel))
+				.register(SlabType.DOUBLE, BlockStateVariant.create().put(VariantSettings.MODEL, fullModel));
+		blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(slab).coordinate(map));
 	}
 	
 	private static void registerIvy(Block block, Item item, BlockStateModelGenerator blockStateModelGenerator)
@@ -189,6 +203,96 @@ public class RCModelProvider extends FabricModelProvider
 			itemTint.ifPresentOrElse(
 					tint -> generator.itemModelOutput.accept(pile.asItem(), ItemModels.tinted(model0, new ConstantTintSource(tint))), 
 					() -> generator.registerParentedItemModel(pile, model0));
+		}
+	}
+	
+	private static class CrackedConcrete
+	{
+		public static final Model TEMPLATE_CRACKED_0 = new Model(
+				Optional.of(Identifier.ofVanilla("block/cube_all")),
+				Optional.of("_0"),
+				TextureKey.ALL);
+		public static final Model TEMPLATE_CRACKED_1 = new Model(
+				Optional.of(Identifier.ofVanilla("block/cube_all")),
+				Optional.of("_1"),
+				TextureKey.ALL);
+		public static final Model TEMPLATE_CRACKED_2 = new Model(
+				Optional.of(Identifier.ofVanilla("block/cube_all")),
+				Optional.of("_2"),
+				TextureKey.ALL);
+		public static final Model TEMPLATE_CRACKED_3 = new Model(
+				Optional.of(Identifier.ofVanilla("block/cube_all")),
+				Optional.of("_3"),
+				TextureKey.ALL);
+		
+		private static TextureMap crackedTex(Block block, int index)
+		{
+			Identifier tex = Registries.BLOCK.getId(block);
+			tex = Identifier.of(tex.getNamespace(), "block/"+tex.getPath()+"_"+index);
+			return new TextureMap().put(TextureKey.ALL, tex);
+		}
+		
+		private static void makeBlockState(Block block, BlockStateModelGenerator generator)
+		{
+			Identifier model0 = TEMPLATE_CRACKED_0.upload(block, crackedTex(block, 0), generator.modelCollector);
+			BlockStateVariantMap map = BlockStateVariantMap.create(CrackedConcreteBlock.CRACKS)
+					.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, model0))
+					.register(2, BlockStateVariant.create().put(VariantSettings.MODEL, TEMPLATE_CRACKED_1.upload(block, crackedTex(block, 1), generator.modelCollector)))
+					.register(3, BlockStateVariant.create().put(VariantSettings.MODEL, TEMPLATE_CRACKED_2.upload(block, crackedTex(block, 2), generator.modelCollector)))
+					.register(4, BlockStateVariant.create().put(VariantSettings.MODEL, TEMPLATE_CRACKED_3.upload(block, crackedTex(block, 3), generator.modelCollector)));
+			
+			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(map));
+			generator.registerParentedItemModel(block, model0);
+		}
+	}
+	
+	private static class Rubble
+	{
+		public static final Model TEMPLATE_RUBBLE_0 = new Model(
+				Optional.of(Reference.ModInfo.prefix("block/template_rubble_0")),
+				Optional.of("_0"),
+				TextureKey.ALL);
+		public static final Model TEMPLATE_RUBBLE_1 = new Model(
+				Optional.of(Reference.ModInfo.prefix("block/template_rubble_1")),
+				Optional.of("_1"),
+				TextureKey.ALL);
+		public static final Model TEMPLATE_RUBBLE_2 = new Model(
+				Optional.of(Reference.ModInfo.prefix("block/template_rubble_2")),
+				Optional.of("_2"),
+				TextureKey.ALL);
+		public static final Model TEMPLATE_RUBBLE_3 = new Model(
+				Optional.of(Reference.ModInfo.prefix("block/template_rubble_3")),
+				Optional.of("_3"),
+				TextureKey.ALL);
+		
+		private static TextureMap rubbleTex(Block cobble)
+		{
+			Identifier tex = Registries.BLOCK.getId(Blocks.COBBLESTONE);
+			tex = Identifier.of(tex.getNamespace(), "block/"+tex.getPath());
+			return new TextureMap().put(TextureKey.ALL, tex);
+		}
+		
+		private static List<BlockStateVariant> entry(Identifier model)
+		{
+			return List.of(
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R0),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R90),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R180),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R270)
+					);
+		}
+		
+		private static void makeBlockState(Block block, BlockStateModelGenerator generator)
+		{
+			Identifier model0 = TEMPLATE_RUBBLE_0.upload(block, rubbleTex(block), generator.modelCollector);
+			BlockStateVariantMap map = BlockStateVariantMap.create(RubbleBlock.DEPTH)
+					.register(1, entry(model0))
+					.register(2, entry(TEMPLATE_RUBBLE_1.upload(block, rubbleTex(block), generator.modelCollector)))
+					.register(3, entry(TEMPLATE_RUBBLE_2.upload(block, rubbleTex(block), generator.modelCollector)))
+					.register(4, entry(TEMPLATE_RUBBLE_3.upload(block, rubbleTex(block), generator.modelCollector)));
+			
+			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(map));
+			generator.registerParentedItemModel(block, model0);
 		}
 	}
 }

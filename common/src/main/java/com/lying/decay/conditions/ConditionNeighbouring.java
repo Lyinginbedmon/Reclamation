@@ -193,7 +193,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		
 		protected boolean isMatch(BlockState state, BlockPos neighbour, Direction face, BlockPos pos, ServerWorld world)
 		{
-			return !state.isReplaceable() && state.isSideSolidFullSquare(world, neighbour, face.getOpposite());
+			return !state.isReplaceable() && state.isSideSolidFullSquare(world, neighbour, face);
 		}
 	}
 	

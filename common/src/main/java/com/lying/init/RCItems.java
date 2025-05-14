@@ -82,10 +82,16 @@ public class RCItems
 	public static final RegistrySupplier<Item> RED_FADED_TERRACOTTA			= registerTerracottaBlock(DyeColor.RED);
 	public static final RegistrySupplier<Item> WHITE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.WHITE);
 	public static final RegistrySupplier<Item> YELLOW_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.YELLOW);
+	public static final RegistrySupplier<Item> RUBBLE						= registerBlockNoItem("rubble", RCBlocks.RUBBLE);
 	
 	private static RegistrySupplier<Item> registerTerracottaBlock(DyeColor color)
 	{
 		return registerBlock(color.asString()+"_faded_terracotta", (RegistrySupplier<Block>)RCBlocks.DYE_TO_TERRACOTTA.get(color).faded());
+	}
+	
+	private static RegistrySupplier<Item> registerCrackedConcrete(DyeColor color)
+	{
+		return registerBlockNoItem("cracked_"+color.asString()+"_concrete", (RegistrySupplier<Block>)RCBlocks.DYE_TO_CONCRETE.get(color));
 	}
 	
 	private static RegistrySupplier<Item> registerBlock(String nameIn, RegistrySupplier<Block> blockIn)
@@ -121,6 +127,9 @@ public class RCItems
 	
 	public static void init()
 	{
+		for(DyeColor color : DyeColor.values())
+			registerCrackedConcrete(color);
+		
 		TABS.register();
 		ITEMS.register();
 		Reclamation.LOGGER.info("# Initialised {} items ({} block items)", itemTally, ALL_BLOCKS.size());

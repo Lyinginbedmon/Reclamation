@@ -3,7 +3,8 @@
     "reclamation:is_solid_block",
     {
       "at_least": 2,
-      "id": "reclamation:unsupported"
+      "id": "reclamation:supported",
+      "inverted": true
     },
     {
       "Threshold": 5,

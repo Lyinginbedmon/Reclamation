@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "reclamation:block/cracked_yellow_concrete_0"
+  }
+}

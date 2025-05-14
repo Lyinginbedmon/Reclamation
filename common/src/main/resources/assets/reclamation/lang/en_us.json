@@ -45,6 +45,22 @@
 	"block.reclamation.doused_soul_lantern": "Doused Soul Lantern",
 	"block.reclamation.doused_torch": "Doused Torch",
 	"block.reclamation.doused_soul_torch": "Doused Soul Torch",
+	"block.reclamation.cracked_black_concrete": "Cracked Black Concrete",
+	"block.reclamation.cracked_blue_concrete": "Cracked Blue Concrete",
+	"block.reclamation.cracked_brown_concrete": "Cracked Brown Concrete",
+	"block.reclamation.cracked_cyan_concrete": "Cracked Cyan Concrete",
+	"block.reclamation.cracked_gray_concrete": "Cracked Gray Concrete",
+	"block.reclamation.cracked_green_concrete": "Cracked Green Concrete",
+	"block.reclamation.cracked_light_blue_concrete": "Cracked Light Blue Concrete",
+	"block.reclamation.cracked_light_gray_concrete": "Cracked Light Gray Concrete",
+	"block.reclamation.cracked_lime_concrete": "Cracked Lime Concrete",
+	"block.reclamation.cracked_magenta_concrete": "Cracked Magenta Concrete",
+	"block.reclamation.cracked_orange_concrete": "Cracked Orange Concrete",
+	"block.reclamation.cracked_pink_concrete": "Cracked Pink Concrete",
+	"block.reclamation.cracked_purple_concrete": "Cracked Purple Concrete",
+	"block.reclamation.cracked_red_concrete": "Cracked Red Concrete",
+	"block.reclamation.cracked_white_concrete": "Cracked White Concrete",
+	"block.reclamation.cracked_yellow_concrete": "Cracked Yellow Concrete",
 	// Items
 	"item.reclamation.withering_dust": "Withering Dust",
 	// Status effects
@@ -63,8 +79,10 @@
 	"command.reclamation.block_outside_world": "That block is outside of the world",
 	"command.reclamation.block_wither_immune": "That block is immune to all decay",
 	"command.reclamation.block_no_entries": "The decay library has no entries applicable to that block",
-	"command.reclamation.block_entry_invalid": "That decay entry is not applicable to that block"
+	"command.reclamation.block_entry_invalid": "That decay entry is not applicable to that block",
 	// Gui
 	// Enums
 	// Keybinds
+	// Sounds
+	"sound.reclamation.withering_dust": "Withering Dust decays"
 }

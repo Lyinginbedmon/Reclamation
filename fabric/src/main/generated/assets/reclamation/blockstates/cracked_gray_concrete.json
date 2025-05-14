@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "cracks=1": {
+      "model": "reclamation:block/cracked_gray_concrete_0"
+    },
+    "cracks=2": {
+      "model": "reclamation:block/cracked_gray_concrete_1"
+    },
+    "cracks=3": {
+      "model": "reclamation:block/cracked_gray_concrete_2"
+    },
+    "cracks=4": {
+      "model": "reclamation:block/cracked_gray_concrete_3"
+    }
+  }
+}

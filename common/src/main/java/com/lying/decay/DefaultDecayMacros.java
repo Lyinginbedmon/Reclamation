@@ -53,16 +53,18 @@ public class DefaultDecayMacros
 	{
 		FACE_CONNECTIONS.entrySet().forEach(entry -> register(DecayMacro.Builder.create()
 				.name("place_ivy_"+entry.getKey().asString())
-				.condition(
-					RCDecayConditions.IS_REPLACEABLE.get(),
-					ConditionNeighbouring.Supported.onFaces(entry.getKey()),
-					ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN))
-				.function(
-					FunctionConvert.toBlockState(RCBlocks.IVY.get().getDefaultState().with(entry.getValue(), true))).build()));
+				.condition(ConditionNeighbouring.Supported.onFaces(entry.getKey()))
+				.function(FunctionConvert.toBlockState(RCBlocks.IVY.get().getDefaultState().with(entry.getValue(), true)))
+				.build()));
 		
 		register(DecayMacro.Builder.create()
 				.name(PLACE_IVY)
-				.function(FunctionMacro.of(FACE_CONNECTIONS.keySet().stream().map(Direction::asString).map(s -> "place_ivy_"+s).map(s -> Reference.ModInfo.prefix(s)).toList().toArray(new Identifier[0]))).build());
+				.condition(
+					RCDecayConditions.IS_REPLACEABLE.get(),
+					ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN)
+				)
+				.function(FunctionMacro.of(FACE_CONNECTIONS.keySet().stream().map(Direction::asString).map(s -> "place_ivy_"+s).map(s -> Reference.ModInfo.prefix(s)).toList().toArray(new Identifier[0])))
+				.build());
 		
 		register(DecayMacro.Builder.create()
 				.name(PLACE_FLOWERS)

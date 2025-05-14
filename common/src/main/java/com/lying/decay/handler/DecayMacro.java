@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.lying.Reclamation;
 import com.lying.decay.conditions.DecayCondition;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.functions.DecayFunction;

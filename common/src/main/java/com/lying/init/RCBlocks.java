@@ -8,11 +8,13 @@ import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
+import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedLanternBlock;
 import com.lying.block.DousedTorchBlock;
 import com.lying.block.FadedTerracottaBlock;
 import com.lying.block.IvyBlock;
 import com.lying.block.LeafPileBlock;
+import com.lying.block.RubbleBlock;
 import com.lying.block.ScrapeableBlock;
 import com.lying.block.SootBlock;
 import com.lying.reference.Reference;
@@ -42,6 +44,7 @@ public class RCBlocks
 	public static LeafPileBlock[] TINTED_LEAF_PILES = new LeafPileBlock[0];
 	
 	public static final Map<DyeColor, Terracotta> DYE_TO_TERRACOTTA = new HashMap<>();
+	public static final Map<DyeColor, Supplier<Block>> DYE_TO_CONCRETE = new HashMap<>();
 	
 	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank) { }
 	
@@ -88,10 +91,12 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> WHITE_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.WHITE);
 	public static final RegistrySupplier<Block> YELLOW_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.YELLOW);
 	
-	public static final RegistrySupplier<Block> DOUSED_TORCH			= register("doused_torch", settings -> new DousedTorchBlock(Blocks.TORCH, Blocks.WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
-	public static final RegistrySupplier<Block> DOUSED_SOUL_TORCH		= register("doused_soul_torch", settings -> new DousedTorchBlock(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
-	public static final RegistrySupplier<Block> DOUSED_LANTERN			= register("doused_lantern", settings -> new DousedLanternBlock(() -> Blocks.LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
-	public static final RegistrySupplier<Block> DOUSED_SOUL_LANTERN		= register("doused_soul_lantern", settings -> new DousedLanternBlock(() -> Blocks.SOUL_LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> DOUSED_TORCH				= register("doused_torch", settings -> new DousedTorchBlock(Blocks.TORCH, Blocks.WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> DOUSED_SOUL_TORCH			= register("doused_soul_torch", settings -> new DousedTorchBlock(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> DOUSED_LANTERN				= register("doused_lantern", settings -> new DousedLanternBlock(() -> Blocks.LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> DOUSED_SOUL_LANTERN			= register("doused_soul_lantern", settings -> new DousedLanternBlock(() -> Blocks.SOUL_LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
+	
+	public static final RegistrySupplier<Block> RUBBLE						= register("rubble", settings -> new RubbleBlock(settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	
 	private static RegistrySupplier<Block> registerLeafPile(WoodType typeIn)
 	{
@@ -117,6 +122,18 @@ public class RCBlocks
 					.strength(1.4F)
 					.pistonBehavior(PistonBehavior.PUSH_ONLY)));
 	}
+	
+	private static RegistrySupplier<Block> registerCrackedConcrete(DyeColor color)
+	{
+		RegistrySupplier<Block> registry = register("cracked_"+color.asString()+"_concrete", settings -> 
+			new CrackedConcreteBlock(settings
+					.mapColor(color)
+					.instrument(NoteBlockInstrument.BASEDRUM)
+					.requiresTool()
+					.strength(1.8F)));
+		DYE_TO_CONCRETE.put(color, registry);
+		return registry;
+	}
 
 	private static RegistrySupplier<Block> registerSolidCube(String nameIn, Function<AbstractBlock.Settings, Block> supplierIn)
 	{
@@ -137,6 +154,9 @@ public class RCBlocks
 	
 	public static void init()
 	{
+		for(DyeColor color : DyeColor.values())
+			registerCrackedConcrete(color);
+		
 		BLOCKS.register();
 		Reclamation.LOGGER.info("# Initialised {} blocks", ALL_BLOCKS.size());
 		

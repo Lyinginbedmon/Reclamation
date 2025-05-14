@@ -28,9 +28,10 @@ public class RCBlockTagsProvider extends BlockTagProvider
 				RCBlocks.RUSTED_IRON.get());
 		
 		Block[] fadedTerracotta = RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).map(Supplier::get).toList().toArray(new Block[0]);
+		Block[] crackedConcrete = RCBlocks.DYE_TO_CONCRETE.values().stream().map(Supplier::get).toList().toArray(new Block[0]);
 		getOrCreateTagBuilder(RCBlockTags.FADED_TERRACOTTA).add(fadedTerracotta);
 		
-		getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(
+		getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(fadedTerracotta).add(crackedConcrete).add(
 				RCBlocks.CRACKED_STONE_BRICK_SLAB.get(),
 				RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(),
 				RCBlocks.EXPOSED_IRON.get(),
@@ -42,8 +43,8 @@ public class RCBlockTagsProvider extends BlockTagProvider
 				RCBlocks.WAXED_IRON_BLOCK.get(),
 				RCBlocks.WAXED_RUSTED_IRON.get(),
 				RCBlocks.WAXED_TARNISHED_GOLD.get(),
-				RCBlocks.WAXED_WEATHERED_IRON.get());
-		getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(fadedTerracotta);
+				RCBlocks.WAXED_WEATHERED_IRON.get(),
+				RCBlocks.RUBBLE.get());
 		getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(RCBlocks.SOOT.get());
 	}
 }
