@@ -38,6 +38,7 @@ import net.minecraft.world.tick.ScheduledTickView;
 public class IvyBlock extends Block
 {
 	public static final MapCodec<IvyBlock> CODEC	= createCodec(IvyBlock::new);
+	public static final BooleanProperty INERT = BooleanProperty.of("inert");
 	public static final BooleanProperty
 		UP = ConnectingBlock.UP,
 		NORTH = ConnectingBlock.NORTH,
@@ -76,6 +77,7 @@ public class IvyBlock extends Block
 	{
 		super(settings.ticksRandomly());
 		setDefaultState(getStateManager().getDefaultState()
+			.with(INERT, false)
 			.with(UP, false)
 			.with(NORTH, false)
 			.with(SOUTH, false)
@@ -89,7 +91,7 @@ public class IvyBlock extends Block
 	
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
 	{
-		builder.add(UP, NORTH, EAST, SOUTH, WEST);
+		builder.add(INERT, UP, NORTH, EAST, SOUTH, WEST);
 	}
 	
 	private static VoxelShape getShapeForState(BlockState state)
@@ -212,7 +214,7 @@ public class IvyBlock extends Block
 	
 	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
 	{
-		if(!world.getGameRules().getBoolean(GameRules.DO_VINES_SPREAD) || random.nextInt(4) > 0)
+		if(!world.getGameRules().getBoolean(GameRules.DO_VINES_SPREAD) || state.get(INERT) || random.nextInt(4) > 0)
 			return;
 		
 		GROW_OPTIONS.stream().filter(g -> g.viable(state, pos, world)).findAny().ifPresent(g -> g.enact(state, pos, world));

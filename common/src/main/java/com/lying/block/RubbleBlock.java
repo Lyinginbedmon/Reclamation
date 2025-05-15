@@ -24,7 +24,7 @@ import net.minecraft.world.tick.ScheduledTickView;
 
 public class RubbleBlock extends Block
 {
-	public static final int DELAY = 20;
+	public static final int DELAY = 5;
 	public static final IntProperty DEPTH = IntProperty.of("depth", 1, 4);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 5.0, 15.0);
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[] 
@@ -89,7 +89,7 @@ public class RubbleBlock extends Block
 	
 	protected boolean canReplace(BlockState state, ItemPlacementContext context)
 	{
-		return state.isReplaceable() && context.canReplaceExisting() || state.isOf(this) && state.get(DEPTH) < 4;
+		return super.canReplace(state, context) || !context.shouldCancelInteraction() && context.getStack().isOf(this.asItem()) && state.isOf(this) && state.get(DEPTH) < 4;
 	}
 	
 	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify)
@@ -123,15 +123,37 @@ public class RubbleBlock extends Block
 	
 	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
 	{
-		if(state.get(DEPTH) == 1 && !canAddTo(world.getBlockState(pos.down())))
+		BlockPos down = pos.down();
+		BlockState downState = world.getBlockState(down);
+		if(canAddTo(downState))
+		{
+			int myDepth = state.get(DEPTH);
+			if(downState.isOf(this))
+			{
+				int downDepth = downState.get(DEPTH);
+				int dif = Math.min(myDepth, 4 - downDepth);
+				world.setBlockState(down, downState.with(DEPTH, downDepth + dif), 2);
+				myDepth -= dif;
+			}
+			else if(downState.isReplaceable())
+			{
+				world.setBlockState(down, state, 2);
+				myDepth = 0;
+			}
+			
+			world.setBlockState(pos, myDepth > 0 ? state.with(DEPTH, myDepth) : Blocks.AIR.getDefaultState(), 2);
 			return;
+		}
 		
-		BlockState myState = tryEqualise(pos, pos.down(), state, world, true);
-		for(Direction side : randomSequence(random))
-			myState = tryEqualise(pos, pos.offset(side), myState, world, false);
-		
-		if(state != myState)
-			world.setBlockState(pos, myState, 2);
+		if(state.get(DEPTH) > 1)
+		{
+			BlockState myState = state;
+			for(Direction side : randomSequence(random))
+				myState = tryEqualise(pos, pos.offset(side), myState, world);
+			
+			if(state != myState)
+				world.setBlockState(pos, myState, 2);
+		}
 	}
 	
 	private boolean canAddTo(BlockState state)
@@ -139,32 +161,34 @@ public class RubbleBlock extends Block
 		return state.isReplaceable() || state.isOf(this) && state.get(DEPTH) < 4;
 	}
 	
-	private static boolean canStack(BlockState from, BlockState to, boolean forceTransfer)
+	private static boolean canStack(BlockState from, BlockState to)
 	{
-		int fromD = from.get(DEPTH);
-		int toD = to.get(DEPTH);
-		return toD < 4 && (forceTransfer || fromD >= toD && (fromD - toD) > 1);
+		return canStack(from.get(DEPTH), to.get(DEPTH));
 	}
 	
-	private BlockState tryEqualise(BlockPos myPos, BlockPos otherPos, BlockState myState, World world, boolean forceTransfer)
+	private static boolean canStack(int from, int to)
+	{
+		return to < 4 && from >= to && (from - to) > 1;
+	}
+	
+	private BlockState tryEqualise(BlockPos myPos, BlockPos otherPos, BlockState myState, World world)
 	{
 		if(!myState.isOf(this))
 			return myState;
 		
 		int depth = myState.get(DEPTH);
-		if(!forceTransfer && depth == 1)
+		if(depth == 1)
 			return myState;
 		
 		BlockState otherState = world.getBlockState(otherPos);
 		if(!canAddTo(otherState))
 			return myState;
 		
-		if(otherState.isOf(this) && canStack(myState, otherState, forceTransfer))
+		if(otherState.isOf(this) && canStack(myState, otherState))
 		{
 			int depth2 = otherState.get(DEPTH);
-			int transfer = forceTransfer ? Math.min(depth, 4 - depth2) : 1;
-			world.setBlockState(otherPos, otherState.with(DEPTH, depth2 + transfer), 2);
-			depth -= transfer;
+			world.setBlockState(otherPos, otherState.with(DEPTH, depth2 + 1), 2);
+			depth--;
 		}
 		else if(otherState.isReplaceable())
 		{

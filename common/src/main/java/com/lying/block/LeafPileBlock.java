@@ -100,7 +100,7 @@ public class LeafPileBlock extends CarpetBlock
 	
 	protected boolean canReplace(BlockState state, ItemPlacementContext context)
 	{
-		return state.isReplaceable() && context.canReplaceExisting() || state.isOf(this) && state.get(LAYERS) < 3;
+		return super.canReplace(state, context) || !context.shouldCancelInteraction() && context.getStack().isOf(this.asItem()) && state.isOf(this) && state.get(LAYERS) < 3;
 	}
 	
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity)
