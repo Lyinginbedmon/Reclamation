@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "reclamation:block/rubble_0"
+    "model": "reclamation:block/stone_rubble_0"
   }
 }

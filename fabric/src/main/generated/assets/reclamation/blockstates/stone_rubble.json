@@ -1,0 +1,148 @@
+{
+  "variants": {
+    "depth=1,full=false": [
+      {
+        "model": "reclamation:block/stone_rubble_0",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/stone_rubble_0",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/stone_rubble_0",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/stone_rubble_0",
+        "y": 270
+      }
+    ],
+    "depth=1,full=true": [
+      {
+        "model": "reclamation:block/stone_rubble_0",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/stone_rubble_0",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/stone_rubble_0",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/stone_rubble_0",
+        "y": 270
+      }
+    ],
+    "depth=2,full=false": [
+      {
+        "model": "reclamation:block/stone_rubble_1",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/stone_rubble_1",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/stone_rubble_1",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/stone_rubble_1",
+        "y": 270
+      }
+    ],
+    "depth=2,full=true": [
+      {
+        "model": "reclamation:block/stone_rubble_1",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/stone_rubble_1",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/stone_rubble_1",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/stone_rubble_1",
+        "y": 270
+      }
+    ],
+    "depth=3,full=false": [
+      {
+        "model": "reclamation:block/stone_rubble_2",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/stone_rubble_2",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/stone_rubble_2",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/stone_rubble_2",
+        "y": 270
+      }
+    ],
+    "depth=3,full=true": [
+      {
+        "model": "reclamation:block/stone_rubble_2",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/stone_rubble_2",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/stone_rubble_2",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/stone_rubble_2",
+        "y": 270
+      }
+    ],
+    "depth=4,full=false": [
+      {
+        "model": "reclamation:block/stone_rubble_3",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/stone_rubble_3",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/stone_rubble_3",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/stone_rubble_3",
+        "y": 270
+      }
+    ],
+    "depth=4,full=true": [
+      {
+        "model": "reclamation:block/stone_rubble_full",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/stone_rubble_full",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/stone_rubble_full",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/stone_rubble_full",
+        "y": 270
+      }
+    ]
+  }
+}

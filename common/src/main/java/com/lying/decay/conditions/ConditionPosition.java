@@ -68,13 +68,13 @@ public class ConditionPosition extends DecayCondition
 		
 		protected JsonObject write(JsonObject obj)
 		{
-			obj.add("Target", CODEC.encodeStart(JsonOps.INSTANCE, dimension).getOrThrow());
+			obj.add("target", CODEC.encodeStart(JsonOps.INSTANCE, dimension).getOrThrow());
 			return obj;
 		}
 		
 		protected void read(JsonObject obj)
 		{
-			dimension = CODEC.parse(JsonOps.INSTANCE, obj.get("Target")).getOrThrow();
+			dimension = CODEC.parse(JsonOps.INSTANCE, obj.get("target")).getOrThrow();
 		}
 	}
 	
@@ -130,17 +130,17 @@ public class ConditionPosition extends DecayCondition
 		
 		protected JsonObject write(JsonObject obj)
 		{
-			threshold.ifPresent(v -> obj.addProperty("Threshold", v));
-			operation.ifPresent(c -> obj.add("Operation", c.toJson()));
+			threshold.ifPresent(v -> obj.addProperty("threshold", v));
+			operation.ifPresent(c -> obj.add("operation", c.toJson()));
 			return obj;
 		}
 		
 		protected void read(JsonObject obj)
 		{
-			if(obj.has("Threshold"))
-				threshold = Optional.of(obj.get("Threshold").getAsInt());
-			if(obj.has("Operation"))
-				operation = Optional.of(Comparison.fromJson(obj.get("Operation")));
+			if(obj.has("threshold"))
+				threshold = Optional.of(obj.get("threshold").getAsInt());
+			if(obj.has("operation"))
+				operation = Optional.of(Comparison.fromJson(obj.get("operation")));
 		}
 	}
 }

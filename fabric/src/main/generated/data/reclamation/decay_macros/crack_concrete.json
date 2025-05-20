@@ -6,22 +6,22 @@
   "function": {
     "id": "reclamation:macro",
     "macros": [
-      "reclamation:crack_light_blue_concrete",
+      "reclamation:crack_black_concrete",
+      "reclamation:crack_blue_concrete",
+      "reclamation:crack_gray_concrete",
+      "reclamation:crack_lime_concrete",
+      "reclamation:crack_magenta_concrete",
+      "reclamation:crack_yellow_concrete",
+      "reclamation:crack_light_gray_concrete",
+      "reclamation:crack_brown_concrete",
+      "reclamation:crack_orange_concrete",
       "reclamation:crack_red_concrete",
       "reclamation:crack_green_concrete",
-      "reclamation:crack_white_concrete",
-      "reclamation:crack_purple_concrete",
-      "reclamation:crack_blue_concrete",
-      "reclamation:crack_yellow_concrete",
-      "reclamation:crack_brown_concrete",
-      "reclamation:crack_black_concrete",
-      "reclamation:crack_cyan_concrete",
-      "reclamation:crack_magenta_concrete",
-      "reclamation:crack_lime_concrete",
-      "reclamation:crack_orange_concrete",
       "reclamation:crack_pink_concrete",
-      "reclamation:crack_light_gray_concrete",
-      "reclamation:crack_gray_concrete"
+      "reclamation:crack_white_concrete",
+      "reclamation:crack_light_blue_concrete",
+      "reclamation:crack_purple_concrete",
+      "reclamation:crack_cyan_concrete"
     ]
   },
   "name": "reclamation:crack_concrete"

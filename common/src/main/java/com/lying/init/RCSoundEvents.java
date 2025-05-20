@@ -17,7 +17,10 @@ public class RCSoundEvents
 	private static int tally;
 	
 	private static final Identifier ID_WITHERING_DUST	= prefix("withering_dust");
-	public static final RegistrySupplier<SoundEvent> WITHERING_DUST	= register(ID_WITHERING_DUST);
+	public static final RegistrySupplier<SoundEvent> WITHERING_DUST		= register(ID_WITHERING_DUST);
+	
+	private static final Identifier ID_RUBBLE_SHIFTING	= prefix("rubble_shifting");
+	public static final RegistrySupplier<SoundEvent> RUBBLE_SHIFTING	= register(ID_RUBBLE_SHIFTING);
 	
 	private static RegistrySupplier<SoundEvent> register(Identifier name)
 	{

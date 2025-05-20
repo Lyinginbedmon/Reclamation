@@ -120,7 +120,7 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> DOUSED_LANTERN				= register("doused_lantern", settings -> new DousedLanternBlock(() -> Blocks.LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_SOUL_LANTERN			= register("doused_soul_lantern", settings -> new DousedLanternBlock(() -> Blocks.SOUL_LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
 	
-	public static final RegistrySupplier<Block> RUBBLE						= register("rubble", settings -> new RubbleBlock(settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
+	public static final RegistrySupplier<Block> RUBBLE						= register("stone_rubble", settings -> new RubbleBlock(settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	
 	private static RegistrySupplier<Block> registerLeafPile(WoodType typeIn)
 	{

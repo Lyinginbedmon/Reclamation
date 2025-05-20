@@ -1,0 +1,101 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:stone_rubble",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "depth": "1"
+              }
+            }
+          ],
+          "name": "reclamation:stone_rubble"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:stone_rubble",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "depth": "2"
+              }
+            }
+          ],
+          "name": "reclamation:stone_rubble"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:stone_rubble",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "depth": "3"
+              }
+            }
+          ],
+          "name": "reclamation:stone_rubble"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "reclamation:stone_rubble",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "depth": "4"
+              }
+            }
+          ],
+          "name": "reclamation:stone_rubble"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}

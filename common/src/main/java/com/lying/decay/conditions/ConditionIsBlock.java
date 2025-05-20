@@ -154,17 +154,17 @@ public class ConditionIsBlock extends DecayCondition
 			{
 				List<Direction> list = Lists.newArrayList();
 				faces.get().forEach(list::add);
-				obj.add("Faces", FACE_CODEC.encodeStart(JsonOps.INSTANCE, list).getOrThrow());
+				obj.add("faces", FACE_CODEC.encodeStart(JsonOps.INSTANCE, list).getOrThrow());
 			}
 			return obj;
 		}
 		
 		protected void read(JsonObject obj)
 		{
-			if(obj.has("Faces"))
+			if(obj.has("faces"))
 			{
 				EnumSet<Direction> set = EnumSet.noneOf(Direction.class);
-				FACE_CODEC.parse(JsonOps.INSTANCE, obj.get("Faces")).getOrThrow().forEach(set::add);
+				FACE_CODEC.parse(JsonOps.INSTANCE, obj.get("faces")).getOrThrow().forEach(set::add);
 				faces = Optional.of(set);
 			}
 		}

@@ -7,8 +7,8 @@
       "inverted": true
     },
     {
-      "Threshold": 5,
-      "id": "reclamation:altitude"
+      "id": "reclamation:altitude",
+      "threshold": 5
     }
   ],
   "function": "reclamation:fall",

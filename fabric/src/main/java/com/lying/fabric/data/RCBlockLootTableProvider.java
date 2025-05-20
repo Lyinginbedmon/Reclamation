@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.lying.block.IvyBlock;
 import com.lying.block.LeafPileBlock;
+import com.lying.block.RubbleBlock;
 import com.lying.block.SootBlock;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCBlocks.Terracotta;
@@ -34,7 +35,7 @@ import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Property;
 
 public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 {
@@ -70,6 +71,7 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 		addRustDrops(RCBlocks.RUSTED_IRON.get(), Items.IRON_INGOT, 0, 3);
 		addIvyDrops(RCBlocks.IVY.get());
 		addSootDrops(RCBlocks.SOOT.get());
+		addRubbleDrops(RCBlocks.RUBBLE.get());
 	}
 	
 	private void addRustDrops(Block silk, Item alt, int min, int max)
@@ -115,11 +117,11 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 		addDrop(
 				block, LootTable.builder()
 					// Drop 1 ivy per covered face when harvested with shears
-					.pool(boolConditionalPool(block, IvyBlock.EAST, true).conditionally(createWithShearsCondition()))
-					.pool(boolConditionalPool(block, IvyBlock.NORTH, true).conditionally(createWithShearsCondition()))
-					.pool(boolConditionalPool(block, IvyBlock.SOUTH, true).conditionally(createWithShearsCondition()))
-					.pool(boolConditionalPool(block, IvyBlock.WEST, true).conditionally(createWithShearsCondition()))
-					.pool(boolConditionalPool(block, IvyBlock.UP, true).conditionally(createWithShearsCondition()))
+					.pool(conditionalPool(block, IvyBlock.EAST, true).conditionally(createWithShearsCondition()))
+					.pool(conditionalPool(block, IvyBlock.NORTH, true).conditionally(createWithShearsCondition()))
+					.pool(conditionalPool(block, IvyBlock.SOUTH, true).conditionally(createWithShearsCondition()))
+					.pool(conditionalPool(block, IvyBlock.WEST, true).conditionally(createWithShearsCondition()))
+					.pool(conditionalPool(block, IvyBlock.UP, true).conditionally(createWithShearsCondition()))
 				);
 	}
 	
@@ -133,16 +135,23 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 							.conditionally(createWithoutSilkTouchCondition())
 							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0, 1)))))
 					// Drop 1 soot per covered face when harvested with silk touch
-					.pool(boolConditionalPool(block, SootBlock.EAST, true).conditionally(createSilkTouchCondition()))
-					.pool(boolConditionalPool(block, SootBlock.NORTH, true).conditionally(createSilkTouchCondition()))
-					.pool(boolConditionalPool(block, SootBlock.SOUTH, true).conditionally(createSilkTouchCondition()))
-					.pool(boolConditionalPool(block, SootBlock.WEST, true).conditionally(createSilkTouchCondition()))
-					.pool(boolConditionalPool(block, SootBlock.UP, true).conditionally(createSilkTouchCondition()))
-					.pool(boolConditionalPool(block, SootBlock.DOWN, true).conditionally(createSilkTouchCondition()))
+					.pool(conditionalPool(block, SootBlock.EAST, true).conditionally(createSilkTouchCondition()))
+					.pool(conditionalPool(block, SootBlock.NORTH, true).conditionally(createSilkTouchCondition()))
+					.pool(conditionalPool(block, SootBlock.SOUTH, true).conditionally(createSilkTouchCondition()))
+					.pool(conditionalPool(block, SootBlock.WEST, true).conditionally(createSilkTouchCondition()))
+					.pool(conditionalPool(block, SootBlock.UP, true).conditionally(createSilkTouchCondition()))
+					.pool(conditionalPool(block, SootBlock.DOWN, true).conditionally(createSilkTouchCondition()))
 				);
 	}
 	
-	private LootPool.Builder boolConditionalPool(Block drop, BooleanProperty north, boolean b)
+	private void addRubbleDrops(Block block)
+	{
+		LootTable.Builder builder = LootTable.builder();
+		RubbleBlock.DEPTH.getValues().forEach(val -> builder.pool(conditionalPool(block, RubbleBlock.DEPTH, val)));
+		addDrop(block, builder);
+	}
+	
+	private <T extends Property<U>, U extends Comparable<U>> LootPool.Builder conditionalPool(Block drop, T property, U val)
 	{
 		return addSurvivesExplosionCondition(
 				drop,
@@ -150,7 +159,7 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						ofItem(drop)
-							.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(north, b)))
+							.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(property, property.name(val))))
 					)
 			);
 	}

@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.lying.init.RCSoundEvents;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -11,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -158,7 +160,11 @@ public class RubbleBlock extends Block
 				myState = tryEqualise(pos, pos.offset(side), myState, world);
 			
 			if(state != myState)
+			{
 				world.setBlockState(pos, myState, 2);
+				if(random.nextInt(8) == 0)
+					world.playSound(null, pos, RCSoundEvents.RUBBLE_SHIFTING.get(), SoundCategory.BLOCKS);;
+			}
 		}
 	}
 	

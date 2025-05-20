@@ -21,8 +21,8 @@ import net.minecraft.util.math.Direction.Axis;
 public class PositionPredicate
 {
 	public static final Codec<PositionPredicate> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-				Property.CODEC.listOf().optionalFieldOf("Properties").forGetter(p -> listOrSolo(Optional.of(p.values)).getLeft()),
-				Property.CODEC.optionalFieldOf("Property").forGetter(p -> listOrSolo(Optional.of(p.values)).getRight())
+				Property.CODEC.listOf().optionalFieldOf("properties").forGetter(p -> listOrSolo(Optional.of(p.values)).getLeft()),
+				Property.CODEC.optionalFieldOf("property").forGetter(p -> listOrSolo(Optional.of(p.values)).getRight())
 			).apply(instance, (l,s) -> 
 			{
 				PositionPredicate predicate = create();
@@ -61,9 +61,9 @@ public class PositionPredicate
 	public static record Property(int value, Axis axis, Comparison operation)
 	{
 		public static final Codec<Property> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-				Codec.INT.fieldOf("Value").forGetter(Property::value),
-				Axis.CODEC.fieldOf("Axis").forGetter(Property::axis),
-				Comparison.CODEC.fieldOf("Operation").forGetter(Property::operation)
+				Codec.INT.fieldOf("value").forGetter(Property::value),
+				Axis.CODEC.fieldOf("axis").forGetter(Property::axis),
+				Comparison.CODEC.fieldOf("operation").forGetter(Property::operation)
 				)
 				.apply(instance, (v,s,o) -> new Property(v, s, o)));
 		
