@@ -1,0 +1,13 @@
+{
+  "condition": {
+    "block": "minecraft:cyan_concrete",
+    "id": "reclamation:is_block"
+  },
+  "function": {
+    "convert_to": {
+      "block": "reclamation:cracked_cyan_concrete"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:crack_cyan_concrete"
+}

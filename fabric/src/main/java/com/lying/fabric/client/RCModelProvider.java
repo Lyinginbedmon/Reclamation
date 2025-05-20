@@ -1,8 +1,9 @@
 package com.lying.fabric.client;
 
+import static com.lying.reference.Reference.ModInfo.prefix;
+
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedTorchBlock;
@@ -12,7 +13,6 @@ import com.lying.client.ReclamationClient;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCBlocks.Terracotta;
 import com.lying.init.RCItems;
-import com.lying.reference.Reference;
 
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -45,16 +45,20 @@ import net.minecraft.util.math.Direction;
 public class RCModelProvider extends FabricModelProvider
 {
 	public static final Model TEMPLATE_LAYER_0 = new Model(
-			Optional.of(Reference.ModInfo.prefix("block/template_layered_0")),
+			Optional.of(prefix("block/template_layered_0")),
 			Optional.of("_0"),
 			TextureKey.ALL);
 	public static final Model TEMPLATE_LAYER_1 = new Model(
-			Optional.of(Reference.ModInfo.prefix("block/template_layered_1")),
+			Optional.of(prefix("block/template_layered_1")),
 			Optional.of("_1"),
 			TextureKey.ALL);
 	public static final Model TEMPLATE_LAYER_2 = new Model(
-			Optional.of(Reference.ModInfo.prefix("block/template_layered_2")),
+			Optional.of(prefix("block/template_layered_2")),
 			Optional.of("_2"),
+			TextureKey.ALL);
+	public static final Model TEMPLATE_TINTED_CUBE = new Model(
+			Optional.of(prefix("block/template_tinted_cube")),
+			Optional.empty(),
 			TextureKey.ALL);
 	
 	public RCModelProvider(FabricDataOutput output)
@@ -66,7 +70,7 @@ public class RCModelProvider extends FabricModelProvider
 	{
 		RCBlocks.SOLID_CUBES.forEach(entry -> blockStateModelGenerator.registerSimpleCubeAll(entry.get()));
 		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).forEach(b -> blockStateModelGenerator.registerSouthDefaultHorizontalFacing(TexturedModel.TEMPLATE_GLAZED_TERRACOTTA, b.get()));
-		RCBlocks.DYE_TO_CONCRETE.values().stream().map(Supplier::get).forEach(b -> CrackedConcrete.makeBlockState(b, blockStateModelGenerator));
+		RCBlocks.DYE_TO_CONCRETE.values().stream().forEach(b -> CrackedConcrete.makeBlockState((CrackedConcreteBlock)b.cracked().get(), b.dry().get(), blockStateModelGenerator));
 		DousedLights.register(blockStateModelGenerator);
 		LeafPile.register(blockStateModelGenerator);
 		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
@@ -208,61 +212,78 @@ public class RCModelProvider extends FabricModelProvider
 	
 	private static class CrackedConcrete
 	{
-		public static final Model TEMPLATE_CRACKED_0 = new Model(
-				Optional.of(Identifier.ofVanilla("block/cube_all")),
-				Optional.of("_0"),
-				TextureKey.ALL);
-		public static final Model TEMPLATE_CRACKED_1 = new Model(
-				Optional.of(Identifier.ofVanilla("block/cube_all")),
-				Optional.of("_1"),
-				TextureKey.ALL);
-		public static final Model TEMPLATE_CRACKED_2 = new Model(
-				Optional.of(Identifier.ofVanilla("block/cube_all")),
-				Optional.of("_2"),
-				TextureKey.ALL);
-		public static final Model TEMPLATE_CRACKED_3 = new Model(
-				Optional.of(Identifier.ofVanilla("block/cube_all")),
-				Optional.of("_3"),
-				TextureKey.ALL);
+		public static final TextureKey OVERLAY = TextureKey.of("overlay");
 		
-		private static TextureMap crackedTex(Block block, int index)
+		public static final Model TEMPLATE_CRACKED_0 = new Model(
+				Optional.of(prefix("block/cube_all_overlay")),
+				Optional.of("_0"),
+				TextureKey.ALL, OVERLAY);
+		public static final Model TEMPLATE_CRACKED_1 = new Model(
+				Optional.of(prefix("block/cube_all_overlay")),
+				Optional.of("_1"),
+				TextureKey.ALL, OVERLAY);
+		public static final Model TEMPLATE_CRACKED_2 = new Model(
+				Optional.of(prefix("block/cube_all_overlay")),
+				Optional.of("_2"),
+				TextureKey.ALL, OVERLAY);
+		public static final Model TEMPLATE_CRACKED_3 = new Model(
+				Optional.of(prefix("block/cube_all_overlay")),
+				Optional.of("_3"),
+				TextureKey.ALL, OVERLAY);
+		
+		private static TextureMap concreteTex(Block block, int index)
 		{
 			Identifier tex = Registries.BLOCK.getId(block);
-			tex = Identifier.of(tex.getNamespace(), "block/"+tex.getPath()+"_"+index);
-			return new TextureMap().put(TextureKey.ALL, tex);
+			return new TextureMap()
+					.put(OVERLAY, prefix("block/cracked_concrete_"+index))
+					.put(TextureKey.ALL, Identifier.of(tex.getNamespace(), "block/"+tex.getPath()));
 		}
 		
-		private static void makeBlockState(Block block, BlockStateModelGenerator generator)
+		private static void makeBlockState(Block block, Block base, BlockStateModelGenerator generator)
 		{
-			Identifier model0 = TEMPLATE_CRACKED_0.upload(block, crackedTex(block, 0), generator.modelCollector);
+			Identifier model0 = TEMPLATE_CRACKED_0.upload(block, concreteTex(base, 0), generator.modelCollector);
 			BlockStateVariantMap map = BlockStateVariantMap.create(CrackedConcreteBlock.CRACKS)
-					.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, model0))
-					.register(2, BlockStateVariant.create().put(VariantSettings.MODEL, TEMPLATE_CRACKED_1.upload(block, crackedTex(block, 1), generator.modelCollector)))
-					.register(3, BlockStateVariant.create().put(VariantSettings.MODEL, TEMPLATE_CRACKED_2.upload(block, crackedTex(block, 2), generator.modelCollector)))
-					.register(4, BlockStateVariant.create().put(VariantSettings.MODEL, TEMPLATE_CRACKED_3.upload(block, crackedTex(block, 3), generator.modelCollector)));
+					.register(1, entry(model0))
+					.register(2, entry(TEMPLATE_CRACKED_1.upload(block, concreteTex(base, 1), generator.modelCollector)))
+					.register(3, entry(TEMPLATE_CRACKED_2.upload(block, concreteTex(base, 2), generator.modelCollector)))
+					.register(4, entry(TEMPLATE_CRACKED_3.upload(block, concreteTex(base, 3), generator.modelCollector)));
 			
 			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(map));
 			generator.registerParentedItemModel(block, model0);
+		}
+		
+		private static List<BlockStateVariant> entry(Identifier model)
+		{
+			return List.of(
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R0),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R90),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R180),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R270)
+					);
 		}
 	}
 	
 	private static class Rubble
 	{
 		public static final Model TEMPLATE_RUBBLE_0 = new Model(
-				Optional.of(Reference.ModInfo.prefix("block/template_rubble_0")),
+				Optional.of(prefix("block/template_rubble_0")),
 				Optional.of("_0"),
 				TextureKey.ALL);
 		public static final Model TEMPLATE_RUBBLE_1 = new Model(
-				Optional.of(Reference.ModInfo.prefix("block/template_rubble_1")),
+				Optional.of(prefix("block/template_rubble_1")),
 				Optional.of("_1"),
 				TextureKey.ALL);
 		public static final Model TEMPLATE_RUBBLE_2 = new Model(
-				Optional.of(Reference.ModInfo.prefix("block/template_rubble_2")),
+				Optional.of(prefix("block/template_rubble_2")),
 				Optional.of("_2"),
 				TextureKey.ALL);
 		public static final Model TEMPLATE_RUBBLE_3 = new Model(
-				Optional.of(Reference.ModInfo.prefix("block/template_rubble_3")),
+				Optional.of(prefix("block/template_rubble_3")),
 				Optional.of("_3"),
+				TextureKey.ALL);
+		public static final Model TEMPLATE_RUBBLE_FULL_BLOCK = new Model(
+				Optional.of(prefix("block/template_tinted_cube")),
+				Optional.of("_full"),
 				TextureKey.ALL);
 		
 		private static TextureMap rubbleTex(Block cobble)
@@ -285,11 +306,22 @@ public class RCModelProvider extends FabricModelProvider
 		private static void makeBlockState(Block block, BlockStateModelGenerator generator)
 		{
 			Identifier model0 = TEMPLATE_RUBBLE_0.upload(block, rubbleTex(block), generator.modelCollector);
-			BlockStateVariantMap map = BlockStateVariantMap.create(RubbleBlock.DEPTH)
-					.register(1, entry(model0))
-					.register(2, entry(TEMPLATE_RUBBLE_1.upload(block, rubbleTex(block), generator.modelCollector)))
-					.register(3, entry(TEMPLATE_RUBBLE_2.upload(block, rubbleTex(block), generator.modelCollector)))
-					.register(4, entry(TEMPLATE_RUBBLE_3.upload(block, rubbleTex(block), generator.modelCollector)));
+			
+			List<BlockStateVariant> entry0 = entry(model0);
+			List<BlockStateVariant> entry1 = entry(TEMPLATE_RUBBLE_1.upload(block, rubbleTex(block), generator.modelCollector));
+			List<BlockStateVariant> entry2 = entry(TEMPLATE_RUBBLE_2.upload(block, rubbleTex(block), generator.modelCollector));
+			List<BlockStateVariant> entry3 = entry(TEMPLATE_RUBBLE_3.upload(block, rubbleTex(block), generator.modelCollector));
+			List<BlockStateVariant> entry4 = entry(TEMPLATE_RUBBLE_FULL_BLOCK.upload(block, rubbleTex(block), generator.modelCollector));
+			
+			BlockStateVariantMap map = BlockStateVariantMap.create(RubbleBlock.DEPTH, RubbleBlock.FULL)
+					.register(1, false, entry0)
+					.register(1, true, entry0)
+					.register(2, false, entry1)
+					.register(2, true, entry1)
+					.register(3, false, entry2)
+					.register(3, true, entry2)
+					.register(4, false, entry3)
+					.register(4, true, entry4);
 			
 			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(map));
 			generator.registerParentedItemModel(block, model0);

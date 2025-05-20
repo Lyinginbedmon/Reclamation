@@ -44,9 +44,16 @@ public class RCBlocks
 	public static LeafPileBlock[] TINTED_LEAF_PILES = new LeafPileBlock[0];
 	
 	public static final Map<DyeColor, Terracotta> DYE_TO_TERRACOTTA = new HashMap<>();
-	public static final Map<DyeColor, Supplier<Block>> DYE_TO_CONCRETE = new HashMap<>();
+	public static final Map<DyeColor, Concrete> DYE_TO_CONCRETE = new HashMap<>();
 	
-	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank) { }
+	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank)
+	{
+		public static Terracotta of(Block glazed, Supplier<Block> faded, Block blank) { return new Terracotta(() -> glazed, faded, () -> blank); }
+	}
+	public static record Concrete(Supplier<Block> dry, Supplier<Block> cracked, Supplier<Block> powder)
+	{
+		public static Concrete of(Block dry, Supplier<Block> cracked, Block powder) { return new Concrete(() -> dry, cracked, () -> powder); }
+	}
 	
 	public static final RegistrySupplier<Block> WAXED_IRON_BLOCK		= registerSolidCube("waxed_iron_block", settings -> new ScrapeableBlock(() -> Blocks.IRON_BLOCK, settings.mapColor(MapColor.IRON_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresTool().strength(5F, 6F).sounds(BlockSoundGroup.METAL)));
 	public static final RegistrySupplier<Block> WAXED_EXPOSED_IRON		= registerSolidCube("waxed_exposed_iron", settings -> new ScrapeableBlock(RCBlocks.EXPOSED_IRON, settings.mapColor(MapColor.LIGHT_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresTool().strength(4.0F, 6.0F).sounds(BlockSoundGroup.METAL)));
@@ -91,6 +98,23 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> WHITE_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.WHITE);
 	public static final RegistrySupplier<Block> YELLOW_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.YELLOW);
 	
+	public static final RegistrySupplier<Block> CRACKED_BLACK_CONCRETE		= registerCrackedConcrete(DyeColor.BLACK);
+	public static final RegistrySupplier<Block> CRACKED_BLUE_CONCRETE		= registerCrackedConcrete(DyeColor.BLUE);
+	public static final RegistrySupplier<Block> CRACKED_BROWN_CONCRETE		= registerCrackedConcrete(DyeColor.BROWN);
+	public static final RegistrySupplier<Block> CRACKED_CYAN_CONCRETE		= registerCrackedConcrete(DyeColor.CYAN);
+	public static final RegistrySupplier<Block> CRACKED_GRAY_CONCRETE		= registerCrackedConcrete(DyeColor.GRAY);
+	public static final RegistrySupplier<Block> CRACKED_GREEN_CONCRETE		= registerCrackedConcrete(DyeColor.GREEN);
+	public static final RegistrySupplier<Block> CRACKED_LIGHT_BLUE_CONCRETE	= registerCrackedConcrete(DyeColor.LIGHT_BLUE);
+	public static final RegistrySupplier<Block> CRACKED_LIGHT_GRAY_CONCRETE	= registerCrackedConcrete(DyeColor.LIGHT_GRAY);
+	public static final RegistrySupplier<Block> CRACKED_LIME_CONCRETE		= registerCrackedConcrete(DyeColor.LIME);
+	public static final RegistrySupplier<Block> CRACKED_MAGENTA_CONCRETE	= registerCrackedConcrete(DyeColor.MAGENTA);
+	public static final RegistrySupplier<Block> CRACKED_ORANGE_CONCRETE		= registerCrackedConcrete(DyeColor.ORANGE);
+	public static final RegistrySupplier<Block> CRACKED_PINK_CONCRETE		= registerCrackedConcrete(DyeColor.PINK);
+	public static final RegistrySupplier<Block> CRACKED_PURPLE_CONCRETE		= registerCrackedConcrete(DyeColor.PURPLE);
+	public static final RegistrySupplier<Block> CRACKED_RED_CONCRETE		= registerCrackedConcrete(DyeColor.RED);
+	public static final RegistrySupplier<Block> CRACKED_WHITE_CONCRETE		= registerCrackedConcrete(DyeColor.WHITE);
+	public static final RegistrySupplier<Block> CRACKED_YELLOW_CONCRETE		= registerCrackedConcrete(DyeColor.YELLOW);
+	
 	public static final RegistrySupplier<Block> DOUSED_TORCH				= register("doused_torch", settings -> new DousedTorchBlock(Blocks.TORCH, Blocks.WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_SOUL_TORCH			= register("doused_soul_torch", settings -> new DousedTorchBlock(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_LANTERN				= register("doused_lantern", settings -> new DousedLanternBlock(() -> Blocks.LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
@@ -126,15 +150,14 @@ public class RCBlocks
 	private static RegistrySupplier<Block> registerCrackedConcrete(DyeColor color)
 	{
 		RegistrySupplier<Block> registry = register("cracked_"+color.asString()+"_concrete", settings -> 
-			new CrackedConcreteBlock(settings
+			new CrackedConcreteBlock(color, settings
 					.mapColor(color)
 					.instrument(NoteBlockInstrument.BASEDRUM)
 					.requiresTool()
 					.strength(1.8F)));
-		DYE_TO_CONCRETE.put(color, registry);
 		return registry;
 	}
-
+	
 	private static RegistrySupplier<Block> registerSolidCube(String nameIn, Function<AbstractBlock.Settings, Block> supplierIn)
 	{
 		RegistrySupplier<Block> registry = register(nameIn, supplierIn);
@@ -154,28 +177,42 @@ public class RCBlocks
 	
 	public static void init()
 	{
-		for(DyeColor color : DyeColor.values())
-			registerCrackedConcrete(color);
-		
 		BLOCKS.register();
 		Reclamation.LOGGER.info("# Initialised {} blocks", ALL_BLOCKS.size());
 		
-		DYE_TO_TERRACOTTA.put(DyeColor.BLACK, new Terracotta(() -> Blocks.BLACK_GLAZED_TERRACOTTA, RCBlocks.BLACK_FADED_TERRACOTTA, () -> Blocks.BLACK_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.BLUE, new Terracotta(() -> Blocks.BLUE_GLAZED_TERRACOTTA, RCBlocks.BLUE_FADED_TERRACOTTA, () -> Blocks.BLUE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.BROWN, new Terracotta(() -> Blocks.BROWN_GLAZED_TERRACOTTA, RCBlocks.BROWN_FADED_TERRACOTTA, () -> Blocks.BROWN_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.CYAN, new Terracotta(() -> Blocks.CYAN_GLAZED_TERRACOTTA, RCBlocks.CYAN_FADED_TERRACOTTA, () -> Blocks.CYAN_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.GRAY, new Terracotta(() -> Blocks.GRAY_GLAZED_TERRACOTTA, RCBlocks.GRAY_FADED_TERRACOTTA, () -> Blocks.GRAY_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.GREEN, new Terracotta(() -> Blocks.GREEN_GLAZED_TERRACOTTA, RCBlocks.GREEN_FADED_TERRACOTTA, () -> Blocks.GREEN_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.LIGHT_BLUE, new Terracotta(() -> Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA, RCBlocks.LIGHT_BLUE_FADED_TERRACOTTA, () -> Blocks.LIGHT_BLUE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.LIGHT_GRAY, new Terracotta(() -> Blocks.LIGHT_GRAY_GLAZED_TERRACOTTA, RCBlocks.LIGHT_GRAY_FADED_TERRACOTTA, () -> Blocks.LIGHT_GRAY_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.LIME, new Terracotta(() -> Blocks.LIME_GLAZED_TERRACOTTA, RCBlocks.LIME_FADED_TERRACOTTA, () -> Blocks.LIME_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.MAGENTA, new Terracotta(() -> Blocks.MAGENTA_GLAZED_TERRACOTTA, RCBlocks.MAGENTA_FADED_TERRACOTTA, () -> Blocks.MAGENTA_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.ORANGE, new Terracotta(() -> Blocks.ORANGE_GLAZED_TERRACOTTA, RCBlocks.ORANGE_FADED_TERRACOTTA, () -> Blocks.ORANGE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.PINK, new Terracotta(() -> Blocks.PINK_GLAZED_TERRACOTTA, RCBlocks.PINK_FADED_TERRACOTTA, () -> Blocks.PINK_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.PURPLE, new Terracotta(() -> Blocks.PURPLE_GLAZED_TERRACOTTA, RCBlocks.PURPLE_FADED_TERRACOTTA, () -> Blocks.PURPLE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.RED, new Terracotta(() -> Blocks.RED_GLAZED_TERRACOTTA, RCBlocks.RED_FADED_TERRACOTTA, () -> Blocks.RED_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.WHITE, new Terracotta(() -> Blocks.WHITE_GLAZED_TERRACOTTA, RCBlocks.WHITE_FADED_TERRACOTTA, () -> Blocks.WHITE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.YELLOW, new Terracotta(() -> Blocks.YELLOW_GLAZED_TERRACOTTA, RCBlocks.YELLOW_FADED_TERRACOTTA, () -> Blocks.YELLOW_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.BLACK, Terracotta.of(Blocks.BLACK_GLAZED_TERRACOTTA, RCBlocks.BLACK_FADED_TERRACOTTA, Blocks.BLACK_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.BLUE, Terracotta.of(Blocks.BLUE_GLAZED_TERRACOTTA, RCBlocks.BLUE_FADED_TERRACOTTA, Blocks.BLUE_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.BROWN, Terracotta.of(Blocks.BROWN_GLAZED_TERRACOTTA, RCBlocks.BROWN_FADED_TERRACOTTA, Blocks.BROWN_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.CYAN, Terracotta.of(Blocks.CYAN_GLAZED_TERRACOTTA, RCBlocks.CYAN_FADED_TERRACOTTA, Blocks.CYAN_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.GRAY, Terracotta.of(Blocks.GRAY_GLAZED_TERRACOTTA, RCBlocks.GRAY_FADED_TERRACOTTA, Blocks.GRAY_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.GREEN, Terracotta.of(Blocks.GREEN_GLAZED_TERRACOTTA, RCBlocks.GREEN_FADED_TERRACOTTA, Blocks.GREEN_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.LIGHT_BLUE, Terracotta.of(Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA, RCBlocks.LIGHT_BLUE_FADED_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.LIGHT_GRAY, Terracotta.of(Blocks.LIGHT_GRAY_GLAZED_TERRACOTTA, RCBlocks.LIGHT_GRAY_FADED_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.LIME, Terracotta.of(Blocks.LIME_GLAZED_TERRACOTTA, RCBlocks.LIME_FADED_TERRACOTTA, Blocks.LIME_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.MAGENTA, Terracotta.of(Blocks.MAGENTA_GLAZED_TERRACOTTA, RCBlocks.MAGENTA_FADED_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.ORANGE, Terracotta.of(Blocks.ORANGE_GLAZED_TERRACOTTA, RCBlocks.ORANGE_FADED_TERRACOTTA, Blocks.ORANGE_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.PINK, Terracotta.of(Blocks.PINK_GLAZED_TERRACOTTA, RCBlocks.PINK_FADED_TERRACOTTA, Blocks.PINK_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.PURPLE, Terracotta.of(Blocks.PURPLE_GLAZED_TERRACOTTA, RCBlocks.PURPLE_FADED_TERRACOTTA, Blocks.PURPLE_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.RED, Terracotta.of(Blocks.RED_GLAZED_TERRACOTTA, RCBlocks.RED_FADED_TERRACOTTA, Blocks.RED_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.WHITE, Terracotta.of(Blocks.WHITE_GLAZED_TERRACOTTA, RCBlocks.WHITE_FADED_TERRACOTTA, Blocks.WHITE_TERRACOTTA));
+		DYE_TO_TERRACOTTA.put(DyeColor.YELLOW, Terracotta.of(Blocks.YELLOW_GLAZED_TERRACOTTA, RCBlocks.YELLOW_FADED_TERRACOTTA, Blocks.YELLOW_TERRACOTTA));
+		
+		DYE_TO_CONCRETE.put(DyeColor.BLACK, Concrete.of(Blocks.BLACK_CONCRETE, RCBlocks.CRACKED_BLACK_CONCRETE, Blocks.BLACK_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.BLUE, Concrete.of(Blocks.BLUE_CONCRETE, RCBlocks.CRACKED_BLUE_CONCRETE, Blocks.BLUE_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.BROWN, Concrete.of(Blocks.BROWN_CONCRETE, RCBlocks.CRACKED_BROWN_CONCRETE, Blocks.BROWN_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.CYAN, Concrete.of(Blocks.CYAN_CONCRETE, RCBlocks.CRACKED_CYAN_CONCRETE, Blocks.CYAN_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.GRAY, Concrete.of(Blocks.GRAY_CONCRETE, RCBlocks.CRACKED_GRAY_CONCRETE, Blocks.GRAY_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.GREEN, Concrete.of(Blocks.GREEN_CONCRETE, RCBlocks.CRACKED_GREEN_CONCRETE, Blocks.GREEN_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.LIGHT_BLUE, Concrete.of(Blocks.LIGHT_BLUE_CONCRETE, RCBlocks.CRACKED_LIGHT_BLUE_CONCRETE, Blocks.LIGHT_BLUE_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.LIGHT_GRAY, Concrete.of(Blocks.LIGHT_GRAY_CONCRETE, RCBlocks.CRACKED_LIGHT_GRAY_CONCRETE, Blocks.LIGHT_GRAY_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.LIME, Concrete.of(Blocks.LIME_CONCRETE, RCBlocks.CRACKED_LIME_CONCRETE, Blocks.LIME_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.MAGENTA, Concrete.of(Blocks.MAGENTA_CONCRETE, RCBlocks.CRACKED_MAGENTA_CONCRETE, Blocks.MAGENTA_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.ORANGE, Concrete.of(Blocks.ORANGE_CONCRETE, RCBlocks.CRACKED_ORANGE_CONCRETE, Blocks.ORANGE_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.PINK, Concrete.of(Blocks.PINK_CONCRETE, RCBlocks.CRACKED_PINK_CONCRETE, Blocks.PINK_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.PURPLE, Concrete.of(Blocks.PURPLE_CONCRETE, RCBlocks.CRACKED_PURPLE_CONCRETE, Blocks.PURPLE_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.RED, Concrete.of(Blocks.RED_CONCRETE, RCBlocks.CRACKED_RED_CONCRETE, Blocks.RED_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.WHITE, Concrete.of(Blocks.WHITE_CONCRETE, RCBlocks.CRACKED_WHITE_CONCRETE, Blocks.WHITE_CONCRETE_POWDER));
+		DYE_TO_CONCRETE.put(DyeColor.YELLOW, Concrete.of(Blocks.YELLOW_CONCRETE, RCBlocks.CRACKED_YELLOW_CONCRETE, Blocks.YELLOW_CONCRETE_POWDER));
 		
 		TINTED_LEAF_PILES = List.of(
 				ACACIA_LEAF_PILE,

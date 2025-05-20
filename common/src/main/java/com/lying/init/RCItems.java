@@ -91,7 +91,7 @@ public class RCItems
 	
 	private static RegistrySupplier<Item> registerCrackedConcrete(DyeColor color)
 	{
-		return registerBlockNoItem("cracked_"+color.asString()+"_concrete", (RegistrySupplier<Block>)RCBlocks.DYE_TO_CONCRETE.get(color));
+		return registerBlockNoItem("cracked_"+color.asString()+"_concrete", (RegistrySupplier<Block>)RCBlocks.DYE_TO_CONCRETE.get(color).cracked());
 	}
 	
 	private static RegistrySupplier<Item> registerBlock(String nameIn, RegistrySupplier<Block> blockIn)

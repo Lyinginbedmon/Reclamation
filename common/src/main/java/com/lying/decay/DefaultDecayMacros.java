@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.lying.data.RCBlockTags;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.functions.FunctionBlockState;
@@ -16,7 +17,6 @@ import com.lying.decay.functions.FunctionMacro;
 import com.lying.decay.handler.DecayMacro;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
-import com.lying.reference.Reference;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -41,21 +41,24 @@ public class DefaultDecayMacros
 	public static final Identifier PLACE_IVY		= prefix("place_ivy_main");
 	public static final Identifier FADE_TERRACOTTA	= prefix("fade_terracotta_main");
 	public static final Identifier BLANK_TERRACOTTA	= prefix("blank_terracotta_main");
+	public static final Identifier CRACK_CONCRETE	= prefix("crack_concrete");
 	
-	private static void register(DecayMacro dataIn)
+	private static Identifier register(DecayMacro dataIn)
 	{
 		DATA.put(dataIn.packName(), dataIn);
+		return dataIn.packName();
 	}
 	
 	public static Collection<DecayMacro> getDefaults() { return DATA.values(); }
 	
 	static
 	{
-		FACE_CONNECTIONS.entrySet().forEach(entry -> register(DecayMacro.Builder.create()
+		List<Identifier> ivySet = Lists.newArrayList();
+		FACE_CONNECTIONS.entrySet().forEach(entry -> ivySet.add(register(DecayMacro.Builder.create()
 				.name("place_ivy_"+entry.getKey().asString())
 				.condition(ConditionNeighbouring.Supported.onFaces(entry.getKey()))
 				.function(FunctionConvert.toBlockState(RCBlocks.IVY.get().getDefaultState().with(entry.getValue(), true)))
-				.build()));
+				.build())));
 		
 		register(DecayMacro.Builder.create()
 				.name(PLACE_IVY)
@@ -63,7 +66,7 @@ public class DefaultDecayMacros
 					RCDecayConditions.IS_REPLACEABLE.get(),
 					ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN)
 				)
-				.function(FunctionMacro.of(FACE_CONNECTIONS.keySet().stream().map(Direction::asString).map(s -> "place_ivy_"+s).map(s -> Reference.ModInfo.prefix(s)).toList().toArray(new Identifier[0])))
+				.function(FunctionMacro.of(ivySet.toArray(new Identifier[0])).randomised())
 				.build());
 		
 		register(DecayMacro.Builder.create()
@@ -74,8 +77,8 @@ public class DefaultDecayMacros
 					Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING, 
 					Blocks.BROWN_MUSHROOM, Blocks.RED_MUSHROOM)).build());
 		
-		List<DecayMacro> fadeSet = Lists.newArrayList();
-		List<DecayMacro> blankSet = Lists.newArrayList();
+		List<Identifier> fadeSet = Lists.newArrayList();
+		List<Identifier> blankSet = Lists.newArrayList();
 		RCBlocks.DYE_TO_TERRACOTTA.entrySet().forEach(entry -> 
 		{
 			DyeColor color = entry.getKey();
@@ -86,21 +89,36 @@ public class DefaultDecayMacros
 				.function(
 					FunctionConvert.toBlock(faded),
 					FunctionBlockState.CopyValue.of(Properties.HORIZONTAL_FACING)).build(); 
-			register(fade);
-			fadeSet.add(fade);
+			fadeSet.add(register(fade));
 			
 			DecayMacro blank = DecayMacro.Builder.create()
 					.name("blank_"+color.asString()+"_terracotta")
 					.condition(ConditionIsBlock.of(faded))
 					.function(FunctionConvert.toBlock(entry.getValue().blank().get())).build(); 
-			register(blank);
-			blankSet.add(blank);
+			blankSet.add(register(blank));
 		});
 		register(DecayMacro.Builder.create()
 				.name(FADE_TERRACOTTA)
-				.function(FunctionMacro.of(fadeSet.stream().map(DecayMacro::packName).toList().toArray(new Identifier[0]))).build());
+				.function(FunctionMacro.of(fadeSet.toArray(new Identifier[0]))).build());
 		register(DecayMacro.Builder.create()
 				.name(BLANK_TERRACOTTA)
-				.function(FunctionMacro.of(blankSet.stream().map(DecayMacro::packName).toList().toArray(new Identifier[0]))).build());
+				.function(FunctionMacro.of(blankSet.toArray(new Identifier[0]))).build());
+		
+		List<Identifier> crackSet = Lists.newArrayList();
+		RCBlocks.DYE_TO_CONCRETE.entrySet().forEach(entry -> 
+		{
+			DyeColor color = entry.getKey();
+			Block concrete = entry.getValue().dry().get();
+			Block cracked = entry.getValue().cracked().get();
+			DecayMacro crack = DecayMacro.Builder.create()
+				.name("crack_"+color.asString()+"_concrete")
+				.condition(ConditionIsBlock.of(concrete))
+				.function(FunctionConvert.toBlock(cracked)).build();
+			crackSet.add(register(crack));
+		});
+		register(DecayMacro.Builder.create()
+				.name(CRACK_CONCRETE)
+				.condition(ConditionIsBlock.of(RCBlockTags.CRACKED_CONCRETE))
+				.function(FunctionMacro.of(crackSet.toArray(new Identifier[0]))).build());
 	}
 }

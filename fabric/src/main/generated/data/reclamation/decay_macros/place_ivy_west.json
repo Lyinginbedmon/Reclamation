@@ -9,6 +9,7 @@
         "Name": "reclamation:ivy",
         "Properties": {
           "east": "false",
+          "inert": "false",
           "north": "false",
           "south": "false",
           "up": "false",

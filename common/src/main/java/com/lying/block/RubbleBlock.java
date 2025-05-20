@@ -12,6 +12,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -25,6 +26,8 @@ import net.minecraft.world.tick.ScheduledTickView;
 public class RubbleBlock extends Block
 {
 	public static final int DELAY = 5;
+	public static final BooleanProperty FULL = BooleanProperty.of("full");
+	public static final BooleanProperty INERT = BooleanProperty.of("inert");
 	public static final IntProperty DEPTH = IntProperty.of("depth", 1, 4);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 5.0, 15.0);
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[] 
@@ -39,12 +42,12 @@ public class RubbleBlock extends Block
 	public RubbleBlock(Settings settings)
 	{
 		super(settings);
-		setDefaultState(getDefaultState().with(DEPTH, 1));
+		setDefaultState(getDefaultState().with(DEPTH, 1).with(FULL, false).with(INERT, false));
 	}
 	
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
 	{
-		builder.add(DEPTH);
+		builder.add(DEPTH, FULL, INERT);
 	}
 	
 	public static int layerIndex(BlockState state) { return state.get(DEPTH) - 1; }
@@ -109,7 +112,7 @@ public class RubbleBlock extends Block
 			)
 	{
 		tickView.scheduleBlockTick(pos, this, DELAY);
-		return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
+		return state.with(FULL, state.get(DEPTH) == 4 && world.getBlockState(pos.up()).isOf(this));
 	}
 	
 	private static EnumSet<Direction> randomSequence(Random random)
@@ -123,6 +126,9 @@ public class RubbleBlock extends Block
 	
 	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
 	{
+		if(state.get(INERT))
+			return;
+		
 		BlockPos down = pos.down();
 		BlockState downState = world.getBlockState(down);
 		if(canAddTo(downState))

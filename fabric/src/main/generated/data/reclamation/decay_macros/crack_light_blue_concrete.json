@@ -1,0 +1,13 @@
+{
+  "condition": {
+    "block": "minecraft:light_blue_concrete",
+    "id": "reclamation:is_block"
+  },
+  "function": {
+    "convert_to": {
+      "block": "reclamation:cracked_light_blue_concrete"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:crack_light_blue_concrete"
+}

@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "reclamation:block/cube_all_overlay",
   "textures": {
-    "all": "reclamation:block/cracked_lime_concrete_3"
+    "all": "minecraft:block/lime_concrete",
+    "overlay": "reclamation:block/cracked_concrete_3"
   }
 }

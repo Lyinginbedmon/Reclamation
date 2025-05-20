@@ -1,16 +1,76 @@
 {
   "variants": {
-    "cracks=1": {
-      "model": "reclamation:block/cracked_blue_concrete_0"
-    },
-    "cracks=2": {
-      "model": "reclamation:block/cracked_blue_concrete_1"
-    },
-    "cracks=3": {
-      "model": "reclamation:block/cracked_blue_concrete_2"
-    },
-    "cracks=4": {
-      "model": "reclamation:block/cracked_blue_concrete_3"
-    }
+    "cracks=1": [
+      {
+        "model": "reclamation:block/cracked_blue_concrete_0",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_0",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_0",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_0",
+        "y": 270
+      }
+    ],
+    "cracks=2": [
+      {
+        "model": "reclamation:block/cracked_blue_concrete_1",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_1",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_1",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_1",
+        "y": 270
+      }
+    ],
+    "cracks=3": [
+      {
+        "model": "reclamation:block/cracked_blue_concrete_2",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_2",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_2",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_2",
+        "y": 270
+      }
+    ],
+    "cracks=4": [
+      {
+        "model": "reclamation:block/cracked_blue_concrete_3",
+        "y": 0
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_3",
+        "y": 90
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_3",
+        "y": 180
+      },
+      {
+        "model": "reclamation:block/cracked_blue_concrete_3",
+        "y": 270
+      }
+    ]
   }
 }

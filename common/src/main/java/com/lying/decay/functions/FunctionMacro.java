@@ -2,6 +2,7 @@ package com.lying.decay.functions;
 
 import static com.lying.utility.RCUtils.listOrSolo;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ import net.minecraft.util.Identifier;
 
 public class FunctionMacro extends DecayFunction
 {
-	private MacroList macros = new MacroList(List.of());
+	private MacroList macros = new MacroList(List.of(), Optional.empty());
 	
 	public FunctionMacro(Identifier idIn)
 	{
@@ -30,13 +31,23 @@ public class FunctionMacro extends DecayFunction
 	public static FunctionMacro of(Identifier... idsIn)
 	{
 		FunctionMacro func = (FunctionMacro)RCDecayFunctions.MACRO.get();
-		func.macros = new MacroList(List.of(idsIn));
+		func.macros = new MacroList(List.of(idsIn), Optional.empty());
 		return func;
+	}
+	
+	public FunctionMacro randomised()
+	{
+		macros = macros.random(true);
+		return this;
 	}
 	
 	protected void applyTo(DecayContext context)
 	{
-		for(DecayMacro macro : macros.contents())
+		List<DecayMacro> macros = this.macros.contents();
+		if(this.macros.random().orElse(false))
+			Collections.shuffle(macros);
+		
+		for(DecayMacro macro : macros)
 			if(macro.tryToApply(context))
 				return;
 	}
@@ -48,22 +59,28 @@ public class FunctionMacro extends DecayFunction
 	
 	protected void read(JsonObject obj)
 	{
-		macros = MacroList.CODEC.parse(JsonOps.INSTANCE, obj).resultOrPartial(Reclamation.LOGGER::error).orElse(new MacroList(List.of()));
+		macros = MacroList.CODEC.parse(JsonOps.INSTANCE, obj).resultOrPartial(Reclamation.LOGGER::error).orElse(new MacroList(List.of(), Optional.empty()));
 	}
 	
-	private record MacroList(List<Identifier> macroIDs)
+	private record MacroList(List<Identifier> macroIDs, Optional<Boolean> random)
 	{
 		public static final Codec<MacroList> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 				Identifier.CODEC.optionalFieldOf("macro").forGetter(g -> listOrSolo(Optional.of(g.macroIDs())).getRight()),
-				Identifier.CODEC.listOf().optionalFieldOf("macros").forGetter(g -> listOrSolo(Optional.of(g.macroIDs())).getLeft()))
-				.apply(instance, (solo, set) -> 
+				Identifier.CODEC.listOf().optionalFieldOf("macros").forGetter(g -> listOrSolo(Optional.of(g.macroIDs())).getLeft()),
+				Codec.BOOL.optionalFieldOf("randomise").forGetter(MacroList::random))
+				.apply(instance, (solo, set, rand) -> 
 				{
 					List<Identifier> macroList = Lists.newArrayList();
 					solo.ifPresent(s -> macroList.add(s));
 					set.ifPresent(s -> macroList.addAll(s));
-					return new MacroList(macroList);
+					return new MacroList(macroList, rand);
 				}));
 		
 		public List<DecayMacro> contents() { return macroIDs.stream().map(DecayMacros.instance()::get).filter(Optional::isPresent).map(Optional::get).toList(); }
+		
+		public MacroList random(boolean rand)
+		{
+			return new MacroList(macroIDs, Optional.of(rand));
+		}
 	}
 }

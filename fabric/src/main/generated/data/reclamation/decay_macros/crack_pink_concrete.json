@@ -1,0 +1,13 @@
+{
+  "condition": {
+    "block": "minecraft:pink_concrete",
+    "id": "reclamation:is_block"
+  },
+  "function": {
+    "convert_to": {
+      "block": "reclamation:cracked_pink_concrete"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:crack_pink_concrete"
+}

@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import com.lying.data.RCBlockTags;
 import com.lying.init.RCBlocks;
+import com.lying.init.RCBlocks.Concrete;
 import com.lying.init.RCBlocks.Terracotta;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -28,8 +29,9 @@ public class RCBlockTagsProvider extends BlockTagProvider
 				RCBlocks.RUSTED_IRON.get());
 		
 		Block[] fadedTerracotta = RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).map(Supplier::get).toList().toArray(new Block[0]);
-		Block[] crackedConcrete = RCBlocks.DYE_TO_CONCRETE.values().stream().map(Supplier::get).toList().toArray(new Block[0]);
+		Block[] crackedConcrete = RCBlocks.DYE_TO_CONCRETE.values().stream().map(Concrete::cracked).map(Supplier::get).toList().toArray(new Block[0]);
 		getOrCreateTagBuilder(RCBlockTags.FADED_TERRACOTTA).add(fadedTerracotta);
+		getOrCreateTagBuilder(RCBlockTags.CRACKED_CONCRETE).add(crackedConcrete);
 		
 		getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(fadedTerracotta).add(crackedConcrete).add(
 				RCBlocks.CRACKED_STONE_BRICK_SLAB.get(),

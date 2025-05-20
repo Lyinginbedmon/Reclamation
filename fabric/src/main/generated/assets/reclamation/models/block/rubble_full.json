@@ -1,0 +1,6 @@
+{
+  "parent": "reclamation:block/template_tinted_cube",
+  "textures": {
+    "all": "minecraft:block/cobblestone"
+  }
+}

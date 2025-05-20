@@ -1,0 +1,13 @@
+{
+  "condition": {
+    "block": "minecraft:black_concrete",
+    "id": "reclamation:is_block"
+  },
+  "function": {
+    "convert_to": {
+      "block": "reclamation:cracked_black_concrete"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:crack_black_concrete"
+}
