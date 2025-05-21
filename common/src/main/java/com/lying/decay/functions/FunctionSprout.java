@@ -59,7 +59,7 @@ public class FunctionSprout extends DecayFunction
 			{
 				DecayCondition condition = resultMap.condition.get();
 				BlockState stateAt = context.getBlockState(offset);
-				if(!condition.test(serverWorld, offset, stateAt))
+				if(!DecayCondition.testAny(List.of(condition), serverWorld, offset, stateAt))
 					continue;
 			}
 			

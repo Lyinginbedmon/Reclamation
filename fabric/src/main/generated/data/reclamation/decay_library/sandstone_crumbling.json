@@ -3,6 +3,7 @@
     "base_chance": 0.002
   },
   "conditions": [
+    "reclamation:exposed",
     {
       "block": "minecraft:sandstone",
       "id": "reclamation:is_block"
@@ -17,7 +18,7 @@
         "west",
         "east"
       ],
-      "id": "reclamation:exposed"
+      "id": "reclamation:uncovered"
     }
   ],
   "function": {

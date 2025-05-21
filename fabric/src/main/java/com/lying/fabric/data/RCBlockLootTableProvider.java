@@ -71,7 +71,7 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 		addRustDrops(RCBlocks.RUSTED_IRON.get(), Items.IRON_INGOT, 0, 3);
 		addIvyDrops(RCBlocks.IVY.get());
 		addSootDrops(RCBlocks.SOOT.get());
-		addRubbleDrops(RCBlocks.RUBBLE.get());
+		addRubbleDrops(RCBlocks.STONE_RUBBLE.get());
 	}
 	
 	private void addRustDrops(Block silk, Item alt, int min, int max)

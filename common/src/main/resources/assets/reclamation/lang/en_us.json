@@ -81,6 +81,8 @@
 	"command.reclamation.block_wither_immune": "That block is immune to all decay",
 	"command.reclamation.block_no_entries": "The decay library has no entries applicable to that block",
 	"command.reclamation.block_entry_invalid": "That decay entry is not applicable to that block",
+	"command.reclamation.exterior.success": "Position {} is exposed to the elements by {}",
+	"command.reclamation.exterior.failure": "Position {} is protected from the elements",
 	// Gui
 	// Enums
 	// Keybinds

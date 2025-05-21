@@ -59,7 +59,7 @@ public abstract class ConditionBoolean extends DecayCondition
 		
 		public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
 		{
-			return subConditions.stream().anyMatch(c -> c.test(world, pos, currentState));
+			return DecayCondition.testAny(subConditions, world, pos, currentState);
 		}
 	}
 	
@@ -77,7 +77,7 @@ public abstract class ConditionBoolean extends DecayCondition
 		
 		public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
 		{
-			return subConditions.stream().allMatch(c -> c.test(world, pos, currentState));
+			return DecayCondition.testAll(subConditions, world, pos, currentState);
 		}
 	}
 }

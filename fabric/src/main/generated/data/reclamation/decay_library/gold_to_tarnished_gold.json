@@ -18,6 +18,7 @@
   },
   "conditions": [
     "reclamation:exposed",
+    "reclamation:uncovered",
     {
       "block": "minecraft:gold_block",
       "id": "reclamation:is_block"

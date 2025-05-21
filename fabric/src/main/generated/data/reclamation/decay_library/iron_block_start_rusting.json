@@ -24,7 +24,7 @@
           "id": "reclamation:and",
           "set": [
             "reclamation:exposed",
-            "reclamation:in_rain"
+            "reclamation:current_weather"
           ]
         },
         {

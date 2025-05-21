@@ -78,7 +78,7 @@ public class RCModelProvider extends FabricModelProvider
 		registerStairs(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
 		
-		Rubble.makeBlockState(RCBlocks.RUBBLE.get(), blockStateModelGenerator);
+		Rubble.makeBlockState(RCBlocks.STONE_RUBBLE.get(), blockStateModelGenerator);
 	}
 	
 	public void generateItemModels(ItemModelGenerator itemModelGenerator)

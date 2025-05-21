@@ -16,6 +16,7 @@
     }
   },
   "conditions": [
+    "reclamation:exposed",
     "reclamation:is_solid_block",
     "reclamation:on_ground",
     {
@@ -25,7 +26,7 @@
         "west",
         "east"
       ],
-      "id": "reclamation:exposed"
+      "id": "reclamation:uncovered"
     }
   ],
   "function": {

@@ -20,14 +20,14 @@
     }
   },
   "conditions": [
+    "reclamation:exposed",
     {
       "blocks": [
         "minecraft:chiseled_sandstone",
         "minecraft:cut_sandstone"
       ],
       "id": "reclamation:is_block"
-    },
-    "reclamation:exposed"
+    }
   ],
   "function": {
     "convert_to": {

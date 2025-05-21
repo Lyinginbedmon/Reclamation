@@ -227,16 +227,16 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		}
 	}
 	
-	public static class Exposed extends ConditionNeighbouring
+	public static class Uncovered extends ConditionNeighbouring
 	{
-		public Exposed(Identifier idIn)
+		public Uncovered(Identifier idIn)
 		{
 			super(idIn);
 		}
 		
-		public static Exposed face(Direction... facesIn)
+		public static Uncovered face(Direction... facesIn)
 		{
-			Exposed condition = (Exposed)RCDecayConditions.EXPOSED.get();
+			Uncovered condition = (Uncovered)RCDecayConditions.UNCOVERED.get();
 			EnumSet<Direction> faces = EnumSet.noneOf(Direction.class);
 			faces.addAll(List.of(facesIn));
 			condition.data = new NeighbourData(Optional.of(faces), condition.data.threshold());

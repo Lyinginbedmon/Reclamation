@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import com.lying.Reclamation;
 import com.lying.decay.conditions.ConditionBoolean;
 import com.lying.decay.conditions.ConditionClimate;
+import com.lying.decay.conditions.ConditionExposed;
 import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
@@ -16,6 +17,7 @@ import com.lying.decay.conditions.ConditionPosition;
 import com.lying.decay.conditions.DecayCondition;
 import com.lying.reference.Reference;
 import com.lying.utility.BlockPredicate;
+import com.lying.utility.PositionPredicate;
 
 import net.minecraft.util.Identifier;
 
@@ -53,12 +55,14 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> IN_SNOW		= register("in_snow", ConditionClimate.IsSnowing::new);
 	/** Succeeds if it is storming directly on the affected block */
 	public static final Supplier<DecayCondition> IN_STORM		= register("in_storm", ConditionClimate.IsStorming::new);
+	/** Succeeds if the current weather in the chunk matches */
+	public static final Supplier<DecayCondition> IS_WEATHER		= register("current_weather", ConditionClimate.IsWeather::new);
 	/** Succeeds if the block is adjacent to enough blocks meeting a {@link BlockPredicate} */
 	public static final Supplier<DecayCondition> ADJACENT_TO	= register("adjacent_to", ConditionNeighbouring.Blocks::new);
 	/** Succeeds if the block above the affected block is air */
 	public static final Supplier<DecayCondition> AIR_ABOVE		= register("air_above", ConditionNeighbouring.AirAbove::new);
-	/** Succeeds if a number of faces of the affected block are not occluded */
-	public static final Supplier<DecayCondition> EXPOSED		= register("exposed", ConditionNeighbouring.Exposed::new);
+	/** Succeeds if a number of faces on the affected block are not fully occluded */
+	public static final Supplier<DecayCondition> UNCOVERED		= register("uncovered", ConditionNeighbouring.Uncovered::new);
 	/** Succeeds if the block is solidly supported by the block below itself */
 	public static final Supplier<DecayCondition> ON_GROUND		= register("on_ground", ConditionNeighbouring.OnGround::new);
 	/** Succeeds if the block is solidly supported by enough adjacent blocks */
@@ -71,6 +75,7 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> DIMENSION		= register("dimension", ConditionPosition.Dimension::new);
 	/** Succeeds if the block is at least N blocks above solid ground */
 	public static final Supplier<DecayCondition> ALTITUDE		= register("altitude", ConditionPosition.Altitude::new);
+	public static final Supplier<DecayCondition> EXPOSED		= register("exposed", ConditionExposed::new);
 	
 	/** Registers the given condition under the Reclamation namespace and creates a supplier */
 	private static Supplier<DecayCondition> register(String nameIn, Function<Identifier, DecayCondition> funcIn)

@@ -8,10 +8,12 @@ import java.util.Map;
 
 import com.lying.data.RCBlockTags;
 import com.lying.decay.conditions.ConditionBoolean;
+import com.lying.decay.conditions.ConditionClimate;
 import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.conditions.ConditionPosition;
+import com.lying.decay.conditions.ConditionClimate.IsWeather.Weather;
 import com.lying.decay.functions.FunctionBlockState;
 import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionMacro;
@@ -126,7 +128,7 @@ public class DefaultDecayLibrary
 					ConditionBoolean.Or.of(
 						ConditionBoolean.And.of(
 							RCDecayConditions.EXPOSED.get(),
-							RCDecayConditions.IN_RAIN.get()),
+							ConditionClimate.IsWeather.of(Weather.RAIN)),
 						ConditionNeighbouring.Blocks.of(List.of(RCBlockTags.RUST))),
 					ConditionIsBlock.of(Blocks.IRON_BLOCK))
 				.function(FunctionConvert.toBlock(RCBlocks.EXPOSED_IRON.get())).build());
@@ -195,16 +197,17 @@ public class DefaultDecayLibrary
 					.addModifier(0.001F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blocks(Blocks.SANDSTONE, Blocks.SAND, Blocks.RED_SAND).build()))
 				.name("sandstone_weathering")
 				.condition(
-					ConditionIsBlock.of(Blocks.CHISELED_SANDSTONE, Blocks.CUT_SANDSTONE),
-					RCDecayConditions.EXPOSED.get())
+					RCDecayConditions.EXPOSED.get(),
+					ConditionIsBlock.of(Blocks.CHISELED_SANDSTONE, Blocks.CUT_SANDSTONE))
 				.function(FunctionConvert.toBlock(Blocks.SANDSTONE)).build());
 		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.002F))
 				.name("sandstone_crumbling")
 				.condition(
+					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.SANDSTONE),
-					ConditionNeighbouring.Exposed.face(Direction.values()).threshold(3))
+					ConditionNeighbouring.Uncovered.face(Direction.values()).threshold(3))
 				.function(FunctionConvert.toBlock(Blocks.SAND)).build());
 		
 		register(DecayEntry.Builder.create(
@@ -212,16 +215,18 @@ public class DefaultDecayLibrary
 					.addModifier(0.001F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blocks(Blocks.RED_SANDSTONE, Blocks.SAND, Blocks.RED_SAND).build()))
 				.name("red_sandstone_weathering")
 				.condition(
+					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.CHISELED_RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE),
-					RCDecayConditions.EXPOSED.get())
+					RCDecayConditions.UNCOVERED.get())
 				.function(FunctionConvert.toBlock(Blocks.RED_SANDSTONE)).build());
 		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.002F))
 				.name("red_sandstone_crumbling")
 				.condition(
+					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.RED_SANDSTONE),
-					ConditionNeighbouring.Exposed.face(Direction.values()).threshold(3))
+					ConditionNeighbouring.Uncovered.face(Direction.values()).threshold(3))
 				.function(FunctionConvert.toBlock(Blocks.RED_SAND)).build());
 	}
 	
@@ -232,16 +237,16 @@ public class DefaultDecayLibrary
 					.addModifier(0.03F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().searchRange(1).blockCap(8).tags(List.of(RCBlockTags.FADED_TERRACOTTA, BlockTags.TERRACOTTA)).build()))
 				.name("glazed_terracotta_to_faded_terracotta")
 				.condition(
-					RCDecayConditions.EXPOSED.get(),
+					RCDecayConditions.UNCOVERED.get(),
 					ConditionIsBlock.of(TagKey.of(RegistryKeys.BLOCK, Identifier.of("c","glazed_terracotta"))))
 				.function(FunctionMacro.of(DefaultDecayMacros.FADE_TERRACOTTA)).build());
-			
+		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0F)
 					.addModifier(0.01F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(10).tag(RCBlockTags.FADED_TERRACOTTA).build()))
 				.name("faded_terracotta_to_blank_terracotta")
 				.condition(
-					RCDecayConditions.EXPOSED.get(),
+					RCDecayConditions.UNCOVERED.get(),
 					ConditionIsBlock.of(RCBlockTags.FADED_TERRACOTTA))
 				.function(FunctionMacro.of(DefaultDecayMacros.BLANK_TERRACOTTA)).build());
 	}
@@ -294,9 +299,10 @@ public class DefaultDecayLibrary
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(1).searchRange(1).blocks(Blocks.GRASS_BLOCK).build()))
 				.name("ivy_sprout")
 				.condition(
+					RCDecayConditions.EXPOSED.get(),
 					RCDecayConditions.IS_SOLID.get(),
 					RCDecayConditions.ON_GROUND.get(),
-					ConditionNeighbouring.Exposed.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST))
+					ConditionNeighbouring.Uncovered.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST))
 				.function(
 					FunctionSprout.Builder.create()
 						.faceSet(EnumSet.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST))
@@ -309,6 +315,7 @@ public class DefaultDecayLibrary
 		register(DecayEntry.Builder.create()
 				.name("particulate_shuffle")
 				.condition(
+					RCDecayConditions.EXPOSED.get(),
 					ConditionIsBlock.of(Blocks.GRAVEL, Blocks.SAND, Blocks.RED_SAND),
 					RCDecayConditions.ON_GROUND.get(),
 					RCDecayConditions.AIR_ABOVE.get())
@@ -321,6 +328,7 @@ public class DefaultDecayLibrary
 				.name("gold_to_tarnished_gold")
 				.condition(
 					RCDecayConditions.EXPOSED.get(),
+					RCDecayConditions.UNCOVERED.get(),
 					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
 				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
 	}

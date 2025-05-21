@@ -27,7 +27,7 @@ import net.minecraft.world.tick.ScheduledTickView;
 
 public class RubbleBlock extends Block
 {
-	public static final int DELAY = 5;
+	protected static final int DELAY = 5;
 	public static final BooleanProperty FULL = BooleanProperty.of("full");
 	public static final BooleanProperty INERT = BooleanProperty.of("inert");
 	public static final IntProperty DEPTH = IntProperty.of("depth", 1, 4);

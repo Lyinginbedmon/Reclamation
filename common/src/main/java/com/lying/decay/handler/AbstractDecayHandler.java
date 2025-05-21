@@ -36,10 +36,7 @@ public abstract class AbstractDecayHandler
 	public abstract JsonElement writeToJson(RegistryWrapper.WrapperLookup lookup);
 	
 	/** Returns true if the given world position meets all conditions of this data */
-	public final boolean test(ServerWorld world, BlockPos pos, BlockState state)
-	{
-		return conditions.isEmpty() || conditions.stream().allMatch(p -> p.test(world, pos, state));
-	}
+	public final boolean test(ServerWorld world, BlockPos pos, BlockState state) { return DecayCondition.testAll(conditions, world, pos, state); }
 	
 	public final boolean test(DecayContext context)
 	{

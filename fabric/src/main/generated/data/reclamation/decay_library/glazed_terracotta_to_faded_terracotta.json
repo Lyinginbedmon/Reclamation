@@ -19,7 +19,7 @@
     }
   },
   "conditions": [
-    "reclamation:exposed",
+    "reclamation:uncovered",
     {
       "id": "reclamation:is_block",
       "tag": "#c:glazed_terracotta"

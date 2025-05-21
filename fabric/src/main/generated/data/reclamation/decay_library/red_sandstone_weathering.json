@@ -20,6 +20,7 @@
     }
   },
   "conditions": [
+    "reclamation:exposed",
     {
       "blocks": [
         "minecraft:chiseled_red_sandstone",
@@ -27,7 +28,7 @@
       ],
       "id": "reclamation:is_block"
     },
-    "reclamation:exposed"
+    "reclamation:uncovered"
   ],
   "function": {
     "convert_to": {

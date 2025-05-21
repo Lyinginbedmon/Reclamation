@@ -1,5 +1,6 @@
 {
   "conditions": [
+    "reclamation:exposed",
     {
       "blocks": [
         "minecraft:gravel",

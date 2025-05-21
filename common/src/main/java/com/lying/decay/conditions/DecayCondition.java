@@ -1,6 +1,9 @@
 package com.lying.decay.conditions;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +26,8 @@ public abstract class DecayCondition
 {
 	public static final Codec<DecayCondition> CODEC = Codec.of(DecayCondition::encode, DecayCondition::decode);
 	
+	public static final Comparator<DecayCondition> PRIORITY_SORT = (a,b) -> a.priority < b.priority ? -1 : a.priority > b.priority ? 1 : 0;
+	
 	protected Optional<String> name = Optional.empty();
 	protected boolean inverted = false;
 	
@@ -38,10 +43,30 @@ public abstract class DecayCondition
 	}
 	
 	private final Identifier registryID;
+	private final int priority;
 	
 	protected DecayCondition(Identifier idIn)
 	{
+		this(idIn, 0);
+	}
+	
+	protected DecayCondition(Identifier idIn, int priorityIn)
+	{
 		registryID = idIn;
+		priority = priorityIn;
+	}
+	
+	/** Returns a priority-sorted stream of the given conditions */
+	protected static Stream<DecayCondition> toStream(List<DecayCondition> set) { return set.stream().sorted(PRIORITY_SORT); }
+	
+	public static boolean testAll(List<DecayCondition> set, ServerWorld world, BlockPos pos, BlockState state)
+	{
+		return set.isEmpty() || toStream(set).allMatch(p -> p.test(world, pos, state));
+	}
+	
+	public static boolean testAny(List<DecayCondition> set, ServerWorld world, BlockPos pos, BlockState state)
+	{
+		return set.isEmpty() || toStream(set).anyMatch(p -> p.test(world, pos, state));
 	}
 	
 	public final Identifier registryId() { return registryID; }
@@ -50,7 +75,7 @@ public abstract class DecayCondition
 	
 	protected abstract boolean check(ServerWorld world, BlockPos pos, BlockState currentState);
 	
-	public final boolean test(ServerWorld world, BlockPos pos, BlockState currentState)
+	protected final boolean test(ServerWorld world, BlockPos pos, BlockState currentState)
 	{
 		return check(world, pos, currentState) != inverted;
 	}
