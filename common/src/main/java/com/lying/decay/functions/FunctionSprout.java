@@ -59,11 +59,11 @@ public class FunctionSprout extends DecayFunction
 			{
 				DecayCondition condition = resultMap.condition.get();
 				BlockState stateAt = context.getBlockState(offset);
-				if(!DecayCondition.testAny(List.of(condition), context.create(serverWorld, offset, stateAt)))
+				if(!DecayCondition.testAny(List.of(condition), context.create(serverWorld, offset, stateAt).setParent(context)))
 					continue;
 			}
 			
-			DecayContext child = context.create(serverWorld, offset, context.getBlockState(offset));
+			DecayContext child = context.create(serverWorld, offset, context.getBlockState(offset)).setParent(context);
 			Optional<DecayMacro> macro = DecayMacros.instance().get(resultMap.get(face));
 			if(macro.isPresent() && macro.get().tryToApply(child))
 			{

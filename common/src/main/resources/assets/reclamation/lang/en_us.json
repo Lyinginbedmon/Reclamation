@@ -62,6 +62,7 @@
 	"block.reclamation.cracked_white_concrete": "Cracked White Concrete",
 	"block.reclamation.cracked_yellow_concrete": "Cracked Yellow Concrete",
 	"block.reclamation.stone_rubble": "Stone Rubble",
+	"block.reclamation.deepslate_rubble": "Deepslate Rubble",
 	// Items
 	"item.reclamation.withering_dust": "Withering Dust",
 	// Status effects

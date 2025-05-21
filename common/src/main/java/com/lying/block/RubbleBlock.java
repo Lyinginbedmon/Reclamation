@@ -2,6 +2,7 @@ package com.lying.block;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 import com.lying.init.RCSoundEvents;
@@ -40,10 +41,12 @@ public class RubbleBlock extends Block
 				Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
 			};
 	protected static final List<Direction> MOVES = Lists.newArrayList(Direction.Type.HORIZONTAL);
+	private final Supplier<Block> parent;
 	
-	public RubbleBlock(Settings settings)
+	public RubbleBlock(Supplier<Block> parentIn, Settings settings)
 	{
 		super(settings);
+		parent = parentIn;
 		setDefaultState(getDefaultState().with(DEPTH, 1).with(FULL, false).with(INERT, false));
 	}
 	
@@ -51,6 +54,8 @@ public class RubbleBlock extends Block
 	{
 		builder.add(DEPTH, FULL, INERT);
 	}
+	
+	public Block parentBlock() { return parent.get(); }
 	
 	public static int layerIndex(BlockState state) { return state.get(DEPTH) - 1; }
 	

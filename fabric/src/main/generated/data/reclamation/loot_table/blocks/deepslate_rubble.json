@@ -18,7 +18,7 @@
               "type": "minecraft:item",
               "conditions": [
                 {
-                  "block": "reclamation:stone_rubble",
+                  "block": "reclamation:deepslate_rubble",
                   "condition": "minecraft:block_state_property",
                   "properties": {
                     "depth": "1"
@@ -32,13 +32,13 @@
                   "function": "minecraft:set_count"
                 }
               ],
-              "name": "reclamation:stone_rubble"
+              "name": "reclamation:deepslate_rubble"
             },
             {
               "type": "minecraft:item",
               "conditions": [
                 {
-                  "block": "reclamation:stone_rubble",
+                  "block": "reclamation:deepslate_rubble",
                   "condition": "minecraft:block_state_property",
                   "properties": {
                     "depth": "2"
@@ -52,13 +52,13 @@
                   "function": "minecraft:set_count"
                 }
               ],
-              "name": "reclamation:stone_rubble"
+              "name": "reclamation:deepslate_rubble"
             },
             {
               "type": "minecraft:item",
               "conditions": [
                 {
-                  "block": "reclamation:stone_rubble",
+                  "block": "reclamation:deepslate_rubble",
                   "condition": "minecraft:block_state_property",
                   "properties": {
                     "depth": "3"
@@ -72,13 +72,13 @@
                   "function": "minecraft:set_count"
                 }
               ],
-              "name": "reclamation:stone_rubble"
+              "name": "reclamation:deepslate_rubble"
             },
             {
               "type": "minecraft:item",
               "conditions": [
                 {
-                  "block": "reclamation:stone_rubble",
+                  "block": "reclamation:deepslate_rubble",
                   "condition": "minecraft:block_state_property",
                   "properties": {
                     "depth": "4"
@@ -92,7 +92,7 @@
                   "function": "minecraft:set_count"
                 }
               ],
-              "name": "reclamation:stone_rubble"
+              "name": "reclamation:deepslate_rubble"
             }
           ]
         }

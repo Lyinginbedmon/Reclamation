@@ -8,6 +8,7 @@ import java.util.function.BiPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
+import com.lying.Reclamation;
 import com.lying.decay.context.DecayContext;
 
 import net.minecraft.block.Block;
@@ -26,7 +27,7 @@ import net.minecraft.world.World;
 public class ExteriorUtility
 {
 	/** Hard cap to search iterations */
-	private static final int MAX_ITERATIONS	= 10000;
+	public static final int DEFAULT_MAX_ITERATION_CAP	= 10000;
 	
 	public static final int DEFAULT_SEARCH_RANGE	= 32;
 	
@@ -88,7 +89,7 @@ public class ExteriorUtility
 			return check;
 		
 		// Iterate until search validates or exceeds search range
-		int searchLimit = MAX_ITERATIONS;
+		int searchLimit = Reclamation.config.exteriorIterationCap();
 		while(!pathsToCheck.isEmpty() && searchLimit-- > 0)
 		{
 			if(sorter != null)

@@ -1,0 +1,6 @@
+{
+  "parent": "reclamation:block/template_rubble_2",
+  "textures": {
+    "all": "minecraft:block/cobbled_deepslate"
+  }
+}

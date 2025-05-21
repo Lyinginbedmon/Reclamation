@@ -72,6 +72,7 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 		addIvyDrops(RCBlocks.IVY.get());
 		addSootDrops(RCBlocks.SOOT.get());
 		addRubbleDrops(RCBlocks.STONE_RUBBLE.get());
+		addRubbleDrops(RCBlocks.DEEPSLATE_RUBBLE.get());
 	}
 	
 	private void addRustDrops(Block silk, Item alt, int min, int max)
@@ -88,6 +89,27 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 						)
 					)
 			);
+	}
+	
+	private void addRubbleDrops(Block block)
+	{
+		addDrop(
+				block, LootTable.builder()
+					// Drop 1 block per depth when harvested
+					.pool(
+							LootPool.builder()
+							.conditionally(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
+							.with(
+									AlternativeEntry.builder(
+										RubbleBlock.DEPTH.getValues(),
+										integer -> ItemEntry.builder(block)
+												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(integer.floatValue())))
+												.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(RubbleBlock.DEPTH, integer)))
+												)
+									)
+							)
+					
+					);
 	}
 	
 	private void addLeafPileDrops(Block block)
@@ -142,13 +164,6 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 					.pool(conditionalPool(block, SootBlock.UP, true).conditionally(createSilkTouchCondition()))
 					.pool(conditionalPool(block, SootBlock.DOWN, true).conditionally(createSilkTouchCondition()))
 				);
-	}
-	
-	private void addRubbleDrops(Block block)
-	{
-		LootTable.Builder builder = LootTable.builder();
-		RubbleBlock.DEPTH.getValues().forEach(val -> builder.pool(conditionalPool(block, RubbleBlock.DEPTH, val)));
-		addDrop(block, builder);
 	}
 	
 	private <T extends Property<U>, U extends Comparable<U>> LootPool.Builder conditionalPool(Block drop, T property, U val)

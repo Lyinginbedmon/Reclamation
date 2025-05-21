@@ -46,7 +46,8 @@ public class RCBlockTagsProvider extends BlockTagProvider
 				RCBlocks.WAXED_RUSTED_IRON.get(),
 				RCBlocks.WAXED_TARNISHED_GOLD.get(),
 				RCBlocks.WAXED_WEATHERED_IRON.get(),
-				RCBlocks.STONE_RUBBLE.get());
+				RCBlocks.STONE_RUBBLE.get(),
+				RCBlocks.DEEPSLATE_RUBBLE.get());
 		getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(RCBlocks.SOOT.get());
 	}
 }

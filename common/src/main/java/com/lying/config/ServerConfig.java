@@ -3,6 +3,8 @@ package com.lying.config;
 import java.io.FileWriter;
 import java.util.Properties;
 
+import com.lying.utility.ExteriorUtility;
+
 public class ServerConfig extends Config
 {
 	private static final Properties DEFAULT_SETTINGS = new Properties();
@@ -10,6 +12,7 @@ public class ServerConfig extends Config
 	private int rate = 3;
 	private int radius = 50;
 	private boolean scrapeableRust = false;
+	private int exteriorIterationCap = ExteriorUtility.DEFAULT_MAX_ITERATION_CAP;
 	
 	public ServerConfig(String fileIn)
 	{
@@ -23,6 +26,7 @@ public class ServerConfig extends Config
 		rate = parseIntOr(valuesIn.getProperty("NaturalDecaySpeed"), 3);
 		radius = parseIntOr(valuesIn.getProperty("NaturalDecayRadius"), 50);
 		scrapeableRust = parseBoolOr(valuesIn.getProperty("ScrapeableRust"), false);
+		exteriorIterationCap = parseIntOr(valuesIn.getProperty("ExteriorScanIterationCap"), ExteriorUtility.DEFAULT_MAX_ITERATION_CAP);
 	}
 	
 	protected void writeValues(FileWriter writer)
@@ -30,6 +34,7 @@ public class ServerConfig extends Config
 		writeInt(writer, "NaturalDecaySpeed", rate);
 		writeInt(writer, "NaturalDecayRadius", radius);
 		writeBool(writer, "ScrapeableRust", scrapeableRust);
+		writeInt(writer, "ExteriorScanIterationCap", exteriorIterationCap);
 	}
 	
 	/** How many blocks are tested for natural decay each tick */
@@ -41,9 +46,14 @@ public class ServerConfig extends Config
 	/** Whether rust can be scraped off of rusted blocks */
 	public boolean isRustScrapeable() { return scrapeableRust; }
 	
+	/** Returns the upper limit of iterations on scans for exterior positions */
+	public int exteriorIterationCap() { return exteriorIterationCap; }
+	
 	static
 	{
 		DEFAULT_SETTINGS.setProperty("NaturalDecaySpeed", "3");
 		DEFAULT_SETTINGS.setProperty("NaturalDecayRadius", "50");
+		DEFAULT_SETTINGS.setProperty("ScrapeableRust", "0");
+		DEFAULT_SETTINGS.setProperty("ExteriorScanIterationCap", "10000");
 	}
 }

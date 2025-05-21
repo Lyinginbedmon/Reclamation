@@ -78,7 +78,8 @@ public class RCModelProvider extends FabricModelProvider
 		registerStairs(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
 		
-		Rubble.makeBlockState(RCBlocks.STONE_RUBBLE.get(), blockStateModelGenerator);
+		Rubble.makeBlockState((RubbleBlock)RCBlocks.STONE_RUBBLE.get(), blockStateModelGenerator);
+		Rubble.makeBlockState((RubbleBlock)RCBlocks.DEEPSLATE_RUBBLE.get(), blockStateModelGenerator);
 	}
 	
 	public void generateItemModels(ItemModelGenerator itemModelGenerator)
@@ -288,7 +289,7 @@ public class RCModelProvider extends FabricModelProvider
 		
 		private static TextureMap rubbleTex(Block cobble)
 		{
-			Identifier tex = Registries.BLOCK.getId(Blocks.COBBLESTONE);
+			Identifier tex = Registries.BLOCK.getId(cobble);
 			tex = Identifier.of(tex.getNamespace(), "block/"+tex.getPath());
 			return new TextureMap().put(TextureKey.ALL, tex);
 		}
@@ -303,15 +304,16 @@ public class RCModelProvider extends FabricModelProvider
 					);
 		}
 		
-		private static void makeBlockState(Block block, BlockStateModelGenerator generator)
+		private static void makeBlockState(RubbleBlock block, BlockStateModelGenerator generator)
 		{
-			Identifier model0 = TEMPLATE_RUBBLE_0.upload(block, rubbleTex(block), generator.modelCollector);
+			TextureMap tex = rubbleTex(block.parentBlock());
+			Identifier model0 = TEMPLATE_RUBBLE_0.upload(block, tex, generator.modelCollector);
 			
 			List<BlockStateVariant> entry0 = entry(model0);
-			List<BlockStateVariant> entry1 = entry(TEMPLATE_RUBBLE_1.upload(block, rubbleTex(block), generator.modelCollector));
-			List<BlockStateVariant> entry2 = entry(TEMPLATE_RUBBLE_2.upload(block, rubbleTex(block), generator.modelCollector));
-			List<BlockStateVariant> entry3 = entry(TEMPLATE_RUBBLE_3.upload(block, rubbleTex(block), generator.modelCollector));
-			List<BlockStateVariant> entry4 = entry(TEMPLATE_RUBBLE_FULL_BLOCK.upload(block, rubbleTex(block), generator.modelCollector));
+			List<BlockStateVariant> entry1 = entry(TEMPLATE_RUBBLE_1.upload(block, tex, generator.modelCollector));
+			List<BlockStateVariant> entry2 = entry(TEMPLATE_RUBBLE_2.upload(block, tex, generator.modelCollector));
+			List<BlockStateVariant> entry3 = entry(TEMPLATE_RUBBLE_3.upload(block, tex, generator.modelCollector));
+			List<BlockStateVariant> entry4 = entry(TEMPLATE_RUBBLE_FULL_BLOCK.upload(block, tex, generator.modelCollector));
 			
 			BlockStateVariantMap map = BlockStateVariantMap.create(RubbleBlock.DEPTH, RubbleBlock.FULL)
 					.register(1, false, entry0)
