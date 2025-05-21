@@ -73,11 +73,16 @@ public final class Reclamation
     		if(players.isEmpty())
     			return;
     		
-    		// Log of updated blocks to prevent blocks being decayed multiple times in one update
-    		List<BlockPos> updated = Lists.newArrayList();
 			GameRules gameRules = overworld.getGameRules();
     		int radius = gameRules.getInt(RCGameRules.DECAY_RADIUS);
-    		for(int i=gameRules.getInt(RCGameRules.DECAY_SPEED); i>0; --i)
+    		int rate = gameRules.getInt(RCGameRules.DECAY_SPEED);
+    		if(rate == 0 || radius == 0)
+    			return;
+    		
+    		// Log of updated blocks to prevent blocks being decayed multiple times in one update
+    		List<BlockPos> updated = Lists.newArrayList();
+    		DecayContext root = LiveDecayContext.root(DecayType.NATURAL);
+    		for(int i=rate; i>0; --i)
     		{
     			ServerPlayerEntity player = players.size() > 1 ? players.get(rand.nextInt(players.size())) : players.get(0);
     			
@@ -95,9 +100,11 @@ public final class Reclamation
     			if(updated.contains(randomPos) || !world.isChunkLoaded(randomPos) || !DecayType.NATURAL.canDecayBlock(randomPos, world))
     				continue;
     			
-    			tryToDecay(player.getServerWorld(), LiveDecayContext.supplier(randomPos, player.getServerWorld(), DecayType.NATURAL)).ifPresent(DecayContext::close);
+    			Optional<DecayContext> context = tryToDecay(world, root.create(world, randomPos).setParent(root));
+    			context.ifPresent(root::addChild);
     			updated.add(randomPos);
     		}
+    		root.close();
     	});
     	
     	DecayEvent.CAN_DECAY_BLOCK_EVENT.register((pos, world, type) -> 
@@ -121,6 +128,7 @@ public final class Reclamation
      */
     public static Optional<DecayContext> tryToDecay(ServerWorld world, DecayContext context)
     {
+    	if(context.isRoot()) return Optional.empty();
     	BlockPos pos = context.initialPos;
     	if(!canBlockDecay(pos, world, Optional.empty()))
     		return Optional.empty();
@@ -129,8 +137,7 @@ public final class Reclamation
 		if(context.type != DecayType.NATURAL && !context.type.canDecayBlock(pos, world))
 			return Optional.empty();
 		
-		BlockState state = context.originalState;
-		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
+		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(context);
 		DecayEntry decay = decayOptions.size() > 1 ? decayOptions.get(context.random.nextInt(decayOptions.size())) : decayOptions.get(0);
 		return decay(world, decay, context);
     }
@@ -145,13 +152,13 @@ public final class Reclamation
      */
     public static Optional<DecayContext> tryToDecay(ServerWorld world, DecayEntry entry, boolean ignoreConditions, DecayContext context)
     {
-		return ignoreConditions || entry.test(world, context.currentPos(), context.currentState()) ? decay(world, entry, context) : Optional.empty();
+		return ignoreConditions || entry.test(context) ? decay(world, entry, context) : Optional.empty();
     }
     
     /** Applies the given DecayEntry to the given DecayContext, respecting probability */
 	public static Optional<DecayContext> decay(ServerWorld world, DecayEntry entry, DecayContext context)
     {
-    	if(context.random.nextFloat() <= entry.chance(context.currentPos(), world))
+    	if(!context.isRoot() && context.random.nextFloat() <= entry.chance(context.currentPos(), world))
     		return Optional.of(applyDecay(world, entry, context));
     	else
     		return Optional.empty();
@@ -181,7 +188,7 @@ public final class Reclamation
 			return false;
 		}
 		
-		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
+		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(LiveDecayContext.supplier(pos, world, DecayType.NATURAL));
 		if(decayOptions.isEmpty())
 		{
 			source.ifPresent(s -> s.sendFeedback(() -> Reference.ModInfo.translate("command", "block_no_entries"), false));

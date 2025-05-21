@@ -6,33 +6,35 @@ import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldEvents;
 
 /** DecayContext that performs all enqeued events when closed */
 public class QueuedDecayContext extends DecayContext
 {
-	protected final ServerWorld world;
-	
 	protected final List<Consumer<ServerWorld>> enqueuedWork = Lists.newArrayList();
 	
 	protected QueuedDecayContext(BlockPos pos, ServerWorld serverWorld, BlockState state, DecayType typeIn)
 	{
-		super(serverWorld, pos, state, serverWorld.random, typeIn);
-		world = serverWorld;
+		super(serverWorld, pos, state, typeIn);
 	}
+	
+	public static QueuedDecayContext root(DecayType type) { return new QueuedDecayContext(BlockPos.ORIGIN, (ServerWorld)null, Blocks.AIR.getDefaultState(), type); }
 	
 	public static QueuedDecayContext supplier(BlockPos pos, ServerWorld world, DecayType type){ return new QueuedDecayContext(pos, world, world.getBlockState(pos), type); }
 	
 	public DecayContext create(ServerWorld serverWorld, BlockPos start, BlockState original) { return new QueuedDecayContext(start, serverWorld, original, this.type); }
 	
-	public boolean isAir(BlockPos pos) { return world.getBlockState(pos).isAir(); }
+	public boolean isAir(BlockPos pos) { return world.get().getBlockState(pos).isAir(); }
 	
-	public FluidState fluidState() { return world.getFluidState(currentPos()); }
+	public FluidState fluidState() { return world.get().getFluidState(currentPos()); }
 	
-	public BlockState getBlockState(BlockPos pos) { return world.getBlockState(pos); }
+	public BlockState getBlockState(BlockPos pos) { return world.get().getBlockState(pos); }
 	
 	public void execute(BiConsumer<BlockPos, ServerWorld> consumer)
 	{
@@ -41,7 +43,7 @@ public class QueuedDecayContext extends DecayContext
 	
 	public void breakBlock(BlockPos pos)
 	{
-		enqueue(pos, (p,w) -> w.breakBlock(p, false));
+		enqueue(pos, (p,w) -> w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, p, Block.getRawIdFromState(w.getBlockState(p))));
 	}
 	
 	protected void setStateInWorld(BlockPos pos, BlockState state)
@@ -57,7 +59,7 @@ public class QueuedDecayContext extends DecayContext
 	
 	public void close()
 	{
-		enqueuedWork.forEach(c -> c.accept(world));
-		this.children.forEach(DecayContext::close);
+		super.close();
+		enqueuedWork.forEach(c -> c.accept(world.get()));
 	}
 }

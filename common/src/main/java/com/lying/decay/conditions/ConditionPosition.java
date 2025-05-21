@@ -3,6 +3,7 @@ package com.lying.decay.conditions;
 import java.util.Optional;
 
 import com.google.gson.JsonObject;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
 import com.lying.utility.PositionPredicate;
 import com.lying.utility.PositionPredicate.Comparison;
@@ -10,7 +11,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
@@ -35,9 +35,9 @@ public class ConditionPosition extends DecayCondition
 		return condition;
 	}
 	
-	protected boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+	protected boolean check(DecayContext context)
 	{
-		return predicate.test(pos);
+		return predicate.test(context.currentPos());
 	}
 	
 	protected JsonObject write(JsonObject obj)
@@ -61,9 +61,9 @@ public class ConditionPosition extends DecayCondition
 			super(idIn);
 		}
 		
-		protected boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		protected boolean check(DecayContext context)
 		{
-			return world.getRegistryKey() == dimension;
+			return context.worldKey() == dimension;
 		}
 		
 		protected JsonObject write(JsonObject obj)
@@ -103,8 +103,10 @@ public class ConditionPosition extends DecayCondition
 			return condition;
 		}
 		
-		protected boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		protected boolean check(DecayContext context)
 		{
+			ServerWorld world = context.world.get();
+			BlockPos pos = context.currentPos();
 			if(pos.getY() == world.getBottomY())
 				return test(0);
 			

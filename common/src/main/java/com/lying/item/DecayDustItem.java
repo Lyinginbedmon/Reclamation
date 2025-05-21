@@ -14,7 +14,6 @@ import com.lying.decay.handler.DecayEntry;
 import com.lying.init.RCDataComponentTypes;
 import com.lying.init.RCSoundEvents;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -70,7 +69,6 @@ public class DecayDustItem extends Item
 		if(context.type != DecayType.NATURAL && !context.type.canDecayBlock(pos, world))
 			return Optional.empty();
 		
-		BlockState state = context.originalState;
 		DecayEntry decay = null;
 		if(entry != null)
 		{
@@ -80,7 +78,7 @@ public class DecayDustItem extends Item
 		}
 		else
 		{
-			List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
+			List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(LiveDecayContext.supplier(pos, world, DecayType.ARTIFICIAL));
 			decay = decayOptions.size() > 1 ? decayOptions.get(context.random.nextInt(decayOptions.size())) : decayOptions.get(0);
 		}
 		

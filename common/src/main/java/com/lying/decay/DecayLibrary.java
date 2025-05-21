@@ -18,18 +18,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.lying.Reclamation;
 import com.lying.data.ReloadListener;
+import com.lying.decay.context.DecayContext;
 import com.lying.decay.handler.DecayEntry;
 import com.lying.reference.Reference;
 
 import dev.architectury.registry.ReloadListenerRegistry;
-import net.minecraft.block.BlockState;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.BlockPos;
 
 public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 {
@@ -54,9 +52,9 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 	private void clear() { DATA.clear(); }
 	
 	/** Returns a list of all decay entries applicable to the given block */
-	public List<DecayEntry> getDecayOptions(ServerWorld world, BlockPos pos, BlockState state)
+	public List<DecayEntry> getDecayOptions(DecayContext context)
 	{
-		return DATA.values().stream().filter(d -> d.test(world, pos, state)).toList();
+		return DATA.values().stream().filter(d -> d.test(context)).toList();
 	}
 	
 	public Optional<DecayEntry> get(Identifier id) { return DATA.containsKey(id) ? Optional.of(DATA.get(id)) : Optional.empty(); }

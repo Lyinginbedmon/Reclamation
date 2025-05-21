@@ -1,7 +1,9 @@
 package com.lying.utility;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -24,9 +26,15 @@ import net.minecraft.world.World;
 public class ExteriorUtility
 {
 	/** Hard cap to search iterations */
-	private static final int MAX_ITERATIONS	= 1000;
+	private static final int MAX_ITERATIONS	= 10000;
 	
 	public static final int DEFAULT_SEARCH_RANGE	= 32;
+	
+	/** Returns true if there exists a contiugous open block face between the start and end positions without exceeding the search range*/
+	public static boolean contiguousWith(BlockPos start, BlockPos end, ServerWorld world, int searchRange)
+	{
+		return runSearch(start, world, searchRange, RCUtils.closestFirst(end), (p,w) -> p.equals(end)).isPresent();
+	}
 	
 	/**
 	 * Identifies the nearest position within range that is exposed to the skybox, using a flood fill approach
@@ -36,11 +44,8 @@ public class ExteriorUtility
 	 */
 	public static Optional<BlockPos> isBlockInExterior(DecayContext context, int searchRange)
 	{
-		// TODO Cache result in context where possible to reduce excessive calls
-		return isBlockInExterior(context.currentPos(), context.world, searchRange);
+		return context.isRoot() ? Optional.of(BlockPos.ORIGIN) : isBlockInExterior(context.currentPos(), context.world.get(), searchRange);
 	}
-	
-	// TODO Directed search between two positions
 	
 	/**
 	 * Identifies the nearest position within range that is exposed to the skybox, using a flood fill approach
@@ -51,10 +56,24 @@ public class ExteriorUtility
 	 */
 	public static Optional<BlockPos> isBlockInExterior(BlockPos pos, ServerWorld world, int searchRange)
 	{
-		if(searchRange < 0 || world.getRegistryKey() == World.NETHER)
+		if(world.getRegistryKey() == World.NETHER)
 			return Optional.empty();
 		
-		if(isBlockExterior(pos, world))
+		return runSearch(pos, world, searchRange, null, ExteriorUtility::isBlockExterior);
+	}
+	
+	/** Returns true if the given block constitutes exterior access */
+	private static boolean isBlockExterior(BlockPos pos, ServerWorld world)
+	{
+		return world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() <= pos.getY();
+	}
+	
+	private static Optional<BlockPos> runSearch(BlockPos pos, ServerWorld world, int searchRange, @Nullable Comparator<BlockPos> sorter, BiPredicate<BlockPos, ServerWorld> success)
+	{
+		if(searchRange < 0)
+			return Optional.empty();
+		
+		if(success.test(pos, world))
 			return Optional.of(pos);
 		
 		// Positions that have already been checked
@@ -63,17 +82,25 @@ public class ExteriorUtility
 		// Candidate positions to check
 		List<BlockPos> pathsToCheck = Lists.newArrayList(Moves.getAvailable(pos, world, false).stream().map(m -> m.apply(pos)).toList());
 		
+		// Initial check to see if we are immediately able to access a success position
+		Optional<BlockPos> check = pathsToCheck.stream().filter(p -> success.test(p, world)).findFirst();
+		if(check.isPresent())
+			return check;
+		
 		// Iterate until search validates or exceeds search range
 		int searchLimit = MAX_ITERATIONS;
 		while(!pathsToCheck.isEmpty() && searchLimit-- > 0)
 		{
+			if(sorter != null)
+				pathsToCheck.sort(sorter);
+			
 			// Next position to check, usually meaning the nearest unchecked position from the origin
 			BlockPos current = pathsToCheck.remove(0);
 			
 			// Update searchspace
 			searchSpace.add(current);
 			
-			Iteration iteration = iterateScan(current, world, searchSpace);
+			Iteration iteration = iterateScan(current, world, searchSpace, success);
 			if(iteration.isSuccess())
 				return iteration.terminus();
 			
@@ -87,13 +114,7 @@ public class ExteriorUtility
 		return Optional.empty();
 	}
 	
-	/** Returns true if the given block constitutes exterior access */
-	private static boolean isBlockExterior(BlockPos pos, ServerWorld world)
-	{
-		return world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() <= pos.getY();
-	}
-	
-	private static Iteration iterateScan(BlockPos current, ServerWorld world, List<BlockPos> searchSpace)
+	private static Iteration iterateScan(BlockPos current, ServerWorld world, List<BlockPos> searchSpace, BiPredicate<BlockPos,ServerWorld> success)
 	{
 		List<BlockPos> options = Lists.newArrayList();
 		for(Moves move : Moves.values())
@@ -103,7 +124,7 @@ public class ExteriorUtility
 				continue;
 			
 			BlockPos terminus = move.apply(current);
-			if(isBlockExterior(terminus, world))
+			if(success.test(terminus, world))
 				return new Iteration(terminus, List.of(), searchSpace);
 			else if(!searchSpace.contains(terminus))
 				options.add(terminus);
@@ -145,20 +166,23 @@ public class ExteriorUtility
 		 */
 		public boolean isAvailable(BlockPos pos, World world, boolean checkBidirectional)
 		{
-			if(checkBidirectional)
-			{
-				BlockState state = world.getBlockState(pos);
-				if(!isPassable(state, pos, world, direction))
-					return false;
-			}
-			
-			BlockPos offset = pos.offset(direction);
-			return isPassable(world.getBlockState(offset), offset, world, direction.getOpposite());
+			return 
+					(!checkBidirectional || isPassable(pos, world, direction)) &&
+					isPassable(pos.offset(direction), world, direction.getOpposite());
 		}
 		
-		private static boolean isPassable(BlockState state, BlockPos pos, World world, Direction face)
+		private static boolean isPassable(BlockPos pos, World world, Direction face)
 		{
-			return state.isAir() || state.getCollisionShape(world, pos).isEmpty() || !Block.isFaceFullSquare(state.getSidesShape(world, pos), face);
+			if(world.isAir(pos))
+				return true;
+			
+			BlockState state = world.getBlockState(pos);
+			if(state.getCollisionShape(world, pos).isEmpty())
+				return true;
+			else if(!Block.isFaceFullSquare(state.getSidesShape(world, pos), face))
+				return true;
+			else
+				return false;
 		}
 		
 		/** Returns the list of {@link Moves} available to the given position */

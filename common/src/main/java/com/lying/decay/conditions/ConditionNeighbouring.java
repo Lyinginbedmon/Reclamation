@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.google.gson.JsonObject;
 import com.lying.Reclamation;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
 import com.lying.utility.BlockPredicate;
 import com.lying.utility.BlockPredicate.Builder;
@@ -50,11 +51,12 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		return this;
 	}
 	
-	public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+	protected boolean check(DecayContext context)
 	{
+		BlockPos pos = context.currentPos();
 		int tally = 0;
 		for(Direction face : data.facesToCheck())
-			if(isMatch(world.getBlockState(pos.offset(face)), pos.offset(face), face, pos, world) && ++tally >= data.minimumTally())
+			if(isMatch(context.getBlockState(pos.offset(face)), pos.offset(face), face, pos, context.world.get()) && ++tally >= data.minimumTally())
 				return true;
 		
 		return false;
@@ -169,9 +171,9 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			super(idIn);
 		}
 		
-		public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		protected boolean check(DecayContext context)
 		{
-			return world.isAir(pos.up());
+			return context.isAir(context.currentPos().up());
 		}
 	}
 	
@@ -204,11 +206,11 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			super(idIn);
 		}
 		
-		public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		protected boolean check(DecayContext context)
 		{
-			BlockPos neighbour = pos.down();
-			BlockState state = world.getBlockState(neighbour);
-			return !state.isReplaceable() && state.isSideSolidFullSquare(world, neighbour, Direction.UP);
+			BlockPos neighbour = context.currentPos().down();
+			BlockState state = context.getBlockState(neighbour);
+			return !state.isReplaceable() && state.isSideSolidFullSquare(context.world.get(), neighbour, Direction.UP);
 		}
 	}
 	

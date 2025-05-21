@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -17,10 +18,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 
 public abstract class DecayCondition
 {
@@ -59,25 +57,26 @@ public abstract class DecayCondition
 	/** Returns a priority-sorted stream of the given conditions */
 	protected static Stream<DecayCondition> toStream(List<DecayCondition> set) { return set.stream().sorted(PRIORITY_SORT); }
 	
-	public static boolean testAll(List<DecayCondition> set, ServerWorld world, BlockPos pos, BlockState state)
+	public static boolean testAll(List<DecayCondition> set, DecayContext context)
 	{
-		return set.isEmpty() || toStream(set).allMatch(p -> p.test(world, pos, state));
+		return set.isEmpty() || toStream(set).allMatch(p -> p.test(context));
 	}
 	
-	public static boolean testAny(List<DecayCondition> set, ServerWorld world, BlockPos pos, BlockState state)
+	public static boolean testAny(List<DecayCondition> set, DecayContext context)
 	{
-		return set.isEmpty() || toStream(set).anyMatch(p -> p.test(world, pos, state));
+		return set.isEmpty() || toStream(set).anyMatch(p -> p.test(context));
 	}
 	
 	public final Identifier registryId() { return registryID; }
 	
 	public final boolean inverted() { return inverted; }
 	
-	protected abstract boolean check(ServerWorld world, BlockPos pos, BlockState currentState);
+	/** Tests this condition against the given non-root context */
+	protected abstract boolean check(DecayContext context);
 	
-	protected final boolean test(ServerWorld world, BlockPos pos, BlockState currentState)
+	protected final boolean test(DecayContext context)
 	{
-		return check(world, pos, currentState) != inverted;
+		return !context.isRoot() && check(context) != inverted;
 	}
 	
 	public final DecayCondition invert()

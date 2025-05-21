@@ -4,14 +4,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonObject;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
 import com.lying.utility.PropertyMap;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 
 public class ConditionHasProperty extends DecayCondition
 {
@@ -31,9 +29,9 @@ public class ConditionHasProperty extends DecayCondition
 		return condition;
 	}
 	
-	public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+	public boolean check(DecayContext context)
 	{
-		return !map.isEmpty() && map.matches(currentState);
+		return !map.isEmpty() && map.matches(context.currentState());
 	}
 	
 	protected JsonObject write(JsonObject obj)

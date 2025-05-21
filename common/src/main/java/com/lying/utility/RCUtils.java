@@ -1,5 +1,6 @@
 package com.lying.utility;
 
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public class RCUtils
@@ -27,5 +29,16 @@ public class RCUtils
 		Optional<List<T>> a = list.size() < 2 ? Optional.empty() : primary;
 		Optional<T> b = list.size() == 1 ? Optional.of(list.get(0)) : Optional.empty();
 		return Pair.of(a, b);
+	}
+	
+	/** Returns a {@link BlockPos} comparator for nearest-to-furthest sorting towards the given position */
+	public static Comparator<BlockPos> closestFirst(BlockPos origin)
+	{
+		return (a,b) -> 
+		{
+			double distA = a.getSquaredDistance(origin);
+			double distB = b.getSquaredDistance(origin);
+			return distA < distB ? -1 : distA > distB ? 1 : 0;
+		};
 	}
 }

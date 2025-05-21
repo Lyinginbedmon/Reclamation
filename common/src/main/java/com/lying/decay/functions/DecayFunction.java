@@ -49,11 +49,12 @@ public abstract class DecayFunction
 	
 	public final void apply(DecayContext context)
 	{
-		if(context.continuityBroken())
+		if(context.isRoot() || context.continuityBroken())
 			return;
 		applyTo(context);
 	}
 	
+	/** Applies this function to the given non-root decay context */
 	protected abstract void applyTo(DecayContext context);
 	
 	public final JsonElement toJson()

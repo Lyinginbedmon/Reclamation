@@ -15,6 +15,7 @@ import com.lying.decay.DecayLibrary;
 import com.lying.decay.DecayMacros;
 import com.lying.decay.context.DecayContext;
 import com.lying.decay.context.DecayContext.DecayType;
+import com.lying.decay.context.LiveDecayContext;
 import com.lying.decay.context.QueuedDecayContext;
 import com.lying.decay.handler.DecayEntry;
 import com.lying.decay.handler.DecayMacro;
@@ -29,7 +30,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
-import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -185,21 +185,21 @@ public class RCCommands
 			if(totalBlocks > limit)
 				throw TOO_BIG_EXCEPTION.create(limit, totalBlocks);
 			
-			List<DecayContext> queue = Lists.newArrayList();
+			DecayContext root = QueuedDecayContext.root(DecayType.ARTIFICIAL);
 			for(BlockPos position : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
-				Reclamation.tryToDecay(serverWorld, QueuedDecayContext.supplier(position, serverWorld, DecayType.ARTIFICIAL)).ifPresent(context -> queue.add(context));
-			queue.forEach(DecayContext::close);
+				Reclamation.tryToDecay(serverWorld, root.create(serverWorld, position).setParent(root)).ifPresent(context -> root.addChild(context));
+			root.close();
 			
-			final int decayed = queue.size();
+			final int decayed = root.descendants();
 			source.sendFeedback(() -> translate("command", "decay_region", totalBlocks, decayed), true);
 			return 15;
 		}
 		
 		private static int tryDecayRegionSpecifically(BlockBox region, Identifier entryType, ServerCommandSource source) throws CommandSyntaxException
 		{
-			ServerWorld world = source.getWorld();
+			ServerWorld serverWorld = source.getWorld();
 			int totalBlocks = region.getBlockCountX() * region.getBlockCountY() * region.getBlockCountZ();
-			int limit = world.getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
+			int limit = serverWorld.getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
 			if(totalBlocks > limit)
 				throw TOO_BIG_EXCEPTION.create(limit, totalBlocks);
 			
@@ -207,12 +207,12 @@ public class RCCommands
 			if(entry.isEmpty())
 				throw FAILED_UNKNOWN_ENTRY.create();
 			
-			List<DecayContext> queue = Lists.newArrayList();
-			for(BlockPos pos : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
-				Reclamation.tryToDecay(world, entry.get(), false, QueuedDecayContext.supplier(pos, world, DecayType.ARTIFICIAL)).ifPresent(context -> queue.add(context));
-			queue.forEach(DecayContext::close);
+			DecayContext root = QueuedDecayContext.root(DecayType.ARTIFICIAL);
+			for(BlockPos position : BlockPos.iterate(region.getMinX(), region.getMinY(), region.getMinZ(), region.getMaxX(), region.getMaxY(), region.getMaxZ()))
+				Reclamation.tryToDecay(serverWorld, entry.get(), false, root.create(serverWorld, position).setParent(root)).ifPresent(context -> root.addChild(context));
+			root.close();
 			
-			final int decayed = queue.size();
+			final int decayed = root.descendants();
 			source.sendFeedback(() -> translate("command", "decay_region", totalBlocks, decayed), true);
 			return 15;
 		}
@@ -252,8 +252,7 @@ public class RCCommands
 			if(!Reclamation.canBlockDecay(pos, world, Optional.of(source)))
 				return 15;
 			
-			BlockState state = world.getBlockState(pos);
-			List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(world, pos, state);
+			List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(LiveDecayContext.supplier(pos, world, DecayType.NATURAL));
 			source.sendFeedback(() -> translate("command", "decay_chance_list", decayOptions.size()), true);
 			decayOptions.forEach(entry -> source.sendFeedback(() -> Text.literal(" - ").append(translate("command", "decay_chance_entry", entry.packName().toString(), entry.chance(pos, world))), false));
 			
@@ -271,7 +270,7 @@ public class RCCommands
 				throw FAILED_UNKNOWN_ENTRY.create();
 			entry.ifPresent(e -> 
 			{
-				if(e.test(world, pos, world.getBlockState(pos)))
+				if(e.test(LiveDecayContext.supplier(pos, world, DecayType.NATURAL)))
 					source.sendFeedback(() -> translate("command", "decay_chance_entry", e.packName().toString(), e.chance(pos, world)), true);
 				else
 					source.sendFeedback(() -> translate("command", "block_entry_invalid"), true);

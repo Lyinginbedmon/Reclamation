@@ -10,11 +10,8 @@ import com.lying.decay.context.DecayContext;
 import com.lying.decay.functions.DecayFunction;
 import com.lying.reference.Reference;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 
 public abstract class AbstractDecayHandler
 {
@@ -36,12 +33,7 @@ public abstract class AbstractDecayHandler
 	public abstract JsonElement writeToJson(RegistryWrapper.WrapperLookup lookup);
 	
 	/** Returns true if the given world position meets all conditions of this data */
-	public final boolean test(ServerWorld world, BlockPos pos, BlockState state) { return DecayCondition.testAll(conditions, world, pos, state); }
-	
-	public final boolean test(DecayContext context)
-	{
-		return test(context.world, context.currentPos(), context.currentState());
-	}
+	public final boolean test(DecayContext context) { return DecayCondition.testAll(conditions, context); }
 	
 	/** Sequentially applies all functions of this data to the given context */
 	public final void apply(DecayContext context)

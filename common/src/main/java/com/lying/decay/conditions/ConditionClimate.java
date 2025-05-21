@@ -3,9 +3,9 @@ package com.lying.decay.conditions;
 import java.util.Optional;
 
 import com.google.gson.JsonObject;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -31,9 +31,9 @@ public abstract class ConditionClimate extends DecayCondition
 		public boolean check(ServerWorld world, BlockPos pos);
 	}
 	
-	public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+	protected boolean check(DecayContext context)
 	{
-		return func.check(world, pos);
+		return func.check(context.world.get(), context.currentPos());
 	}
 	
 	public static class SkyAbove extends ConditionClimate
@@ -96,8 +96,10 @@ public abstract class ConditionClimate extends DecayCondition
 			return condition;
 		}
 		
-		protected boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		protected boolean check(DecayContext context)
 		{
+			ServerWorld world = context.world.get();
+			BlockPos pos = context.currentPos();
 			Biome biome = world.getBiome(pos).value();
 			switch(weather.orElse(Weather.RAIN))
 			{

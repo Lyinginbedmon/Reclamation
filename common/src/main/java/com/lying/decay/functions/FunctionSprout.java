@@ -46,7 +46,7 @@ public class FunctionSprout extends DecayFunction
 			return;
 		
 		Random random = context.random;
-		ServerWorld serverWorld = context.world;
+		ServerWorld serverWorld = context.world.get();
 		BlockPos currentPos = context.currentPos();
 		List<Direction> faces = Lists.newArrayList(resultMap.keySet());
 		int placings = count.orElse(faces.size());
@@ -59,7 +59,7 @@ public class FunctionSprout extends DecayFunction
 			{
 				DecayCondition condition = resultMap.condition.get();
 				BlockState stateAt = context.getBlockState(offset);
-				if(!DecayCondition.testAny(List.of(condition), serverWorld, offset, stateAt))
+				if(!DecayCondition.testAny(List.of(condition), context.create(serverWorld, offset, stateAt)))
 					continue;
 			}
 			

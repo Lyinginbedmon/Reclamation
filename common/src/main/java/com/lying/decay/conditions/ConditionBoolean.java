@@ -4,14 +4,12 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
+import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 
 public abstract class ConditionBoolean extends DecayCondition
 {
@@ -57,9 +55,9 @@ public abstract class ConditionBoolean extends DecayCondition
 			return ((ConditionBoolean)RCDecayConditions.OR.get()).addAll(conditionsIn);
 		}
 		
-		public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		protected boolean check(DecayContext context)
 		{
-			return DecayCondition.testAny(subConditions, world, pos, currentState);
+			return DecayCondition.testAny(subConditions, context);
 		}
 	}
 	
@@ -75,9 +73,9 @@ public abstract class ConditionBoolean extends DecayCondition
 			return ((ConditionBoolean)RCDecayConditions.AND.get()).addAll(conditionsIn);
 		}
 		
-		public boolean check(ServerWorld world, BlockPos pos, BlockState currentState)
+		protected boolean check(DecayContext context)
 		{
-			return DecayCondition.testAll(subConditions, world, pos, currentState);
+			return DecayCondition.testAll(subConditions, context);
 		}
 	}
 }
