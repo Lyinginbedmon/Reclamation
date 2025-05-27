@@ -12,6 +12,7 @@ import com.lying.decay.conditions.ConditionClimate;
 import com.lying.decay.conditions.ConditionExposed;
 import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
+import com.lying.decay.conditions.ConditionMacro;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.conditions.ConditionPosition;
 import com.lying.decay.conditions.DecayCondition;
@@ -75,7 +76,10 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> DIMENSION		= register("dimension", ConditionPosition.Dimension::new);
 	/** Succeeds if the block is at least N blocks above solid ground */
 	public static final Supplier<DecayCondition> ALTITUDE		= register("altitude", ConditionPosition.Altitude::new);
+	/** Succeeds if there exists a contiguous path through block faces to the outside */
 	public static final Supplier<DecayCondition> EXPOSED		= register("exposed", ConditionExposed::new);
+	/** Succeeds if the conditions satisfy those of all given {@link DecayMacro} */
+	public static final Supplier<DecayCondition> MACRO			= register("macro", ConditionMacro::new);
 	
 	/** Registers the given condition under the Reclamation namespace and creates a supplier */
 	private static Supplier<DecayCondition> register(String nameIn, Function<Identifier, DecayCondition> funcIn)

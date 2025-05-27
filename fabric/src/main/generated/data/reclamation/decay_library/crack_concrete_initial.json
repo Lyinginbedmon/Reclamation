@@ -1,0 +1,27 @@
+{
+  "chance": {
+    "base_chance": 0.1,
+    "modifier": {
+      "amount": 1.0,
+      "multiplier": {
+        "minimum": 0.1,
+        "search": {
+          "capacity": 9,
+          "looking_for": {
+            "tag": "#reclamation:cracked_concrete"
+          }
+        }
+      },
+      "operation": "add_multiplied_total"
+    }
+  },
+  "condition": {
+    "id": "reclamation:is_block",
+    "tag": "#minecraft:concrete"
+  },
+  "function": {
+    "id": "reclamation:macro",
+    "macro": "reclamation:crack_concrete"
+  },
+  "name": "reclamation:crack_concrete_initial"
+}

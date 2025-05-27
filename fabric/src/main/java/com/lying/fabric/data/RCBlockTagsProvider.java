@@ -11,6 +11,7 @@ import com.lying.init.RCBlocks.Terracotta;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider.BlockTagProvider;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 
@@ -23,6 +24,24 @@ public class RCBlockTagsProvider extends BlockTagProvider
 	
 	protected void configure(WrapperLookup wrapperLookup)
 	{
+		getOrCreateTagBuilder(RCBlockTags.CONCRETE).add(
+				Blocks.BLACK_CONCRETE,
+				Blocks.BLUE_CONCRETE,
+				Blocks.BROWN_CONCRETE,
+				Blocks.CYAN_CONCRETE,
+				Blocks.GRAY_CONCRETE,
+				Blocks.GREEN_CONCRETE,
+				Blocks.LIGHT_BLUE_CONCRETE,
+				Blocks.LIGHT_GRAY_CONCRETE,
+				Blocks.LIME_CONCRETE,
+				Blocks.MAGENTA_CONCRETE,
+				Blocks.ORANGE_CONCRETE,
+				Blocks.PINK_CONCRETE,
+				Blocks.PURPLE_CONCRETE,
+				Blocks.RED_CONCRETE,
+				Blocks.WHITE_CONCRETE,
+				Blocks.YELLOW_CONCRETE);
+		
 		getOrCreateTagBuilder(RCBlockTags.RUST).add(
 				RCBlocks.EXPOSED_IRON.get(),
 				RCBlocks.WEATHERED_IRON.get(),

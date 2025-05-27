@@ -37,17 +37,13 @@ public class FunctionMacro extends DecayFunction
 	
 	public FunctionMacro randomised()
 	{
-		macros = macros.random(true);
+		macros = macros.setRandom(true);
 		return this;
 	}
 	
 	protected void applyTo(DecayContext context)
 	{
-		List<DecayMacro> macros = this.macros.contents();
-		if(this.macros.random().orElse(false))
-			Collections.shuffle(macros);
-		
-		for(DecayMacro macro : macros)
+		for(DecayMacro macro : macros.contents())
 			if(macro.tryToApply(context))
 				return;
 	}
@@ -62,12 +58,12 @@ public class FunctionMacro extends DecayFunction
 		macros = MacroList.CODEC.parse(JsonOps.INSTANCE, obj).resultOrPartial(Reclamation.LOGGER::error).orElse(new MacroList(List.of(), Optional.empty()));
 	}
 	
-	private record MacroList(List<Identifier> macroIDs, Optional<Boolean> random)
+	public static record MacroList(List<Identifier> macroIDs, Optional<Boolean> isRandom)
 	{
 		public static final Codec<MacroList> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 				Identifier.CODEC.optionalFieldOf("macro").forGetter(g -> listOrSolo(Optional.of(g.macroIDs())).getRight()),
 				Identifier.CODEC.listOf().optionalFieldOf("macros").forGetter(g -> listOrSolo(Optional.of(g.macroIDs())).getLeft()),
-				Codec.BOOL.optionalFieldOf("randomise").forGetter(MacroList::random))
+				Codec.BOOL.optionalFieldOf("randomise").forGetter(MacroList::isRandom))
 				.apply(instance, (solo, set, rand) -> 
 				{
 					List<Identifier> macroList = Lists.newArrayList();
@@ -76,9 +72,15 @@ public class FunctionMacro extends DecayFunction
 					return new MacroList(macroList, rand);
 				}));
 		
-		public List<DecayMacro> contents() { return macroIDs.stream().map(DecayMacros.instance()::get).filter(Optional::isPresent).map(Optional::get).toList(); }
+		public List<DecayMacro> contents()
+		{
+			List<DecayMacro> list = Lists.newArrayList(macroIDs.stream().map(DecayMacros.instance()::get).filter(Optional::isPresent).map(Optional::get).toList());
+			if(isRandom.orElse(false) && list.size() > 1)
+				Collections.shuffle(list);
+			return list;
+		}
 		
-		public MacroList random(boolean rand)
+		public MacroList setRandom(boolean rand)
 		{
 			return new MacroList(macroIDs, Optional.of(rand));
 		}

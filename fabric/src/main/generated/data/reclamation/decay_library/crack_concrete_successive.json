@@ -1,0 +1,37 @@
+{
+  "chance": {
+    "base_chance": 0.2,
+    "modifier": {
+      "amount": 1.0,
+      "multiplier": {
+        "search": {
+          "capacity": 9,
+          "looking_for": {
+            "tag": "#reclamation:cracked_concrete"
+          }
+        }
+      },
+      "operation": "add_multiplied_total"
+    }
+  },
+  "conditions": [
+    {
+      "id": "reclamation:is_block",
+      "tag": "#reclamation:cracked_concrete"
+    },
+    {
+      "id": "reclamation:is_block",
+      "inverted": true,
+      "value": {
+        "cracks": "4"
+      }
+    }
+  ],
+  "function": {
+    "id": "reclamation:cycle_blockstate_value",
+    "properties": [
+      "cracks"
+    ]
+  },
+  "name": "reclamation:crack_concrete_successive"
+}

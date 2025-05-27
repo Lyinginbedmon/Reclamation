@@ -213,44 +213,41 @@ public class RCModelProvider extends FabricModelProvider
 	
 	private static class CrackedConcrete
 	{
-		public static final TextureKey OVERLAY = TextureKey.of("overlay");
-		
 		public static final Model TEMPLATE_CRACKED_0 = new Model(
-				Optional.of(prefix("block/cube_all_overlay")),
+				Optional.of(Identifier.ofVanilla("block/cube_all")),
 				Optional.of("_0"),
-				TextureKey.ALL, OVERLAY);
+				TextureKey.ALL);
 		public static final Model TEMPLATE_CRACKED_1 = new Model(
-				Optional.of(prefix("block/cube_all_overlay")),
+				Optional.of(Identifier.ofVanilla("block/cube_all")),
 				Optional.of("_1"),
-				TextureKey.ALL, OVERLAY);
+				TextureKey.ALL);
 		public static final Model TEMPLATE_CRACKED_2 = new Model(
-				Optional.of(prefix("block/cube_all_overlay")),
+				Optional.of(Identifier.ofVanilla("block/cube_all")),
 				Optional.of("_2"),
-				TextureKey.ALL, OVERLAY);
+				TextureKey.ALL);
 		public static final Model TEMPLATE_CRACKED_3 = new Model(
-				Optional.of(prefix("block/cube_all_overlay")),
+				Optional.of(Identifier.ofVanilla("block/cube_all")),
 				Optional.of("_3"),
-				TextureKey.ALL, OVERLAY);
+				TextureKey.ALL);
 		
 		private static TextureMap concreteTex(Block block, int index)
 		{
 			Identifier tex = Registries.BLOCK.getId(block);
 			return new TextureMap()
-					.put(OVERLAY, prefix("block/cracked_concrete_"+index))
-					.put(TextureKey.ALL, Identifier.of(tex.getNamespace(), "block/"+tex.getPath()));
+					.put(TextureKey.ALL, Identifier.of(tex.getNamespace(), "block/cracked_concrete/"+tex.getPath()+"_"+index));
 		}
 		
 		private static void makeBlockState(Block block, Block base, BlockStateModelGenerator generator)
 		{
-			Identifier model0 = TEMPLATE_CRACKED_0.upload(block, concreteTex(base, 0), generator.modelCollector);
+			Identifier heldModel;
 			BlockStateVariantMap map = BlockStateVariantMap.create(CrackedConcreteBlock.CRACKS)
-					.register(1, entry(model0))
-					.register(2, entry(TEMPLATE_CRACKED_1.upload(block, concreteTex(base, 1), generator.modelCollector)))
-					.register(3, entry(TEMPLATE_CRACKED_2.upload(block, concreteTex(base, 2), generator.modelCollector)))
-					.register(4, entry(TEMPLATE_CRACKED_3.upload(block, concreteTex(base, 3), generator.modelCollector)));
+					.register(1, entry(TEMPLATE_CRACKED_0.upload(block, concreteTex(block, 0), generator.modelCollector)))
+					.register(2, entry(heldModel = TEMPLATE_CRACKED_1.upload(block, concreteTex(block, 1), generator.modelCollector)))
+					.register(3, entry(TEMPLATE_CRACKED_2.upload(block, concreteTex(block, 2), generator.modelCollector)))
+					.register(4, entry(TEMPLATE_CRACKED_3.upload(block, concreteTex(block, 3), generator.modelCollector)));
 			
 			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(map));
-			generator.registerParentedItemModel(block, model0);
+			generator.registerParentedItemModel(block, heldModel);
 		}
 		
 		private static List<BlockStateVariant> entry(Identifier model)

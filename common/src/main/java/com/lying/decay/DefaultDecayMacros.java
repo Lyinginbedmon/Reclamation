@@ -118,7 +118,7 @@ public class DefaultDecayMacros
 		});
 		register(DecayMacro.Builder.create()
 				.name(CRACK_CONCRETE)
-				.condition(ConditionIsBlock.of(RCBlockTags.CRACKED_CONCRETE))
+				.condition(ConditionIsBlock.of(RCBlockTags.CONCRETE))
 				.function(FunctionMacro.of(crackSet.toArray(new Identifier[0]))).build());
 	}
 }

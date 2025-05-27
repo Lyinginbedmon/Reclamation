@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lying.block.CrackedConcreteBlock;
 import com.lying.data.RCBlockTags;
 import com.lying.decay.conditions.ConditionBoolean;
 import com.lying.decay.conditions.ConditionClimate;
@@ -22,6 +23,7 @@ import com.lying.decay.handler.DecayEntry;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
 import com.lying.init.RCDecayFunctions;
+import com.lying.utility.BlockPredicate;
 import com.lying.utility.BlockSaturationCalculator;
 import com.lying.utility.BlockSaturationCalculator.Mode;
 import com.lying.utility.PropertyMap;
@@ -116,6 +118,24 @@ public class DefaultDecayLibrary
 					FunctionConvert.toBlockState(Blocks.MOSSY_STONE_BRICK_SLAB.getDefaultState().with(Properties.SLAB_TYPE, SlabType.BOTTOM)),
 					RCDecayFunctions.FALL.get(),
 					RCDecayFunctions.TO_AIR.get()).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.1F)
+					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).blockCap(9).tag(RCBlockTags.CRACKED_CONCRETE).build()))
+				.name("crack_concrete_initial")
+				.condition(
+					ConditionIsBlock.of(RCBlockTags.CONCRETE))
+				.function(
+					FunctionMacro.of(DefaultDecayMacros.CRACK_CONCRETE)).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.2F)
+					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().blockCap(9).tag(RCBlockTags.CRACKED_CONCRETE).build()))
+				.name("crack_concrete_successive")
+				.condition(
+					ConditionIsBlock.of(RCBlockTags.CRACKED_CONCRETE),
+					ConditionIsBlock.of(BlockPredicate.Builder.create().addBlockValues(PropertyMap.create().add(CrackedConcreteBlock.CRACKS, 4)).build()).invert())
+				.function(
+					FunctionBlockState.CycleValue.of(CrackedConcreteBlock.CRACKS)).build());
 	}
 	
 	private static void registerIronRust()
