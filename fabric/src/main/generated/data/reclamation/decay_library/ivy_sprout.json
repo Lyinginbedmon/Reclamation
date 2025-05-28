@@ -30,6 +30,7 @@
     }
   ],
   "function": {
+    "count": 1,
     "id": "reclamation:sprout",
     "sprouted": {
       "faces": [
@@ -42,7 +43,10 @@
       "must_be": {
         "id": "reclamation:and",
         "set": [
-          "reclamation:is_air",
+          {
+            "id": "reclamation:macro",
+            "macro": "reclamation:place_ivy_main"
+          },
           {
             "face": "down",
             "id": "reclamation:adjacent_to",

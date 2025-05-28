@@ -1,10 +1,16 @@
 package com.lying.decay.conditions;
 
 import java.util.Optional;
+import java.util.function.Function;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
+import com.lying.utility.PositionPredicate.Comparison;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -145,6 +151,103 @@ public abstract class ConditionClimate extends DecayCondition
 						return weather;
 				return RAIN;
 			}
+		}
+	}
+	
+	protected static abstract class CheckBiome extends DecayCondition
+	{
+		protected Optional<Float> temp = Optional.empty();
+		protected Optional<Comparison> comp = Optional.empty();
+		
+		private final Function<Biome, Float> getterFunc;
+		
+		protected CheckBiome(Identifier idIn, Function<Biome, Float> funcIn)
+		{
+			super(idIn);
+			getterFunc = funcIn;
+		}
+		
+		protected boolean check(DecayContext context)
+		{
+			float temperature = temp.orElse(0.5F);
+			Biome biome = context.world.get().getBiome(context.currentPos()).value();
+			return comp.orElse(Comparison.GREATER_THAN_OR_EQUAL).apply(getterFunc.apply(biome), temperature);
+		}
+		
+		protected JsonObject write(JsonObject obj)
+		{
+			return new BiomeData(temp, comp).toJson().getAsJsonObject();
+		}
+		
+		protected void read(JsonObject obj)
+		{
+			BiomeData data = BiomeData.fromJson(obj);
+			temp = data.val;
+			comp = data.op;
+		}
+		
+		private static record BiomeData(Optional<Float> val, Optional<Comparison> op)
+		{
+			public static final Codec<BiomeData> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
+					Codec.FLOAT.optionalFieldOf("value").forGetter(BiomeData::val),
+					Comparison.CODEC.optionalFieldOf("operation").forGetter(BiomeData::op)
+					).apply(instance, BiomeData::new));
+			
+			public JsonElement toJson()
+			{
+				return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
+			}
+			
+			public static BiomeData fromJson(JsonObject obj)
+			{
+				return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow();
+			}
+		}
+	}
+	
+	public static class Temperature extends CheckBiome
+	{
+		public Temperature(Identifier idIn)
+		{
+			super(idIn, b -> b.getTemperature());
+		}
+		
+		public static Temperature of(float value)
+		{
+			Temperature condition = (Temperature)RCDecayConditions.TEMPERATURE.get();
+			condition.temp = Optional.of(value);
+			return condition;
+		}
+		
+		public static Temperature of(float value, Comparison operation)
+		{
+			Temperature condition = (Temperature)RCDecayConditions.TEMPERATURE.get();
+			condition.temp = Optional.of(value);
+			condition.comp = Optional.of(operation);
+			return condition;
+		}
+	}
+	
+	public static class Humidity extends CheckBiome
+	{
+		public Humidity(Identifier idIn)
+		{
+			super(idIn, b -> b.weather.downfall());
+		}
+		
+		public static Humidity of(float value)
+		{
+			Humidity condition = (Humidity)RCDecayConditions.HUMIDITY.get();
+			condition.temp = Optional.of(value);
+			return condition;
+		}
+		
+		public static Humidity of(float value, Comparison operation)
+		{
+			Humidity condition = (Humidity)RCDecayConditions.HUMIDITY.get();
+			condition.temp = Optional.of(value);
+			condition.comp = Optional.of(operation);
+			return condition;
 		}
 	}
 }

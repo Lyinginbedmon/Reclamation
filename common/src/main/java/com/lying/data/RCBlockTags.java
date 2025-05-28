@@ -13,4 +13,5 @@ public class RCBlockTags
 	public static final TagKey<Block> FADED_TERRACOTTA	= TagKey.of(RegistryKeys.BLOCK, prefix("faded_terracotta"));
 	public static final TagKey<Block> CRACKED_CONCRETE	= TagKey.of(RegistryKeys.BLOCK, prefix("cracked_concrete"));
 	public static final TagKey<Block> CONCRETE			= TagKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla("concrete"));
+	public static final TagKey<Block> MOLD_IMPERVIOUS	= TagKey.of(RegistryKeys.BLOCK, prefix("mold_impervious"));
 }

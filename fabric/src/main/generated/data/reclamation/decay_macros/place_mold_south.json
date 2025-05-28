@@ -1,0 +1,24 @@
+{
+  "condition": {
+    "face": "south",
+    "id": "reclamation:supported"
+  },
+  "function": {
+    "convert_to": {
+      "state": {
+        "Name": "reclamation:mold",
+        "Properties": {
+          "down": "false",
+          "east": "false",
+          "inert": "false",
+          "north": "false",
+          "south": "true",
+          "up": "false",
+          "west": "false"
+        }
+      }
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:place_mold_south"
+}

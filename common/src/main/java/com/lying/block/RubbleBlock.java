@@ -26,12 +26,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.tick.ScheduledTickView;
 
-public class RubbleBlock extends Block
+public class RubbleBlock extends Block implements IDeActivatable
 {
 	protected static final int DELAY = 5;
-	public static final BooleanProperty FULL = BooleanProperty.of("full");
-	public static final BooleanProperty INERT = BooleanProperty.of("inert");
-	public static final IntProperty DEPTH = IntProperty.of("depth", 1, 4);
+	public static final BooleanProperty FULL	= BooleanProperty.of("full");
+	public static final BooleanProperty INERT	= IDeActivatable.INERT;
+	public static final IntProperty DEPTH		= IntProperty.of("depth", 1, 4);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 5.0, 15.0);
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[] 
 			{
@@ -133,7 +133,7 @@ public class RubbleBlock extends Block
 	
 	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
 	{
-		if(state.get(INERT))
+		if(isInert(state))
 			return;
 		
 		BlockPos down = pos.down();

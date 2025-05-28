@@ -24,6 +24,12 @@ public class RCBlockTagsProvider extends BlockTagProvider
 	
 	protected void configure(WrapperLookup wrapperLookup)
 	{
+		getOrCreateTagBuilder(BlockTags.DIRT);
+		getOrCreateTagBuilder(BlockTags.LEAVES);
+		getOrCreateTagBuilder(BlockTags.DOORS);
+		getOrCreateTagBuilder(BlockTags.TRAPDOORS);
+		getOrCreateTagBuilder(BlockTags.SHULKER_BOXES);
+		
 		getOrCreateTagBuilder(RCBlockTags.CONCRETE).add(
 				Blocks.BLACK_CONCRETE,
 				Blocks.BLUE_CONCRETE,
@@ -68,5 +74,12 @@ public class RCBlockTagsProvider extends BlockTagProvider
 				RCBlocks.STONE_RUBBLE.get(),
 				RCBlocks.DEEPSLATE_RUBBLE.get());
 		getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(RCBlocks.SOOT.get());
+		
+		getOrCreateTagBuilder(RCBlockTags.MOLD_IMPERVIOUS)
+				.addTag(BlockTags.LEAVES)
+				.addTag(BlockTags.DOORS)
+				.addTag(BlockTags.TRAPDOORS)
+				.addTag(BlockTags.SHULKER_BOXES)
+				.addTag(BlockTags.DIRT);
 	}
 }

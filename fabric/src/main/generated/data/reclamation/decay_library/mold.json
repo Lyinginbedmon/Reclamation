@@ -1,0 +1,74 @@
+{
+  "chance": {
+    "base_chance": 0.1,
+    "modifier": {
+      "amount": 0.2,
+      "multiplier": {
+        "search": {
+          "capacity": 3,
+          "looking_for": {
+            "block": "reclamation:mold"
+          },
+          "range": 1
+        },
+        "use_tally_as": "flat_value"
+      },
+      "operation": "add_value"
+    }
+  },
+  "conditions": [
+    {
+      "id": "reclamation:exposed",
+      "inverted": true
+    },
+    {
+      "id": "reclamation:temperature",
+      "value": 0.5
+    },
+    {
+      "id": "reclamation:or",
+      "name": "moisture_check",
+      "set": [
+        {
+          "id": "reclamation:is_humid",
+          "value": 0.4
+        }
+      ]
+    },
+    {
+      "faces": [
+        "down",
+        "north",
+        "south",
+        "west",
+        "east"
+      ],
+      "id": "reclamation:uncovered"
+    },
+    "reclamation:is_solid_block",
+    {
+      "id": "reclamation:is_block",
+      "inverted": true,
+      "tag": "#reclamation:mold_impervious"
+    }
+  ],
+  "function": {
+    "count": 1,
+    "id": "reclamation:sprout",
+    "sprouted": {
+      "faces": [
+        "down",
+        "north",
+        "south",
+        "west",
+        "east"
+      ],
+      "growth": "reclamation:place_mold_main",
+      "must_be": {
+        "id": "reclamation:macro",
+        "macro": "reclamation:place_mold_main"
+      }
+    }
+  },
+  "name": "reclamation:mold"
+}

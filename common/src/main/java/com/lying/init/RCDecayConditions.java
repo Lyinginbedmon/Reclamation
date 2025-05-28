@@ -28,7 +28,6 @@ public class RCDecayConditions
 	
 	/**
 	 * TODO Add more conditions
-	 * * Climate temperature/humidity
 	 * * Specific biome
 	 * * Entity scan
 	 */
@@ -80,6 +79,10 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> EXPOSED		= register("exposed", ConditionExposed::new);
 	/** Succeeds if the conditions satisfy those of all given {@link DecayMacro} */
 	public static final Supplier<DecayCondition> MACRO			= register("macro", ConditionMacro::new);
+	/** Succeeds if the biome's temperature passes the comparison with a given value */
+	public static final Supplier<DecayCondition> TEMPERATURE	= register("temperature", ConditionClimate.Temperature::new);
+	/** Succeeds if the biome's humidity passes the comparison with a given value */
+	public static final Supplier<DecayCondition> HUMIDITY		= register("is_humid", ConditionClimate.Humidity::new);
 	
 	/** Registers the given condition under the Reclamation namespace and creates a supplier */
 	private static Supplier<DecayCondition> register(String nameIn, Function<Identifier, DecayCondition> funcIn)

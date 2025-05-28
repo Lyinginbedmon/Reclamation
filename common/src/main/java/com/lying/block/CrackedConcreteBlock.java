@@ -49,7 +49,8 @@ public class CrackedConcreteBlock extends Block
 		
 		BlockPos blockPos = pos.down();
 		if(FallingBlock.canFallThrough(world.getBlockState(blockPos)))
-			ParticleUtil.spawnParticle(world, pos, random, new BlockStateParticleEffect(ParticleTypes.BLOCK_CRUMBLE, state));
+			for(int i=state.get(CRACKS); i>0; i--)
+				ParticleUtil.spawnParticle(world, pos, random, new BlockStateParticleEffect(ParticleTypes.BLOCK_CRUMBLE, state));
 	}
 	
 	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance)

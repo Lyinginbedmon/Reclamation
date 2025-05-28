@@ -25,9 +25,9 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class LeafPileBlock extends CarpetBlock
+public class LeafPileBlock extends CarpetBlock implements IDeActivatable
 {
-	public static final BooleanProperty INERT = BooleanProperty.of("inert");
+	public static final BooleanProperty INERT	= IDeActivatable.INERT;
 	public static final BooleanProperty STEPPED_ON = BooleanProperty.of("trampled");
 	public static final IntProperty LAYERS = IntProperty.of("layers", 1, 3);
 	public static final List<Block> LEAF_PILES = Lists.newArrayList();
@@ -106,7 +106,7 @@ public class LeafPileBlock extends CarpetBlock
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity)
 	{
 		super.onEntityCollision(state, world, pos, entity);
-		if(!world.isClient && !(state.get(STEPPED_ON) || state.get(INERT)) && !entity.bypassesSteppingEffects())
+		if(!world.isClient && !(state.get(STEPPED_ON) || isInert(state)) && !entity.bypassesSteppingEffects())
 		{
 			Random rand = world.getRandom();
 			for(Direction d : Direction.Type.HORIZONTAL.getShuffled(rand))

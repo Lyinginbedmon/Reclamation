@@ -25,6 +25,7 @@
 	"block.reclamation.cracked_stone_brick_stairs": "Cracked Stone Brick Stairs",
 	"block.reclamation.ivy": "Ivy",
 	"block.reclamation.soot": "Soot",
+	"block.reclamation.mold": "Mold",
 	"block.reclamation.black_faded_terracotta": "Black Faded Terracotta",
 	"block.reclamation.blue_faded_terracotta": "Blue Faded Terracotta",
 	"block.reclamation.brown_faded_terracotta": "Brown Faded Terracotta",
@@ -65,6 +66,7 @@
 	"block.reclamation.deepslate_rubble": "Deepslate Rubble",
 	// Items
 	"item.reclamation.withering_dust": "Withering Dust",
+	"item.reclamation.deactivator": "De/Activator",
 	// Status effects
 	// Item tags
 	// Commands

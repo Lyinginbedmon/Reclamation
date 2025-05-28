@@ -2,20 +2,19 @@
   "conditions": [
     "reclamation:is_replaceable",
     {
-      "face": "down",
-      "id": "reclamation:adjacent_to",
-      "look_for": {
-        "block": "minecraft:grass_block"
-      }
+      "block": "reclamation:ivy",
+      "id": "reclamation:is_block",
+      "inverted": true
     }
   ],
   "function": {
     "id": "reclamation:macro",
     "macros": [
-      "reclamation:place_ivy_west",
-      "reclamation:place_ivy_east",
       "reclamation:place_ivy_south",
-      "reclamation:place_ivy_north"
+      "reclamation:place_ivy_west",
+      "reclamation:place_ivy_north",
+      "reclamation:place_ivy_up",
+      "reclamation:place_ivy_east"
     ],
     "randomise": true
   },

@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
+import com.lying.item.DeactivatorItem;
 import com.lying.item.DecayDustItem;
 import com.lying.reference.Reference;
 
@@ -23,6 +24,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 
 public class RCItems
 {
@@ -38,6 +40,7 @@ public class RCItems
 			() -> new ItemStack(RCItems.WEATHERED_IRON.get())));
 	
 	public static final RegistrySupplier<Item> WITHERING_DUST				= register("withering_dust", settings -> new DecayDustItem(settings));
+	public static final RegistrySupplier<Item> DEACTIVATOR					= register("deactivator", settings -> new DeactivatorItem(settings.maxCount(1).rarity(Rarity.EPIC)));
 	
 	public static final RegistrySupplier<Item> RUSTED_IRON					= registerBlock("rusted_iron", RCBlocks.RUSTED_IRON);
 	public static final RegistrySupplier<Item> WEATHERED_IRON				= registerBlock("weathered_iron", RCBlocks.WEATHERED_IRON);
@@ -60,6 +63,7 @@ public class RCItems
 	public static final RegistrySupplier<Item> SPRUCE_LEAF_PILE				= registerBlockNoItem("spruce_leaf_pile", RCBlocks.SPRUCE_LEAF_PILE);
 	public static final RegistrySupplier<Item> SOOT							= registerBlockNoItem("soot", RCBlocks.SOOT);
 	public static final RegistrySupplier<Item> IVY							= registerBlockNoItem("ivy", RCBlocks.IVY);
+	public static final RegistrySupplier<Item> MOLD							= registerBlockNoItem("mold", RCBlocks.MOLD);
 	public static final RegistrySupplier<Item> CRACKED_STONE_BRICK_SLAB		= registerBlock("cracked_stone_brick_slab", RCBlocks.CRACKED_STONE_BRICK_SLAB);
 	public static final RegistrySupplier<Item> CRACKED_STONE_BRICK_STAIRS	= registerBlock("cracked_stone_brick_stairs", RCBlocks.CRACKED_STONE_BRICK_STAIRS);
 	public static final RegistrySupplier<Item> DOUSED_TORCH					= registerBlock("doused_torch", RCBlocks.DOUSED_TORCH);

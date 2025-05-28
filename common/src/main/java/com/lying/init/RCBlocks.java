@@ -14,6 +14,7 @@ import com.lying.block.DousedTorchBlock;
 import com.lying.block.FadedTerracottaBlock;
 import com.lying.block.IvyBlock;
 import com.lying.block.LeafPileBlock;
+import com.lying.block.MoldBlock;
 import com.lying.block.RubbleBlock;
 import com.lying.block.ScrapeableBlock;
 import com.lying.block.SootBlock;
@@ -67,8 +68,9 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> RUSTED_IRON				= registerSolidCube("rusted_iron", settings -> new ScrapeableBlock(RCBlocks.WEATHERED_IRON, WAXED_RUSTED_IRON, settings.requiresTool().strength(2.0F, 6.0F).mapColor(MapColor.ORANGE).instrument(NoteBlockInstrument.IRON_XYLOPHONE).sounds(BlockSoundGroup.METAL)));
 	public static final RegistrySupplier<Block> TARNISHED_GOLD			= registerSolidCube("tarnished_gold", settings -> new ScrapeableBlock(() -> Blocks.GOLD_BLOCK, settings.requiresTool().strength(3.0F, 6.0F).mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.METAL)));
 	
-	public static final RegistrySupplier<Block> SOOT						= register("soot", settings -> new SootBlock(settings.mapColor(MapColor.BLACK).replaceable().noCollision().requiresTool().strength(0.1F).sounds(BlockSoundGroup.SNOW).pistonBehavior(PistonBehavior.DESTROY)));
-	public static final RegistrySupplier<Block> IVY							= register("ivy", settings -> new IvyBlock(settings.mapColor(MapColor.DARK_GREEN).replaceable().noCollision().strength(0.2F).sounds(BlockSoundGroup.VINE).burnable().pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> SOOT						= register("soot", settings -> new SootBlock(settings.mapColor(MapColor.BLACK).replaceable().nonOpaque().noCollision().requiresTool().strength(0.1F).sounds(BlockSoundGroup.SNOW).pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> IVY							= register("ivy", settings -> new IvyBlock(settings.mapColor(MapColor.DARK_GREEN).replaceable().nonOpaque().noCollision().strength(0.2F).velocityMultiplier(0.7F).sounds(BlockSoundGroup.VINE).burnable().pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> MOLD						= register("mold", settings -> new MoldBlock(settings.mapColor(MapColor.BLACK).replaceable().nonOpaque().noCollision().strength(0.1F).sounds(BlockSoundGroup.SLIME).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> CRACKED_STONE_BRICK_SLAB	= register("cracked_stone_brick_slab", settings -> new SlabBlock(settings.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)));
 	public static final RegistrySupplier<Block> CRACKED_STONE_BRICK_STAIRS	= register("cracked_stone_brick_stairs", settings -> new StairsBlock(Blocks.CRACKED_STONE_BRICKS.getDefaultState(), settings.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)));
 	public static final RegistrySupplier<Block> OAK_LEAF_PILE				= registerLeafPile(WoodType.OAK);

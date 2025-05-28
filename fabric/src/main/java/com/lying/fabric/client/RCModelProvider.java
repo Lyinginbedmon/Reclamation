@@ -73,9 +73,11 @@ public class RCModelProvider extends FabricModelProvider
 		RCBlocks.DYE_TO_CONCRETE.values().stream().forEach(b -> CrackedConcrete.makeBlockState((CrackedConcreteBlock)b.cracked().get(), b.dry().get(), blockStateModelGenerator));
 		DousedLights.register(blockStateModelGenerator);
 		LeafPile.register(blockStateModelGenerator);
-		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
 		registerSlab(RCBlocks.CRACKED_STONE_BRICK_SLAB.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		registerStairs(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
+		
+		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
+		registerMold(RCBlocks.MOLD.get(), RCItems.MOLD.get(), blockStateModelGenerator);
 		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
 		
 		Rubble.makeBlockState((RubbleBlock)RCBlocks.STONE_RUBBLE.get(), blockStateModelGenerator);
@@ -86,6 +88,7 @@ public class RCModelProvider extends FabricModelProvider
 	{
 		RCItems.BASIC_BLOCK_ITEMS.stream().map(e -> (BlockItem)e.get()).forEach(entry -> registerBlockModel(entry, itemModelGenerator));
 		itemModelGenerator.register(RCItems.WITHERING_DUST.get(), Models.GENERATED);
+		itemModelGenerator.register(RCItems.DEACTIVATOR.get(), Models.GENERATED);
 	}
 	
 	private static void registerBlockModel(BlockItem item, ItemModelGenerator itemModelGenerator)
@@ -127,6 +130,12 @@ public class RCModelProvider extends FabricModelProvider
 	{
 		Identifier id = Models.GENERATED.upload(item, TextureMap.layer0(block), blockStateModelGenerator.modelCollector);
 		blockStateModelGenerator.registerTintedItemModel(block, id, new ConstantTintSource(ReclamationClient.BASE_LEAF));
+		blockStateModelGenerator.registerMultifaceBlockModel(block);
+	}
+	
+	private static void registerMold(Block block, Item item, BlockStateModelGenerator blockStateModelGenerator)
+	{
+		blockStateModelGenerator.registerItemModel(item, Models.GENERATED.upload(item, TextureMap.layer0(block), blockStateModelGenerator.modelCollector));
 		blockStateModelGenerator.registerMultifaceBlockModel(block);
 	}
 	

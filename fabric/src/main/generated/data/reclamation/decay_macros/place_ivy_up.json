@@ -1,0 +1,23 @@
+{
+  "condition": {
+    "face": "up",
+    "id": "reclamation:supported"
+  },
+  "function": {
+    "convert_to": {
+      "state": {
+        "Name": "reclamation:ivy",
+        "Properties": {
+          "east": "false",
+          "inert": "false",
+          "north": "false",
+          "south": "false",
+          "up": "true",
+          "west": "false"
+        }
+      }
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:place_ivy_up"
+}

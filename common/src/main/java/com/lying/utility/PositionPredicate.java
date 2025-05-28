@@ -99,15 +99,15 @@ public class PositionPredicate
 		public static final StringIdentifiable.EnumCodec<Comparison> CODEC = StringIdentifiable.createCodec(Comparison::values);
 		
 		private final String name;
-		private final BiPredicate<Integer, Integer> func;
+		private final BiPredicate<Float, Float> func;
 		
-		private Comparison(String nameIn, BiPredicate<Integer, Integer> funcIn)
+		private Comparison(String nameIn, BiPredicate<Float, Float> funcIn)
 		{
 			name = nameIn;
 			func = funcIn;
 		}
 		
-		public boolean apply(int a, int b) { return func.test(a, b); }
+		public boolean apply(float a, float b) { return func.test(a, b); }
 		
 		public String asString() { return name; }
 		

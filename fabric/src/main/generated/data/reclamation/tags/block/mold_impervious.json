@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#minecraft:leaves",
+    "#minecraft:doors",
+    "#minecraft:trapdoors",
+    "#minecraft:shulker_boxes",
+    "#minecraft:dirt"
+  ]
+}

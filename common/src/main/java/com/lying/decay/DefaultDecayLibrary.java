@@ -10,11 +10,12 @@ import com.lying.block.CrackedConcreteBlock;
 import com.lying.data.RCBlockTags;
 import com.lying.decay.conditions.ConditionBoolean;
 import com.lying.decay.conditions.ConditionClimate;
+import com.lying.decay.conditions.ConditionClimate.IsWeather.Weather;
 import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
+import com.lying.decay.conditions.ConditionMacro;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.conditions.ConditionPosition;
-import com.lying.decay.conditions.ConditionClimate.IsWeather.Weather;
 import com.lying.decay.functions.FunctionBlockState;
 import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionMacro;
@@ -327,10 +328,32 @@ public class DefaultDecayLibrary
 					FunctionSprout.Builder.create()
 						.faceSet(EnumSet.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST))
 						.soloProvider(DefaultDecayMacros.PLACE_IVY)
+						.maxPlace(1)
 						.onCondition(
 							ConditionBoolean.And.of(
-								RCDecayConditions.IS_AIR.get(),
+								ConditionMacro.of(DefaultDecayMacros.PLACE_IVY),
 								ConditionNeighbouring.Blocks.of(Blocks.GRASS_BLOCK).faces(Direction.DOWN))).build()).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.1F)
+					.addModifier(0.2F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(3).mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.MOLD.get()).build()))
+				.name("mold")
+				.condition(
+					RCDecayConditions.EXPOSED.get().invert(),
+					ConditionClimate.Temperature.of(0.5F),
+					ConditionBoolean.Or.of(
+						ConditionClimate.Humidity.of(0.4F)
+						// TODO Add block area check for water
+						).named("moisture_check"),
+					ConditionNeighbouring.Uncovered.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN),
+					RCDecayConditions.IS_SOLID.get(),
+					ConditionIsBlock.of(RCBlockTags.MOLD_IMPERVIOUS).invert())
+				.function(
+					FunctionSprout.Builder.create()
+						.faceSet(EnumSet.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN))
+						.soloProvider(DefaultDecayMacros.PLACE_MOLD)
+						.maxPlace(1)
+						.onCondition(ConditionMacro.of(DefaultDecayMacros.PLACE_MOLD)).build()).build());
 		
 		register(DecayEntry.Builder.create()
 				.name("particulate_shuffle")

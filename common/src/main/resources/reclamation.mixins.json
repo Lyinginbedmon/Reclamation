@@ -6,6 +6,7 @@
   "client": [
   ],
   "mixins": [
+	"AccessorBiome"
   ],
   "injectors": {
     "defaultRequire": 1

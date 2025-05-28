@@ -1,6 +1,5 @@
 package com.lying.client;
 
-import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.LeafPileBlock;
 import com.lying.init.RCBlocks;
 
@@ -25,8 +24,7 @@ public class ReclamationClient
 	
 	public static void clientInit()
 	{
-		RenderTypeRegistry.register(RenderLayer.getCutout(), RCBlocks.IVY.get());
+		RenderTypeRegistry.register(RenderLayer.getCutout(), RCBlocks.IVY.get(), RCBlocks.MOLD.get());
 		RenderTypeRegistry.register(RenderLayer.getCutoutMipped(), LeafPileBlock.LEAF_PILE_TO_LEAVES.keySet().stream().toList().toArray(new Block[0]));
-		RenderTypeRegistry.register(RenderLayer.getCutoutMipped(), CrackedConcreteBlock.DYE_TO_BLOCK.values().stream().toList().toArray(new Block[0]));
 	}
 }
