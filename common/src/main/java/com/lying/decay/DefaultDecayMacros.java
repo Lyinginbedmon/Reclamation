@@ -11,14 +11,18 @@ import com.google.common.collect.Lists;
 import com.lying.block.IvyBlock;
 import com.lying.block.MoldBlock;
 import com.lying.data.RCBlockTags;
+import com.lying.decay.conditions.ConditionBoolean;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
+import com.lying.decay.conditions.ConditionPosition;
+import com.lying.decay.conditions.ConditionPosition.Light.Type;
 import com.lying.decay.functions.FunctionBlockState;
 import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionMacro;
 import com.lying.decay.handler.DecayMacro;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDecayConditions;
+import com.lying.utility.PositionPredicate.Comparison;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -79,7 +83,11 @@ public class DefaultDecayMacros
 				.name(PLACE_MOLD)
 				.condition(
 					RCDecayConditions.IS_REPLACEABLE.get(),
-					ConditionIsBlock.of(RCBlocks.MOLD.get()).invert()
+					ConditionIsBlock.of(RCBlocks.MOLD.get()).invert(),
+					ConditionBoolean.Or.of(
+						ConditionPosition.Light.create().type(Type.SKY).operation(Comparison.GREATER_THAN).threshold(4),
+						ConditionPosition.Light.create().type(Type.BLOCK).operation(Comparison.GREATER_THAN).threshold(8)
+						).invert().named("not_too_bright")
 				)
 				.function(FunctionMacro.of(moldSet.toArray(new Identifier[0])).randomised())
 				.build());

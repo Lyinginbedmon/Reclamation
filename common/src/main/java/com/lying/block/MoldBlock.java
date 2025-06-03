@@ -31,14 +31,14 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.tick.ScheduledTickView;
 
-public class MoldBlock extends Block implements IFaceBlock
+public class MoldBlock extends Block implements IFaceBlock, IDeActivatable
 {
 	public static final MapCodec<MoldBlock> CODEC	= createCodec(MoldBlock::new);
-	public static final BooleanProperty INERT = BooleanProperty.of("inert");
 	public static final BooleanProperty
 		UP = ConnectingBlock.UP,
 		DOWN = ConnectingBlock.DOWN,
@@ -183,7 +183,15 @@ public class MoldBlock extends Block implements IFaceBlock
 	
 	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
 	{
-		if(!state.get(INERT))
+		if(isInert(state))
+			return;
+		
+		if(world.getLightLevel(LightType.SKY, pos) > 4 || world.getLightLevel(LightType.BLOCK, pos) > 8)
+		{
+			if(random.nextInt(6) == 0)
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+		}
+		else
 			applyGrowth(state, world, pos, random);
 	}
 	

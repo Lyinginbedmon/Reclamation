@@ -3,11 +3,14 @@ package com.lying.fabric.client;
 import static com.lying.reference.Reference.ModInfo.prefix;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedTorchBlock;
 import com.lying.block.LeafPileBlock;
+import com.lying.block.RaggedBannerBlock;
 import com.lying.block.RubbleBlock;
 import com.lying.client.ReclamationClient;
 import com.lying.init.RCBlocks;
@@ -18,6 +21,7 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MultifaceBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.client.data.BlockStateModelGenerator;
@@ -28,17 +32,21 @@ import net.minecraft.client.data.ItemModels;
 import net.minecraft.client.data.Model;
 import net.minecraft.client.data.ModelIds;
 import net.minecraft.client.data.Models;
+import net.minecraft.client.data.MultipartBlockStateSupplier;
 import net.minecraft.client.data.TextureKey;
 import net.minecraft.client.data.TextureMap;
 import net.minecraft.client.data.TexturedModel;
 import net.minecraft.client.data.VariantSettings;
 import net.minecraft.client.data.VariantsBlockStateSupplier;
+import net.minecraft.client.data.When;
+import net.minecraft.client.render.item.model.special.BannerModelRenderer;
 import net.minecraft.client.render.item.tint.ConstantTintSource;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
@@ -60,6 +68,11 @@ public class RCModelProvider extends FabricModelProvider
 			Optional.of(prefix("block/template_tinted_cube")),
 			Optional.empty(),
 			TextureKey.ALL);
+	public static final Model TEMPLATE_IVY	= new Model(
+			Optional.of(prefix("block/template_ivy")),
+			Optional.empty(),
+			TextureKey.TEXTURE
+			);
 	
 	public RCModelProvider(FabricDataOutput output)
 	{
@@ -77,18 +90,22 @@ public class RCModelProvider extends FabricModelProvider
 		registerStairs(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		
 		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
-		registerMold(RCBlocks.MOLD.get(), RCItems.MOLD.get(), blockStateModelGenerator);
+		Mold.makeBlockState(RCBlocks.MOLD.get(), RCItems.MOLD.get(), blockStateModelGenerator);
 		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
 		
+		Scrap.makeBlockState(RCBlocks.IRON_SCRAP.get(), blockStateModelGenerator);
 		Rubble.makeBlockState((RubbleBlock)RCBlocks.STONE_RUBBLE.get(), blockStateModelGenerator);
 		Rubble.makeBlockState((RubbleBlock)RCBlocks.DEEPSLATE_RUBBLE.get(), blockStateModelGenerator);
+		
+		for(DyeColor color : new DyeColor[] {DyeColor.WHITE, DyeColor.CYAN})
+			RaggedBanner.makeBlockState(RaggedBannerBlock.getForColor(color), null, color, blockStateModelGenerator);
 	}
 	
 	public void generateItemModels(ItemModelGenerator itemModelGenerator)
 	{
 		RCItems.BASIC_BLOCK_ITEMS.stream().map(e -> (BlockItem)e.get()).forEach(entry -> registerBlockModel(entry, itemModelGenerator));
 		itemModelGenerator.register(RCItems.WITHERING_DUST.get(), Models.GENERATED);
-		itemModelGenerator.register(RCItems.DEACTIVATOR.get(), Models.GENERATED);
+		itemModelGenerator.register(RCItems.DEACTIVATOR.get(), Models.HANDHELD_ROD);
 	}
 	
 	private static void registerBlockModel(BlockItem item, ItemModelGenerator itemModelGenerator)
@@ -130,12 +147,6 @@ public class RCModelProvider extends FabricModelProvider
 	{
 		Identifier id = Models.GENERATED.upload(item, TextureMap.layer0(block), blockStateModelGenerator.modelCollector);
 		blockStateModelGenerator.registerTintedItemModel(block, id, new ConstantTintSource(ReclamationClient.BASE_LEAF));
-		blockStateModelGenerator.registerMultifaceBlockModel(block);
-	}
-	
-	private static void registerMold(Block block, Item item, BlockStateModelGenerator blockStateModelGenerator)
-	{
-		blockStateModelGenerator.registerItemModel(item, Models.GENERATED.upload(item, TextureMap.layer0(block), blockStateModelGenerator.modelCollector));
 		blockStateModelGenerator.registerMultifaceBlockModel(block);
 	}
 	
@@ -333,6 +344,106 @@ public class RCModelProvider extends FabricModelProvider
 			
 			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(map));
 			generator.registerParentedItemModel(block, model0);
+		}
+	}
+	
+	private static class Mold
+	{
+		private static final Model MOLD_0 = new Model(
+				Optional.of(prefix("block/template_ivy")),
+				Optional.of("_0"),
+				TextureKey.TEXTURE
+				);
+		private static final Model MOLD_1 = new Model(
+				Optional.of(prefix("block/template_ivy")),
+				Optional.of("_1"),
+				TextureKey.TEXTURE
+				);
+		private static final Model MOLD_2 = new Model(
+				Optional.of(prefix("block/template_ivy")),
+				Optional.of("_2"),
+				TextureKey.TEXTURE
+				);
+		
+		private static final Map<Direction, Function<Identifier, BlockStateVariant>> CONNECTION_VARIANT_FUNCTIONS = Map.of(
+				Direction.NORTH,
+					model -> BlockStateVariant.create().put(VariantSettings.MODEL, model),
+				Direction.EAST,
+					model -> BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true),
+				Direction.SOUTH,
+					model -> BlockStateVariant.create()
+							.put(VariantSettings.MODEL, model)
+							.put(VariantSettings.Y, VariantSettings.Rotation.R180)
+							.put(VariantSettings.UVLOCK, true),
+				Direction.WEST,
+					model -> BlockStateVariant.create()
+							.put(VariantSettings.MODEL, model)
+							.put(VariantSettings.Y, VariantSettings.Rotation.R270)
+							.put(VariantSettings.UVLOCK, true),
+				Direction.UP,
+					model -> BlockStateVariant.create()
+							.put(VariantSettings.MODEL, model)
+							.put(VariantSettings.X, VariantSettings.Rotation.R270)
+							.put(VariantSettings.UVLOCK, true),
+				Direction.DOWN,
+					model -> BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)
+			);
+		
+		private static void makeBlockState(Block block, Item item, BlockStateModelGenerator generator)
+		{
+			Identifier blockID = ModelIds.getBlockModelId(block);
+			Identifier texture0 = Identifier.of(blockID.getNamespace(), blockID.getPath()+"_0");
+			generator.registerItemModel(item, Models.GENERATED.upload(item, TextureMap.layer0(texture0), generator.modelCollector));
+			
+			List<Identifier> models = List.of(
+					MOLD_0.upload(block, new TextureMap().put(TextureKey.TEXTURE, texture0), generator.modelCollector),
+					MOLD_1.upload(block, new TextureMap().put(TextureKey.TEXTURE, Identifier.of(blockID.getNamespace(), blockID.getPath()+"_1")), generator.modelCollector),
+					MOLD_2.upload(block, new TextureMap().put(TextureKey.TEXTURE, Identifier.of(blockID.getNamespace(), blockID.getPath()+"_2")), generator.modelCollector)
+					);
+			MultipartBlockStateSupplier map = MultipartBlockStateSupplier.create(block);
+			CONNECTION_VARIANT_FUNCTIONS.entrySet().forEach(entry -> 
+				map.with(When.create().set(MultifaceBlock.getProperty(entry.getKey()), true), models.stream().map(model -> entry.getValue().apply(model)).toList()));
+			generator.blockStateCollector.accept(map);
+		}
+	}
+	
+	private static class RaggedBanner
+	{
+		@SuppressWarnings("deprecation")
+		private static void makeBlockState(Block block, Block wallBlock, DyeColor color, BlockStateModelGenerator generator)
+		{
+			Identifier id = ModelIds.getMinecraftNamespacedBlock("banner");
+			Identifier id2 = ModelIds.getMinecraftNamespacedItem("template_banner");
+			generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, id));
+			
+			Item item = block.asItem();
+			generator.itemModelOutput.accept(item, ItemModels.special(id2, new BannerModelRenderer.Unbaked(color)));
+		}
+	}
+	
+	private static class Scrap
+	{
+		private static final Model MODEL = new Model(
+				Optional.empty(),
+				Optional.empty(),
+				TextureKey.TEXTURE
+				);
+		
+		private static void makeBlockState(Block block, BlockStateModelGenerator generator)
+		{
+			TextureMap tex = (new TextureMap()).put(TextureKey.TEXTURE, Registries.BLOCK.getId(block));
+			Identifier model = MODEL.upload(block, tex, generator.modelCollector);
+			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, entry(model).toArray(new BlockStateVariant[0])));
+		}
+		
+		private static List<BlockStateVariant> entry(Identifier model)
+		{
+			return List.of(
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R0),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R90),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R180),
+					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R270)
+					);
 		}
 	}
 }

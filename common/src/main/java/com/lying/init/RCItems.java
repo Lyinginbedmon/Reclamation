@@ -86,8 +86,11 @@ public class RCItems
 	public static final RegistrySupplier<Item> RED_FADED_TERRACOTTA			= registerTerracottaBlock(DyeColor.RED);
 	public static final RegistrySupplier<Item> WHITE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.WHITE);
 	public static final RegistrySupplier<Item> YELLOW_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.YELLOW);
+	public static final RegistrySupplier<Item> IRON_SCRAP					= registerBlock("iron_scrap", RCBlocks.IRON_SCRAP);
 	public static final RegistrySupplier<Item> STONE_RUBBLE					= registerBlockNoItem("stone_rubble", RCBlocks.STONE_RUBBLE);
 	public static final RegistrySupplier<Item> DEEPSLATE_RUBBLE				= registerBlockNoItem("deepslate_rubble", RCBlocks.DEEPSLATE_RUBBLE);
+	public static final RegistrySupplier<Item> WHITE_RAGGED_BANNER			= registerBlockNoItem("ragged_white_banner", RCBlocks.WHITE_RAGGED_BANNER);
+	public static final RegistrySupplier<Item> CYAN_RAGGED_BANNER			= registerBlockNoItem("ragged_cyan_banner", RCBlocks.CYAN_RAGGED_BANNER);
 	
 	private static RegistrySupplier<Item> registerTerracottaBlock(DyeColor color)
 	{

@@ -34,7 +34,7 @@ public class DeactivatorItem extends Item
 				{
 					IDeActivatable activator = (IDeActivatable)state.getBlock();
 					serverWorld.setBlockState(position, activator.toggleInert(state));
-					serverWorld.playSound(null, position, SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.PLAYERS);
+					serverWorld.playSound(null, position, activator.isInert(state) ? SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF : SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.PLAYERS);
 					return ActionResult.SUCCESS;
 				}
 			}

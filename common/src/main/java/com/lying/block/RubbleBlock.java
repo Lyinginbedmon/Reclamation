@@ -30,7 +30,6 @@ public class RubbleBlock extends Block implements IDeActivatable
 {
 	protected static final int DELAY = 5;
 	public static final BooleanProperty FULL	= BooleanProperty.of("full");
-	public static final BooleanProperty INERT	= IDeActivatable.INERT;
 	public static final IntProperty DEPTH		= IntProperty.of("depth", 1, 4);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 5.0, 15.0);
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[] 
@@ -50,6 +49,7 @@ public class RubbleBlock extends Block implements IDeActivatable
 		setDefaultState(getDefaultState().with(DEPTH, 1).with(FULL, false).with(INERT, false));
 	}
 	
+	// TODO Add waterlogging
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
 	{
 		builder.add(DEPTH, FULL, INERT);

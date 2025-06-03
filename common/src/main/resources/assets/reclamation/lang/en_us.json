@@ -64,6 +64,8 @@
 	"block.reclamation.cracked_yellow_concrete": "Cracked Yellow Concrete",
 	"block.reclamation.stone_rubble": "Stone Rubble",
 	"block.reclamation.deepslate_rubble": "Deepslate Rubble",
+	"block.reclamation.ragged_white_banner": "Ragged White Banner",
+	"block.reclamation.ragged_cyan_banner": "Ragged Cyan Banner",
 	// Items
 	"item.reclamation.withering_dust": "Withering Dust",
 	"item.reclamation.deactivator": "De/Activator",

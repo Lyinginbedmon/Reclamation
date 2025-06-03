@@ -5,17 +5,36 @@
       "block": "reclamation:mold",
       "id": "reclamation:is_block",
       "inverted": true
+    },
+    {
+      "id": "reclamation:or",
+      "inverted": true,
+      "name": "not_too_bright",
+      "set": [
+        {
+          "type": "sky",
+          "id": "reclamation:light",
+          "operation": ">",
+          "threshold": 4
+        },
+        {
+          "type": "block",
+          "id": "reclamation:light",
+          "operation": ">",
+          "threshold": 8
+        }
+      ]
     }
   ],
   "function": {
     "id": "reclamation:macro",
     "macros": [
-      "reclamation:place_mold_down",
-      "reclamation:place_mold_south",
-      "reclamation:place_mold_west",
+      "reclamation:place_mold_east",
       "reclamation:place_mold_north",
       "reclamation:place_mold_up",
-      "reclamation:place_mold_east"
+      "reclamation:place_mold_down",
+      "reclamation:place_mold_west",
+      "reclamation:place_mold_south"
     ],
     "randomise": true
   },

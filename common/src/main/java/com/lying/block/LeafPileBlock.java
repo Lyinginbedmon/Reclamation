@@ -27,7 +27,6 @@ import net.minecraft.world.WorldView;
 
 public class LeafPileBlock extends CarpetBlock implements IDeActivatable
 {
-	public static final BooleanProperty INERT	= IDeActivatable.INERT;
 	public static final BooleanProperty STEPPED_ON = BooleanProperty.of("trampled");
 	public static final IntProperty LAYERS = IntProperty.of("layers", 1, 3);
 	public static final List<Block> LEAF_PILES = Lists.newArrayList();

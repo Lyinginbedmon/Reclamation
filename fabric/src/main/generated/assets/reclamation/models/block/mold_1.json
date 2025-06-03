@@ -1,6 +1,6 @@
 {
   "parent": "reclamation:block/template_ivy",
   "textures": {
-    "texture": "reclamation:block/ivy"
+    "texture": "reclamation:block/mold_1"
   }
 }

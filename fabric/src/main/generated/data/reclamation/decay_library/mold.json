@@ -19,10 +19,12 @@
   "conditions": [
     {
       "id": "reclamation:exposed",
-      "inverted": true
+      "inverted": true,
+      "name": "indoors"
     },
     {
       "id": "reclamation:temperature",
+      "name": "warmth_check",
       "value": 0.5
     },
     {

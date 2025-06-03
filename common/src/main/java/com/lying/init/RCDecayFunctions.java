@@ -44,7 +44,7 @@ public class RCDecayFunctions
 	/** Cycles one or more blockstate properties */
 	public static final Supplier<DecayFunction> CYCLE_VALUE	= register("cycle_blockstate_value", FunctionBlockState.CycleValue::new);
 	/** Sets one or more blockstate properties to random values */
-	public static final Supplier<DecayFunction> RANDOMISE_VALUE	= register("randomise_blockstate_value", FunctionBlockState.RandomValue::new);
+	public static final Supplier<DecayFunction> RANDOMISE_VALUE		= register("randomise_blockstate_value", FunctionBlockState.RandomValue::new);
 	/** Sets the value of one or more blockstate properties */
 	public static final Supplier<DecayFunction> SET_STATE_VALUE		= register("set_blockstate_value", FunctionBlockState.SetValue::new);
 	/** Calls a {@link DecayMacro} on an adjacent space to the affected block */

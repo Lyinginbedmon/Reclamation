@@ -16,6 +16,7 @@ import com.lying.decay.context.DecayContext.DecayType;
 import com.lying.decay.context.LiveDecayContext;
 import com.lying.decay.handler.DecayEntry;
 import com.lying.event.DecayEvent;
+import com.lying.init.RCBlockEntityTypes;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCDataComponentTypes;
 import com.lying.init.RCDecayConditions;
@@ -51,6 +52,7 @@ public final class Reclamation
     	RCGameRules.init();
     	RCCommands.init();
     	RCBlocks.init();
+    	RCBlockEntityTypes.init();
     	RCDataComponentTypes.init();
         RCItems.init();
         RCSoundEvents.init();

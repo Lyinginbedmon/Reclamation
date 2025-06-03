@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public class CrackedConcreteBlock extends Block
+public class CrackedConcreteBlock extends Block implements IDeActivatable
 {
 	public static final IntProperty CRACKS = IntProperty.of("cracks", 1, 4);
 	
@@ -29,7 +29,7 @@ public class CrackedConcreteBlock extends Block
 	{
 		super(settings);
 		color = colorIn;
-		setDefaultState(getDefaultState().with(CRACKS, 1));
+		setDefaultState(getDefaultState().with(CRACKS, 1).with(INERT, false));
 		
 		DYE_TO_BLOCK.put(colorIn, this);
 	}
@@ -40,7 +40,7 @@ public class CrackedConcreteBlock extends Block
 	
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
 	{
-		builder.add(CRACKS);
+		builder.add(CRACKS, INERT);
 	}
 	
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random)
@@ -56,6 +56,8 @@ public class CrackedConcreteBlock extends Block
 	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance)
 	{
 		super.onLandedUpon(world, state, pos, entity, fallDistance);
+		if(isInert(state)) return;
+		
 		int cracks = state.get(CRACKS);
 		if(cracks < 4 && fallDistance > 10F && world.getRandom().nextInt(4) == 0)
 			world.setBlockState(pos, state.with(CRACKS, ++cracks), 2);

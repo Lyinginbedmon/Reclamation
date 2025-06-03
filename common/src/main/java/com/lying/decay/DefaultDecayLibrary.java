@@ -339,8 +339,8 @@ public class DefaultDecayLibrary
 					.addModifier(0.2F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(3).mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.MOLD.get()).build()))
 				.name("mold")
 				.condition(
-					RCDecayConditions.EXPOSED.get().invert(),
-					ConditionClimate.Temperature.of(0.5F),
+					RCDecayConditions.EXPOSED.get().invert().named("indoors"),
+					ConditionClimate.Temperature.of(0.5F).named("warmth_check"),
 					ConditionBoolean.Or.of(
 						ConditionClimate.Humidity.of(0.4F)
 						// TODO Add block area check for water

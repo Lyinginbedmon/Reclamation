@@ -34,7 +34,6 @@ import net.minecraft.world.tick.ScheduledTickView;
 public class IvyBlock extends Block implements IFaceBlock, IDeActivatable
 {
 	public static final MapCodec<IvyBlock> CODEC	= createCodec(IvyBlock::new);
-	public static final BooleanProperty INERT	= IDeActivatable.INERT;
 	public static final BooleanProperty
 		UP = ConnectingBlock.UP,
 		NORTH = ConnectingBlock.NORTH,

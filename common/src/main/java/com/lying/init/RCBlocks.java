@@ -15,7 +15,9 @@ import com.lying.block.FadedTerracottaBlock;
 import com.lying.block.IvyBlock;
 import com.lying.block.LeafPileBlock;
 import com.lying.block.MoldBlock;
+import com.lying.block.RaggedBannerBlock;
 import com.lying.block.RubbleBlock;
+import com.lying.block.ScrapBlock;
 import com.lying.block.ScrapeableBlock;
 import com.lying.block.SootBlock;
 import com.lying.reference.Reference;
@@ -122,8 +124,17 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> DOUSED_LANTERN				= register("doused_lantern", settings -> new DousedLanternBlock(() -> Blocks.LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_SOUL_LANTERN			= register("doused_soul_lantern", settings -> new DousedLanternBlock(() -> Blocks.SOUL_LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
 	
+	public static final RegistrySupplier<Block> IRON_SCRAP					= register("iron_scrap", settings -> new ScrapBlock(settings.nonOpaque()));
 	public static final RegistrySupplier<Block> STONE_RUBBLE				= register("stone_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLESTONE, settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	public static final RegistrySupplier<Block> DEEPSLATE_RUBBLE			= register("deepslate_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLED_DEEPSLATE, settings.nonOpaque().mapColor(MapColor.DEEPSLATE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
+	
+	public static final RegistrySupplier<Block> WHITE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.WHITE);
+	public static final RegistrySupplier<Block> CYAN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.CYAN);
+	
+	private static RegistrySupplier<Block> registerRaggedBanner(DyeColor color)
+	{
+		return register("ragged_"+color.asString()+"_banner", settings -> new RaggedBannerBlock(color, settings));
+	}
 	
 	private static RegistrySupplier<Block> registerLeafPile(WoodType typeIn)
 	{

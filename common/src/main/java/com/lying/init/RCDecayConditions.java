@@ -57,6 +57,10 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> IN_STORM		= register("in_storm", ConditionClimate.IsStorming::new);
 	/** Succeeds if the current weather in the chunk matches */
 	public static final Supplier<DecayCondition> IS_WEATHER		= register("current_weather", ConditionClimate.IsWeather::new);
+	/** Succeeds if the biome's temperature passes the comparison with a given value */
+	public static final Supplier<DecayCondition> TEMPERATURE	= register("temperature", ConditionClimate.Temperature::new);
+	/** Succeeds if the biome's humidity passes the comparison with a given value */
+	public static final Supplier<DecayCondition> HUMIDITY		= register("is_humid", ConditionClimate.Humidity::new);
 	/** Succeeds if the block is adjacent to enough blocks meeting a {@link BlockPredicate} */
 	public static final Supplier<DecayCondition> ADJACENT_TO	= register("adjacent_to", ConditionNeighbouring.Blocks::new);
 	/** Succeeds if the block above the affected block is air */
@@ -75,14 +79,14 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> DIMENSION		= register("dimension", ConditionPosition.Dimension::new);
 	/** Succeeds if the block is at least N blocks above solid ground */
 	public static final Supplier<DecayCondition> ALTITUDE		= register("altitude", ConditionPosition.Altitude::new);
+	/** Succeeds if the block is at least N blocks below solid ground */
+	public static final Supplier<DecayCondition> DEPTH			= register("depth", ConditionPosition.Depth::new);
+	/** Succeeds if the position's light level meets a given comparison */
+	public static final Supplier<DecayCondition> LIGHT			= register("light", ConditionPosition.Light::new);
 	/** Succeeds if there exists a contiguous path through block faces to the outside */
 	public static final Supplier<DecayCondition> EXPOSED		= register("exposed", ConditionExposed::new);
 	/** Succeeds if the conditions satisfy those of all given {@link DecayMacro} */
 	public static final Supplier<DecayCondition> MACRO			= register("macro", ConditionMacro::new);
-	/** Succeeds if the biome's temperature passes the comparison with a given value */
-	public static final Supplier<DecayCondition> TEMPERATURE	= register("temperature", ConditionClimate.Temperature::new);
-	/** Succeeds if the biome's humidity passes the comparison with a given value */
-	public static final Supplier<DecayCondition> HUMIDITY		= register("is_humid", ConditionClimate.Humidity::new);
 	
 	/** Registers the given condition under the Reclamation namespace and creates a supplier */
 	private static Supplier<DecayCondition> register(String nameIn, Function<Identifier, DecayCondition> funcIn)
