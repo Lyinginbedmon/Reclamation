@@ -1,13 +1,18 @@
 package com.lying.init;
 
+import static com.lying.reference.Reference.ModInfo.prefix;
+
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
+import com.lying.block.RaggedBannerBlock;
+import com.lying.block.RaggedWallBannerBlock;
 import com.lying.item.DeactivatorItem;
 import com.lying.item.DecayDustItem;
+import com.lying.item.RaggedBannerItem;
 import com.lying.reference.Reference;
 
 import dev.architectury.registry.CreativeTabRegistry;
@@ -89,8 +94,32 @@ public class RCItems
 	public static final RegistrySupplier<Item> IRON_SCRAP					= registerBlock("iron_scrap", RCBlocks.IRON_SCRAP);
 	public static final RegistrySupplier<Item> STONE_RUBBLE					= registerBlockNoItem("stone_rubble", RCBlocks.STONE_RUBBLE);
 	public static final RegistrySupplier<Item> DEEPSLATE_RUBBLE				= registerBlockNoItem("deepslate_rubble", RCBlocks.DEEPSLATE_RUBBLE);
-	public static final RegistrySupplier<Item> WHITE_RAGGED_BANNER			= registerBlockNoItem("ragged_white_banner", RCBlocks.WHITE_RAGGED_BANNER);
-	public static final RegistrySupplier<Item> CYAN_RAGGED_BANNER			= registerBlockNoItem("ragged_cyan_banner", RCBlocks.CYAN_RAGGED_BANNER);
+	public static final RegistrySupplier<Item> BLACK_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BLACK);
+	public static final RegistrySupplier<Item> BLUE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BLUE);
+	public static final RegistrySupplier<Item> BROWN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BROWN);
+	public static final RegistrySupplier<Item> CYAN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.CYAN);
+	public static final RegistrySupplier<Item> GRAY_RAGGED_BANNER			= registerRaggedBanner(DyeColor.GRAY);
+	public static final RegistrySupplier<Item> GREEN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.GREEN);
+	public static final RegistrySupplier<Item> LIGHT_BLUE_RAGGED_BANNER		= registerRaggedBanner(DyeColor.LIGHT_BLUE);
+	public static final RegistrySupplier<Item> LIGHT_GRAY_RAGGED_BANNER		= registerRaggedBanner(DyeColor.LIGHT_GRAY);
+	public static final RegistrySupplier<Item> LIME_RAGGED_BANNER			= registerRaggedBanner(DyeColor.LIME);
+	public static final RegistrySupplier<Item> MAGENTA_RAGGED_BANNER		= registerRaggedBanner(DyeColor.MAGENTA);
+	public static final RegistrySupplier<Item> ORANGE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.ORANGE);
+	public static final RegistrySupplier<Item> PINK_RAGGED_BANNER			= registerRaggedBanner(DyeColor.PINK);
+	public static final RegistrySupplier<Item> PURPLE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.PURPLE);
+	public static final RegistrySupplier<Item> RED_RAGGED_BANNER			= registerRaggedBanner(DyeColor.RED);
+	public static final RegistrySupplier<Item> WHITE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.WHITE);
+	public static final RegistrySupplier<Item> YELLOW_RAGGED_BANNER			= registerRaggedBanner(DyeColor.YELLOW);
+	
+	private static RegistrySupplier<Item> registerRaggedBanner(DyeColor color)
+	{
+		RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, prefix("ragged_"+color.asString()+"_banner"));
+		return registerBlockItem("ragged_"+color.asString()+"_banner", () -> new RaggedBannerItem(RaggedBannerBlock.getForColor(color), RaggedWallBannerBlock.getForColor(color), new Item.Settings()
+				.useBlockPrefixedTranslationKey()
+				.registryKey(key)
+				.arch$tab(RECLAMATION_TAB)
+				.maxCount(16)));
+	}
 	
 	private static RegistrySupplier<Item> registerTerracottaBlock(DyeColor color)
 	{
@@ -111,10 +140,15 @@ public class RCItems
 	
 	private static RegistrySupplier<Item> registerBlockNoItem(String nameIn, RegistrySupplier<Block> blockIn)
 	{
-		Identifier id = Reference.ModInfo.prefix(nameIn);
+		Identifier id = prefix(nameIn);
 		RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
 		Item.Settings settings = new Item.Settings().useBlockPrefixedTranslationKey().registryKey(key).arch$tab(RECLAMATION_TAB);
-		RegistrySupplier<Item> registry = register(id, () -> new BlockItem(blockIn.get(), settings));
+		return registerBlockItem(nameIn, () -> new BlockItem(blockIn.get(), settings));
+	}
+	
+	private static RegistrySupplier<Item> registerBlockItem(String nameIn, Supplier<Item> supplier)
+	{
+		RegistrySupplier<Item> registry = register(prefix(nameIn), supplier);
 		ALL_BLOCKS.add(registry);
 		return registry;
 	}

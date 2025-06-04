@@ -1,12 +1,19 @@
 package com.lying.client.renderer.block;
 
+import static com.lying.reference.Reference.ModInfo.prefix;
+
 import com.lying.block.RaggedBannerBlock;
 import com.lying.block.entity.RaggedBannerBlockEntity;
+import com.lying.client.renderer.RCBannerSpriteManager;
+import com.lying.reference.Reference;
 
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
+import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -15,9 +22,12 @@ import net.minecraft.client.render.block.entity.model.BannerFlagBlockModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.LoadedEntityModels;
 import net.minecraft.client.render.model.ModelBaker;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.BannerPatternsComponent;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
@@ -25,7 +35,7 @@ import net.minecraft.util.math.RotationPropertyHelper;
 
 public class RaggedBannerBlockEntityRenderer implements BlockEntityRenderer<RaggedBannerBlockEntity>
 {
-	private static final int ROTATIONS = 16;
+	public static final SpriteIdentifier BANNER_BASE = new SpriteIdentifier(RCBannerSpriteManager.ATLAS_ID, prefix("entity/banner/base"));
 	private static final float field_55282 = 0.6666667F;
 	private final BannerBlockModel standingModel;
 	private final BannerBlockModel wallModel;
@@ -98,9 +108,64 @@ public class RaggedBannerBlockEntityRenderer implements BlockEntityRenderer<Ragg
 		matrices.translate(0.5F, 0.0F, 0.5F);
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
 		matrices.scale(field_55282, -field_55282, -field_55282);
-		model.render(matrices, ModelBaker.BANNER_BASE.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid), light, overlay);
+		model.render(matrices, ModelBaker.BANNER_BASE.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutoutNoCull), light, overlay);
 		flagModel.sway(sway);
-//		renderCanvas(matrices, vertexConsumers, light, overlay, flagModel.getRootPart(), ModelBaker.BANNER_BASE, true, baseColor, patterns);
+		renderCanvas(matrices, vertexConsumers, light, overlay, flagModel.getRootPart(), BANNER_BASE, true, baseColor, patterns);
 		matrices.pop();
+	}
+	
+	public static void renderCanvas(
+			MatrixStack matrices,
+			VertexConsumerProvider vertexConsumers,
+			int light,
+			int overlay,
+			ModelPart canvas,
+			SpriteIdentifier baseSprite,
+			boolean isBanner,
+			DyeColor color,
+			BannerPatternsComponent patterns
+		)
+	{
+		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, color, patterns, false, true);
+	}
+	
+	public static void renderCanvas(
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		ModelPart canvas,
+		SpriteIdentifier baseSprite,
+		boolean isBanner,
+		DyeColor color,
+		BannerPatternsComponent patterns,
+		boolean glint,
+		boolean solid
+	)
+	{
+		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutoutNoCull, solid, glint), light, overlay);
+		renderLayer(matrices, vertexConsumers, light, overlay, canvas, BANNER_BASE, color);
+		
+		for(BannerPatternsComponent.Layer layer : patterns.layers())
+			renderLayer(
+					matrices, 
+					vertexConsumers, 
+					light, overlay, 
+					canvas, 
+					getBannerPatternTextureId(layer.pattern()), 
+					layer.color());
+	}
+	
+	private static void renderLayer(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, ModelPart canvas, SpriteIdentifier textureId, DyeColor color)
+	{
+		VertexConsumer consumer = textureId.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline);
+		canvas.render(matrices, consumer, light, overlay, color.getEntityColor());
+	}
+	
+	private static SpriteIdentifier getBannerPatternTextureId(RegistryEntry<BannerPattern> pattern)
+	{
+		Identifier id = pattern.value().assetId();
+		id = id.getNamespace().equalsIgnoreCase(Reference.ModInfo.MOD_ID) ? id : prefix(id.getPath());
+		return new SpriteIdentifier(RCBannerSpriteManager.ATLAS_ID, id.withPrefixedPath("entity/banner/"));
 	}
 }

@@ -10,7 +10,7 @@ import java.util.function.Function;
 import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedTorchBlock;
 import com.lying.block.LeafPileBlock;
-import com.lying.block.RaggedBannerBlock;
+import com.lying.block.RaggedWallBannerBlock;
 import com.lying.block.RubbleBlock;
 import com.lying.client.ReclamationClient;
 import com.lying.init.RCBlocks;
@@ -84,6 +84,7 @@ public class RCModelProvider extends FabricModelProvider
 		RCBlocks.SOLID_CUBES.forEach(entry -> blockStateModelGenerator.registerSimpleCubeAll(entry.get()));
 		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).forEach(b -> blockStateModelGenerator.registerSouthDefaultHorizontalFacing(TexturedModel.TEMPLATE_GLAZED_TERRACOTTA, b.get()));
 		RCBlocks.DYE_TO_CONCRETE.values().stream().forEach(b -> CrackedConcrete.makeBlockState((CrackedConcreteBlock)b.cracked().get(), b.dry().get(), blockStateModelGenerator));
+		RCBlocks.DYE_TO_RAGGED_BANNER.entrySet().forEach(e -> RaggedBanner.makeBlockState(e.getValue().get(), RaggedWallBannerBlock.getForColor(e.getKey()), e.getKey(), blockStateModelGenerator));
 		DousedLights.register(blockStateModelGenerator);
 		LeafPile.register(blockStateModelGenerator);
 		registerSlab(RCBlocks.CRACKED_STONE_BRICK_SLAB.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
@@ -96,9 +97,6 @@ public class RCModelProvider extends FabricModelProvider
 		Scrap.makeBlockState(RCBlocks.IRON_SCRAP.get(), blockStateModelGenerator);
 		Rubble.makeBlockState((RubbleBlock)RCBlocks.STONE_RUBBLE.get(), blockStateModelGenerator);
 		Rubble.makeBlockState((RubbleBlock)RCBlocks.DEEPSLATE_RUBBLE.get(), blockStateModelGenerator);
-		
-		for(DyeColor color : new DyeColor[] {DyeColor.WHITE, DyeColor.CYAN})
-			RaggedBanner.makeBlockState(RaggedBannerBlock.getForColor(color), null, color, blockStateModelGenerator);
 	}
 	
 	public void generateItemModels(ItemModelGenerator itemModelGenerator)
@@ -415,6 +413,7 @@ public class RCModelProvider extends FabricModelProvider
 			Identifier id = ModelIds.getMinecraftNamespacedBlock("banner");
 			Identifier id2 = ModelIds.getMinecraftNamespacedItem("template_banner");
 			generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, id));
+			generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(wallBlock, id));
 			
 			Item item = block.asItem();
 			generator.itemModelOutput.accept(item, ItemModels.special(id2, new BannerModelRenderer.Unbaked(color)));
@@ -423,17 +422,10 @@ public class RCModelProvider extends FabricModelProvider
 	
 	private static class Scrap
 	{
-		private static final Model MODEL = new Model(
-				Optional.empty(),
-				Optional.empty(),
-				TextureKey.TEXTURE
-				);
-		
 		private static void makeBlockState(Block block, BlockStateModelGenerator generator)
 		{
-			TextureMap tex = (new TextureMap()).put(TextureKey.TEXTURE, Registries.BLOCK.getId(block));
-			Identifier model = MODEL.upload(block, tex, generator.modelCollector);
-			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, entry(model).toArray(new BlockStateVariant[0])));
+			Identifier id = Registries.BLOCK.getId(block);
+			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, entry(Identifier.of(id.getNamespace(), "block/"+id.getPath())).toArray(new BlockStateVariant[0])));
 		}
 		
 		private static List<BlockStateVariant> entry(Identifier model)

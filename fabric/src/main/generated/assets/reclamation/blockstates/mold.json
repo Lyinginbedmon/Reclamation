@@ -3,6 +3,72 @@
     {
       "apply": [
         {
+          "model": "reclamation:block/mold_0",
+          "uvlock": true,
+          "x": 270
+        },
+        {
+          "model": "reclamation:block/mold_1",
+          "uvlock": true,
+          "x": 270
+        },
+        {
+          "model": "reclamation:block/mold_2",
+          "uvlock": true,
+          "x": 270
+        }
+      ],
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": [
+        {
+          "model": "reclamation:block/mold_0",
+          "uvlock": true,
+          "y": 180
+        },
+        {
+          "model": "reclamation:block/mold_1",
+          "uvlock": true,
+          "y": 180
+        },
+        {
+          "model": "reclamation:block/mold_2",
+          "uvlock": true,
+          "y": 180
+        }
+      ],
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": [
+        {
+          "model": "reclamation:block/mold_0",
+          "uvlock": true,
+          "y": 270
+        },
+        {
+          "model": "reclamation:block/mold_1",
+          "uvlock": true,
+          "y": 270
+        },
+        {
+          "model": "reclamation:block/mold_2",
+          "uvlock": true,
+          "y": 270
+        }
+      ],
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": [
+        {
           "model": "reclamation:block/mold_0"
         },
         {
@@ -43,28 +109,6 @@
         {
           "model": "reclamation:block/mold_0",
           "uvlock": true,
-          "y": 270
-        },
-        {
-          "model": "reclamation:block/mold_1",
-          "uvlock": true,
-          "y": 270
-        },
-        {
-          "model": "reclamation:block/mold_2",
-          "uvlock": true,
-          "y": 270
-        }
-      ],
-      "when": {
-        "west": "true"
-      }
-    },
-    {
-      "apply": [
-        {
-          "model": "reclamation:block/mold_0",
-          "uvlock": true,
           "y": 90
         },
         {
@@ -80,50 +124,6 @@
       ],
       "when": {
         "east": "true"
-      }
-    },
-    {
-      "apply": [
-        {
-          "model": "reclamation:block/mold_0",
-          "uvlock": true,
-          "x": 270
-        },
-        {
-          "model": "reclamation:block/mold_1",
-          "uvlock": true,
-          "x": 270
-        },
-        {
-          "model": "reclamation:block/mold_2",
-          "uvlock": true,
-          "x": 270
-        }
-      ],
-      "when": {
-        "up": "true"
-      }
-    },
-    {
-      "apply": [
-        {
-          "model": "reclamation:block/mold_0",
-          "uvlock": true,
-          "y": 180
-        },
-        {
-          "model": "reclamation:block/mold_1",
-          "uvlock": true,
-          "y": 180
-        },
-        {
-          "model": "reclamation:block/mold_2",
-          "uvlock": true,
-          "y": 180
-        }
-      ],
-      "when": {
-        "south": "true"
       }
     }
   ]

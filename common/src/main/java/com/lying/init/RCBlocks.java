@@ -3,6 +3,7 @@ package com.lying.init;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -16,6 +17,7 @@ import com.lying.block.IvyBlock;
 import com.lying.block.LeafPileBlock;
 import com.lying.block.MoldBlock;
 import com.lying.block.RaggedBannerBlock;
+import com.lying.block.RaggedWallBannerBlock;
 import com.lying.block.RubbleBlock;
 import com.lying.block.ScrapBlock;
 import com.lying.block.ScrapeableBlock;
@@ -48,6 +50,7 @@ public class RCBlocks
 	
 	public static final Map<DyeColor, Terracotta> DYE_TO_TERRACOTTA = new HashMap<>();
 	public static final Map<DyeColor, Concrete> DYE_TO_CONCRETE = new HashMap<>();
+	public static final Map<DyeColor, RegistrySupplier<Block>> DYE_TO_RAGGED_BANNER = new HashMap<>();
 	
 	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank)
 	{
@@ -128,12 +131,62 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> STONE_RUBBLE				= register("stone_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLESTONE, settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	public static final RegistrySupplier<Block> DEEPSLATE_RUBBLE			= register("deepslate_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLED_DEEPSLATE, settings.nonOpaque().mapColor(MapColor.DEEPSLATE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	
-	public static final RegistrySupplier<Block> WHITE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.WHITE);
+	public static final RegistrySupplier<Block> BLACK_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BLACK);
+	public static final RegistrySupplier<Block> BLUE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BLUE);
+	public static final RegistrySupplier<Block> BROWN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BROWN);
 	public static final RegistrySupplier<Block> CYAN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.CYAN);
+	public static final RegistrySupplier<Block> GRAY_RAGGED_BANNER			= registerRaggedBanner(DyeColor.GRAY);
+	public static final RegistrySupplier<Block> GREEN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.GREEN);
+	public static final RegistrySupplier<Block> LIGHT_BLUE_RAGGED_BANNER	= registerRaggedBanner(DyeColor.LIGHT_BLUE);
+	public static final RegistrySupplier<Block> LIGHT_GRAY_RAGGED_BANNER	= registerRaggedBanner(DyeColor.LIGHT_GRAY);
+	public static final RegistrySupplier<Block> LIME_RAGGED_BANNER			= registerRaggedBanner(DyeColor.LIME);
+	public static final RegistrySupplier<Block> MAGENTA_RAGGED_BANNER		= registerRaggedBanner(DyeColor.MAGENTA);
+	public static final RegistrySupplier<Block> ORANGE_RAGGED_BANNER		= registerRaggedBanner(DyeColor.ORANGE);
+	public static final RegistrySupplier<Block> PINK_RAGGED_BANNER			= registerRaggedBanner(DyeColor.PINK);
+	public static final RegistrySupplier<Block> PURPLE_RAGGED_BANNER		= registerRaggedBanner(DyeColor.PURPLE);
+	public static final RegistrySupplier<Block> RED_RAGGED_BANNER			= registerRaggedBanner(DyeColor.RED);
+	public static final RegistrySupplier<Block> WHITE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.WHITE);
+	public static final RegistrySupplier<Block> YELLOW_RAGGED_BANNER		= registerRaggedBanner(DyeColor.YELLOW);
+	
+	public static final RegistrySupplier<Block> BLACK_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.BLACK);
+	public static final RegistrySupplier<Block> BLUE_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.BLUE);
+	public static final RegistrySupplier<Block> BROWN_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.BROWN);
+	public static final RegistrySupplier<Block> CYAN_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.CYAN);
+	public static final RegistrySupplier<Block> GRAY_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.GRAY);
+	public static final RegistrySupplier<Block> GREEN_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.GREEN);
+	public static final RegistrySupplier<Block> LIGHT_BLUE_RAGGED_WALL_BANNER	= registerRaggedWallBanner(DyeColor.LIGHT_BLUE);
+	public static final RegistrySupplier<Block> LIGHT_GRAY_RAGGED_WALL_BANNER	= registerRaggedWallBanner(DyeColor.LIGHT_GRAY);
+	public static final RegistrySupplier<Block> LIME_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.LIME);
+	public static final RegistrySupplier<Block> MAGENTA_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.MAGENTA);
+	public static final RegistrySupplier<Block> ORANGE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.ORANGE);
+	public static final RegistrySupplier<Block> PINK_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.PINK);
+	public static final RegistrySupplier<Block> PURPLE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.PURPLE);
+	public static final RegistrySupplier<Block> RED_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.RED);
+	public static final RegistrySupplier<Block> WHITE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.WHITE);
+	public static final RegistrySupplier<Block> YELLOW_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.YELLOW);
 	
 	private static RegistrySupplier<Block> registerRaggedBanner(DyeColor color)
 	{
-		return register("ragged_"+color.asString()+"_banner", settings -> new RaggedBannerBlock(color, settings));
+		RegistrySupplier<Block> registry = registerBanner("ragged_"+color.asString()+"_banner", color, RaggedBannerBlock::new);
+		DYE_TO_RAGGED_BANNER.put(color, registry);
+		return registry;
+	}
+	
+	private static RegistrySupplier<Block> registerRaggedWallBanner(DyeColor color)
+	{
+		return registerBanner("ragged_"+color.asString()+"_wall_banner", color, RaggedWallBannerBlock::new);
+	}
+	
+	private static RegistrySupplier<Block> registerBanner(String nameIn, DyeColor color, BiFunction<DyeColor,AbstractBlock.Settings, Block> constructor)
+	{
+		return register(nameIn, settings -> constructor.apply(color, settings
+				.mapColor(MapColor.OAK_TAN)
+				.solid()
+				.instrument(NoteBlockInstrument.BASEDRUM)
+				.noCollision()
+				.strength(1F)
+				.sounds(BlockSoundGroup.WOOD)
+				.burnable()));
 	}
 	
 	private static RegistrySupplier<Block> registerLeafPile(WoodType typeIn)
