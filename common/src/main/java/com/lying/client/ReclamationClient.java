@@ -1,6 +1,7 @@
 package com.lying.client;
 
 import com.lying.block.LeafPileBlock;
+import com.lying.client.renderer.RaggedBannerTextures;
 import com.lying.init.RCBlocks;
 
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
@@ -24,6 +25,8 @@ public class ReclamationClient
 	
 	public static void clientInit()
 	{
+		RaggedBannerTextures.init();
+		
 		RenderTypeRegistry.register(RenderLayer.getCutout(), RCBlocks.IVY.get(), RCBlocks.MOLD.get());
 		RenderTypeRegistry.register(RenderLayer.getCutoutMipped(), LeafPileBlock.LEAF_PILE_TO_LEAVES.keySet().stream().toList().toArray(new Block[0]));
 	}

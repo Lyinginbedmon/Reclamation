@@ -7,3 +7,4 @@ accessible	method	net/minecraft/block/entity/BlockEntityType	<init>	(Lnet/minecr
 accessible	method	net/minecraft/client/render/model/SpriteAtlasManager$Atlas	<init>	(Lnet/minecraft/client/texture/SpriteAtlasTexture;Lnet/minecraft/util/Identifier;)V
 
 accessible	field	net/minecraft/world/biome/Biome	weather	Lnet/minecraft/world/biome/Biome$Weather;
+accessible	field	net/minecraft/client/texture/SpriteContents	image	Lnet/minecraft/client/texture/NativeImage;
