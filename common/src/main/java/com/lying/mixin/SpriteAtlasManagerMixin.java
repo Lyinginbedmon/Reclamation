@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.lying.client.renderer.RCBannerSpriteManager;
+import com.lying.client.renderer.LumaSpriteManager;
 
 import net.minecraft.client.render.model.SpriteAtlasManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 public class SpriteAtlasManagerMixin
 {
 	private static final Map<Identifier, Identifier> EXTRA_ATLASES = Map.of(
-			RCBannerSpriteManager.ATLAS_ID, prefix("banner_patterns")
+			LumaSpriteManager.ATLAS_ID, prefix("banner_patterns")
 			);
 	
 	@Shadow

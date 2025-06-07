@@ -9,7 +9,6 @@ import java.util.concurrent.Executor;
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
 import com.lying.data.ReloadListener;
-import com.lying.reference.Reference;
 
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -22,7 +21,6 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -34,16 +32,16 @@ import net.minecraft.util.math.ColorHelper;
 public class RaggedBannerTextures implements ReloadListener<Integer>
 {
 	private static final MinecraftClient mc = MinecraftClient.getInstance();
-	private static final SpriteIdentifier LUMA_MATTE	= new SpriteIdentifier(RCBannerSpriteManager.ATLAS_ID, prefix("banner_luma"));
 	private static final int FLAT_MATTE	= ColorHelper.fromFloats(1F, 1F, 1F, 1F);
 	public static final String FILE_PATH = "ragged_banner";
 	
 	public static RaggedBannerTextures INSTANCE;
 	
+	private static Sprite LUMA_MATTE = null;
 	private Identifier bannerBase = null;
 	private final List<RegistryEntry<BannerPattern>> generatedPatterns = Lists.newArrayList();
 	
-	public Identifier getId() { return Reference.ModInfo.prefix(FILE_PATH); }
+	public Identifier getId() { return prefix(FILE_PATH); }
 	
 	public static void init()
 	{
@@ -51,6 +49,13 @@ public class RaggedBannerTextures implements ReloadListener<Integer>
 		ReloadListenerRegistry.register(ResourceType.SERVER_DATA, INSTANCE, INSTANCE.getId());
 		
 		PlayerEvent.PLAYER_QUIT.register((player) -> INSTANCE.reset());
+	}
+	
+	private Sprite lumaMatte()
+	{
+		if(LUMA_MATTE == null)
+			LUMA_MATTE = LumaSpriteManager.INSTANCE.getSprite(prefix(FILE_PATH));
+		return LUMA_MATTE;
 	}
 	
 	private void reset()
@@ -70,7 +75,7 @@ public class RaggedBannerTextures implements ReloadListener<Integer>
 			Reclamation.LOGGER.info(" # Generating masked banner base");
 			Sprite sprite = TexturedRenderLayers.BANNER_BASE.getSprite();
 			TextureManager texManager = mc.getTextureManager();
-			texManager.registerTexture((bannerBase = prefix("entity/banner_base")), tatterPattern(sprite, texManager));
+			texManager.registerTexture((bannerBase = prefix("entity/banner_base")), tatterPattern(sprite, lumaMatte(), texManager));
 		}
 		return bannerBase;
 	}
@@ -94,17 +99,16 @@ public class RaggedBannerTextures implements ReloadListener<Integer>
 		Reclamation.LOGGER.info(" # Generating masked banner pattern for {}", entry.value().assetId().toString());
 		Sprite sprite = TexturedRenderLayers.getBannerPatternTextureId(entry).getSprite();
 		TextureManager texManager = mc.getTextureManager();
-		texManager.registerTexture(patternToID(entry), tatterPattern(sprite, texManager));
+		texManager.registerTexture(patternToID(entry), tatterPattern(sprite, lumaMatte(), texManager));
 		generatedPatterns.add(entry);
 	}
 	
-	// FIXME Ensure luma & source image are allocated
-	private static NativeImageBackedTexture tatterPattern(Sprite sprite, TextureManager manager)
+	private static NativeImageBackedTexture tatterPattern(Sprite sprite, Sprite lumaMatte, TextureManager manager)
 	{
 		SpriteContents contents = sprite.getContents();
 		NativeImage image = contents.image;
 		
-		SpriteContents matte = LUMA_MATTE.getSprite().getContents();
+		SpriteContents matte = lumaMatte.getContents();
 		NativeImage luma = matte.image;
 		
 		boolean imageNotLoaded = false, lumaNotLoaded = false;
@@ -133,8 +137,6 @@ public class RaggedBannerTextures implements ReloadListener<Integer>
 					
 					masked.setColorArgb(x, y, maskValue(base, lumaValue));
 				}
-		matte.close();
-		contents.close();
 		
 		if(imageNotLoaded)
 			Reclamation.LOGGER.warn(" !! Error generating ragged texture, image is not allocated !!");

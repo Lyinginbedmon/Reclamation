@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.lying.client.renderer.RCBannerSpriteManager;
+import com.lying.client.renderer.LumaSpriteManager;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
@@ -23,6 +23,6 @@ public class MinecraftClientMixin
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/PaintingManager;<init>(Lnet/minecraft/client/texture/TextureManager;)V"))
 	private void rcl$Constructor(RunArgs args, final CallbackInfo ci)
 	{
-		RCBannerSpriteManager.init(getTextureManager());
+		LumaSpriteManager.init(getTextureManager());
 	}
 }

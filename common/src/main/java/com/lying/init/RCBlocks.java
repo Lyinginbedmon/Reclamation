@@ -131,38 +131,37 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> STONE_RUBBLE				= register("stone_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLESTONE, settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	public static final RegistrySupplier<Block> DEEPSLATE_RUBBLE			= register("deepslate_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLED_DEEPSLATE, settings.nonOpaque().mapColor(MapColor.DEEPSLATE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	
-	public static final RegistrySupplier<Block> BLACK_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BLACK);
-	public static final RegistrySupplier<Block> BLUE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BLUE);
-	public static final RegistrySupplier<Block> BROWN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BROWN);
-	public static final RegistrySupplier<Block> CYAN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.CYAN);
-	public static final RegistrySupplier<Block> GRAY_RAGGED_BANNER			= registerRaggedBanner(DyeColor.GRAY);
-	public static final RegistrySupplier<Block> GREEN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.GREEN);
-	public static final RegistrySupplier<Block> LIGHT_BLUE_RAGGED_BANNER	= registerRaggedBanner(DyeColor.LIGHT_BLUE);
-	public static final RegistrySupplier<Block> LIGHT_GRAY_RAGGED_BANNER	= registerRaggedBanner(DyeColor.LIGHT_GRAY);
-	public static final RegistrySupplier<Block> LIME_RAGGED_BANNER			= registerRaggedBanner(DyeColor.LIME);
-	public static final RegistrySupplier<Block> MAGENTA_RAGGED_BANNER		= registerRaggedBanner(DyeColor.MAGENTA);
-	public static final RegistrySupplier<Block> ORANGE_RAGGED_BANNER		= registerRaggedBanner(DyeColor.ORANGE);
-	public static final RegistrySupplier<Block> PINK_RAGGED_BANNER			= registerRaggedBanner(DyeColor.PINK);
-	public static final RegistrySupplier<Block> PURPLE_RAGGED_BANNER		= registerRaggedBanner(DyeColor.PURPLE);
-	public static final RegistrySupplier<Block> RED_RAGGED_BANNER			= registerRaggedBanner(DyeColor.RED);
-	public static final RegistrySupplier<Block> WHITE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.WHITE);
-	public static final RegistrySupplier<Block> YELLOW_RAGGED_BANNER		= registerRaggedBanner(DyeColor.YELLOW);
-	
+	public static final RegistrySupplier<Block> BLACK_RAGGED_BANNER				= registerRaggedBanner(DyeColor.BLACK);
 	public static final RegistrySupplier<Block> BLACK_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.BLACK);
+	public static final RegistrySupplier<Block> BLUE_RAGGED_BANNER				= registerRaggedBanner(DyeColor.BLUE);
 	public static final RegistrySupplier<Block> BLUE_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.BLUE);
+	public static final RegistrySupplier<Block> BROWN_RAGGED_BANNER				= registerRaggedBanner(DyeColor.BROWN);
 	public static final RegistrySupplier<Block> BROWN_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.BROWN);
+	public static final RegistrySupplier<Block> CYAN_RAGGED_BANNER				= registerRaggedBanner(DyeColor.CYAN);
 	public static final RegistrySupplier<Block> CYAN_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.CYAN);
+	public static final RegistrySupplier<Block> GRAY_RAGGED_BANNER				= registerRaggedBanner(DyeColor.GRAY);
 	public static final RegistrySupplier<Block> GRAY_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.GRAY);
+	public static final RegistrySupplier<Block> GREEN_RAGGED_BANNER				= registerRaggedBanner(DyeColor.GREEN);
 	public static final RegistrySupplier<Block> GREEN_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.GREEN);
+	public static final RegistrySupplier<Block> LIGHT_BLUE_RAGGED_BANNER		= registerRaggedBanner(DyeColor.LIGHT_BLUE);
 	public static final RegistrySupplier<Block> LIGHT_BLUE_RAGGED_WALL_BANNER	= registerRaggedWallBanner(DyeColor.LIGHT_BLUE);
+	public static final RegistrySupplier<Block> LIGHT_GRAY_RAGGED_BANNER		= registerRaggedBanner(DyeColor.LIGHT_GRAY);
 	public static final RegistrySupplier<Block> LIGHT_GRAY_RAGGED_WALL_BANNER	= registerRaggedWallBanner(DyeColor.LIGHT_GRAY);
+	public static final RegistrySupplier<Block> LIME_RAGGED_BANNER				= registerRaggedBanner(DyeColor.LIME);
 	public static final RegistrySupplier<Block> LIME_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.LIME);
+	public static final RegistrySupplier<Block> MAGENTA_RAGGED_BANNER			= registerRaggedBanner(DyeColor.MAGENTA);
 	public static final RegistrySupplier<Block> MAGENTA_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.MAGENTA);
+	public static final RegistrySupplier<Block> ORANGE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.ORANGE);
 	public static final RegistrySupplier<Block> ORANGE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.ORANGE);
+	public static final RegistrySupplier<Block> PINK_RAGGED_BANNER				= registerRaggedBanner(DyeColor.PINK);
 	public static final RegistrySupplier<Block> PINK_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.PINK);
+	public static final RegistrySupplier<Block> PURPLE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.PURPLE);
 	public static final RegistrySupplier<Block> PURPLE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.PURPLE);
+	public static final RegistrySupplier<Block> RED_RAGGED_BANNER				= registerRaggedBanner(DyeColor.RED);
 	public static final RegistrySupplier<Block> RED_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.RED);
+	public static final RegistrySupplier<Block> WHITE_RAGGED_BANNER				= registerRaggedBanner(DyeColor.WHITE);
 	public static final RegistrySupplier<Block> WHITE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.WHITE);
+	public static final RegistrySupplier<Block> YELLOW_RAGGED_BANNER			= registerRaggedBanner(DyeColor.YELLOW);
 	public static final RegistrySupplier<Block> YELLOW_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.YELLOW);
 	
 	private static RegistrySupplier<Block> registerRaggedBanner(DyeColor color)
