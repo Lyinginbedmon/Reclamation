@@ -2,6 +2,8 @@ package com.lying.block;
 
 import java.util.function.Supplier;
 
+import com.lying.data.RCTags;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LanternBlock;
@@ -9,7 +11,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -32,7 +33,7 @@ public class DousedLanternBlock extends LanternBlock
 	
 	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
 	{
-		if(state.get(WATERLOGGED) || !stack.isOf(Items.FLINT_AND_STEEL) && !stack.isOf(Items.FIRE_CHARGE))
+		if(state.get(WATERLOGGED) || !stack.isIn(RCTags.IGNITER_ITEMS))
 			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		else
 		{
@@ -41,9 +42,10 @@ public class DousedLanternBlock extends LanternBlock
 					.with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED));
 			world.setBlockState(pos, litState, 11);
 			Item item = stack.getItem();
-			if(stack.isOf(Items.FLINT_AND_STEEL))
+			if(stack.isDamageable())
 			{
-				stack.damage(1, player, LivingEntity.getSlotForHand(hand));
+				if(!player.isCreative())
+					stack.damage(1, player, LivingEntity.getSlotForHand(hand));
 				world.playSound(player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
 			}
 			else

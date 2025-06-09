@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
-import com.lying.data.RCBlockTags;
+import com.lying.data.RCTags;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
@@ -105,7 +105,7 @@ public class MoldBlock extends Block implements IFaceBlock, IDeActivatable
 	/** Returns true if ivy can grown on the given face of the given position */
 	public static boolean shouldConnectTo(BlockView world, BlockPos pos, Direction direction)
 	{
-		return !world.getBlockState(pos).isIn(RCBlockTags.MOLD_IMPERVIOUS) && MultifaceBlock.canGrowOn(world, direction, pos, world.getBlockState(pos));
+		return !world.getBlockState(pos).isIn(RCTags.MOLD_IMPERVIOUS) && MultifaceBlock.canGrowOn(world, direction, pos, world.getBlockState(pos));
 	}
 	
 	/** Returns true if ivy can grow on the given interior side of the block */

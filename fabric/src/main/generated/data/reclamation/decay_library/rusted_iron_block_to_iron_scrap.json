@@ -1,0 +1,26 @@
+{
+  "chance": {
+    "base_chance": 0.03
+  },
+  "conditions": [
+    {
+      "block": "reclamation:rusted_iron",
+      "id": "reclamation:is_block"
+    },
+    "reclamation:on_ground",
+    {
+      "id": "reclamation:and",
+      "set": [
+        "reclamation:exposed",
+        "reclamation:current_weather"
+      ]
+    }
+  ],
+  "function": {
+    "convert_to": {
+      "block": "reclamation:iron_scrap"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:rusted_iron_block_to_iron_scrap"
+}

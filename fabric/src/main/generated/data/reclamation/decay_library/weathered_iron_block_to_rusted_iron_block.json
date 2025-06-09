@@ -18,10 +18,19 @@
       "operation": "add_value"
     }
   },
-  "condition": {
-    "block": "reclamation:weathered_iron",
-    "id": "reclamation:is_block"
-  },
+  "conditions": [
+    {
+      "block": "reclamation:weathered_iron",
+      "id": "reclamation:is_block"
+    },
+    {
+      "id": "reclamation:and",
+      "set": [
+        "reclamation:exposed",
+        "reclamation:current_weather"
+      ]
+    }
+  ],
   "function": {
     "convert_to": {
       "block": "reclamation:rusted_iron"

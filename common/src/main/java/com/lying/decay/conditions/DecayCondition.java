@@ -24,7 +24,7 @@ public abstract class DecayCondition
 {
 	public static final Codec<DecayCondition> CODEC = Codec.of(DecayCondition::encode, DecayCondition::decode);
 	
-	public static final Comparator<DecayCondition> PRIORITY_SORT = (a,b) -> a.priority < b.priority ? -1 : a.priority > b.priority ? 1 : 0;
+	public static final Comparator<DecayCondition> PRIORITY_SORT = (a,b) -> a.priority() < b.priority() ? -1 : a.priority() > b.priority() ? 1 : 0;
 	
 	protected Optional<String> name = Optional.empty();
 	protected boolean inverted = false;
@@ -56,6 +56,9 @@ public abstract class DecayCondition
 	
 	/** Returns a priority-sorted stream of the given conditions */
 	protected static Stream<DecayCondition> toStream(List<DecayCondition> set) { return set.stream().sorted(PRIORITY_SORT); }
+	
+	/** Returns the priority of this condition, which determines the order in which it is checked */
+	protected int priority() { return this.priority; }
 	
 	public static boolean testAll(List<DecayCondition> set, DecayContext context)
 	{

@@ -22,6 +22,12 @@ public abstract class ConditionBoolean extends DecayCondition
 		super(idIn);
 	}
 	
+	/** Returns the highest priority among subconditions */
+	protected int priority()
+	{
+		return subConditions.stream().sorted(PRIORITY_SORT.reversed()).map(DecayCondition::priority).findFirst().orElse(0);
+	}
+	
 	protected ConditionBoolean addAll(DecayCondition... conditions)
 	{
 		for(DecayCondition c : conditions)

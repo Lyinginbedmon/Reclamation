@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
+import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.IvyBlock;
 import com.lying.block.LeafPileBlock;
 import com.lying.block.RubbleBlock;
@@ -52,7 +53,8 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 			RCBlocks.DOUSED_LANTERN,
 			RCBlocks.DOUSED_SOUL_LANTERN,
 			RCBlocks.DOUSED_SOUL_TORCH,
-			RCBlocks.DOUSED_TORCH
+			RCBlocks.DOUSED_TORCH,
+			RCBlocks.MOLD
 			);
 	
 	public RCBlockLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<WrapperLookup> registryLookup)
@@ -64,15 +66,39 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 	{
 		DROP_SELF.stream().map(Supplier::get).forEach(this::addDrop);
 		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).map(Supplier::get).forEach(this::addDrop);
+		RCBlocks.DYE_TO_CONCRETE.values().stream().forEach(c -> addCrackedConcreteDrops(c.cracked().get(), c.powder().get()));
 		LeafPileBlock.LEAF_PILES.forEach(l -> addLeafPileDrops(l));
 		
 		addRustDrops(RCBlocks.EXPOSED_IRON.get(), Items.IRON_INGOT, 4, 7);
 		addRustDrops(RCBlocks.WEATHERED_IRON.get(), Items.IRON_INGOT, 2, 5);
 		addRustDrops(RCBlocks.RUSTED_IRON.get(), Items.IRON_INGOT, 0, 3);
+		addRustDrops(RCBlocks.IRON_SCRAP.get(), Items.IRON_NUGGET, 0, 3);
 		addIvyDrops(RCBlocks.IVY.get());
 		addSootDrops(RCBlocks.SOOT.get());
 		addRubbleDrops(RCBlocks.STONE_RUBBLE.get());
 		addRubbleDrops(RCBlocks.DEEPSLATE_RUBBLE.get());
+	}
+	
+	private void addCrackedConcreteDrops(Block block, Block powder)
+	{
+		addDrop(
+				block, LootTable.builder()
+					.pool(LootPool.builder().with(ItemEntry.builder(block)).conditionally(createSilkTouchCondition()))
+					.pool(forCrackLevel(block, powder, 1))
+					.pool(forCrackLevel(block, powder, 2))
+					.pool(forCrackLevel(block, powder, 3))
+					.pool(forCrackLevel(block, powder, 4))
+				);
+	}
+	
+	private LootPool.Builder forCrackLevel(Block silk, Block powder, int crack)
+	{
+		return LootPool.builder()
+				.rolls(ConstantLootNumberProvider.create(1.0F))
+				.conditionally(createWithoutSilkTouchCondition())
+				.conditionally(BlockStatePropertyLootCondition.builder(silk).properties(StatePredicate.Builder.create().exactMatch(CrackedConcreteBlock.CRACKS, CrackedConcreteBlock.CRACKS.name(crack))))
+				.with(ofItem(silk).weight(5 - crack))
+				.with(ofItem(powder).weight(crack));
 	}
 	
 	private void addRustDrops(Block silk, Item alt, int min, int max)

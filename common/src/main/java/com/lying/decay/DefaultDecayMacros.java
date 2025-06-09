@@ -10,7 +10,7 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import com.lying.block.IvyBlock;
 import com.lying.block.MoldBlock;
-import com.lying.data.RCBlockTags;
+import com.lying.data.RCTags;
 import com.lying.decay.conditions.ConditionBoolean;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionNeighbouring;
@@ -141,7 +141,7 @@ public class DefaultDecayMacros
 		});
 		register(DecayMacro.Builder.create()
 				.name(CRACK_CONCRETE)
-				.condition(ConditionIsBlock.of(RCBlockTags.CONCRETE))
+				.condition(ConditionIsBlock.of(RCTags.CONCRETE))
 				.function(FunctionMacro.of(crackSet.toArray(new Identifier[0]))).build());
 	}
 }

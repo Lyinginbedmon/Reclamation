@@ -75,7 +75,7 @@ public class RCBlocks
 	
 	public static final RegistrySupplier<Block> SOOT						= register("soot", settings -> new SootBlock(settings.mapColor(MapColor.BLACK).replaceable().nonOpaque().noCollision().requiresTool().strength(0.1F).sounds(BlockSoundGroup.SNOW).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> IVY							= register("ivy", settings -> new IvyBlock(settings.mapColor(MapColor.DARK_GREEN).replaceable().nonOpaque().noCollision().strength(0.2F).velocityMultiplier(0.7F).sounds(BlockSoundGroup.VINE).burnable().pistonBehavior(PistonBehavior.DESTROY)));
-	public static final RegistrySupplier<Block> MOLD						= register("mold", settings -> new MoldBlock(settings.mapColor(MapColor.BLACK).replaceable().nonOpaque().noCollision().strength(0.1F).sounds(BlockSoundGroup.SLIME).pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> MOLD						= register("mold", settings -> new MoldBlock(settings.mapColor(MapColor.BLACK).replaceable().nonOpaque().noCollision().requiresTool().strength(0.1F).sounds(BlockSoundGroup.SLIME).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> CRACKED_STONE_BRICK_SLAB	= register("cracked_stone_brick_slab", settings -> new SlabBlock(settings.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)));
 	public static final RegistrySupplier<Block> CRACKED_STONE_BRICK_STAIRS	= register("cracked_stone_brick_stairs", settings -> new StairsBlock(Blocks.CRACKED_STONE_BRICKS.getDefaultState(), settings.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)));
 	public static final RegistrySupplier<Block> OAK_LEAF_PILE				= registerLeafPile(WoodType.OAK);
@@ -127,7 +127,7 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> DOUSED_LANTERN				= register("doused_lantern", settings -> new DousedLanternBlock(() -> Blocks.LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_SOUL_LANTERN			= register("doused_soul_lantern", settings -> new DousedLanternBlock(() -> Blocks.SOUL_LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
 	
-	public static final RegistrySupplier<Block> IRON_SCRAP					= register("iron_scrap", settings -> new ScrapBlock(settings.nonOpaque()));
+	public static final RegistrySupplier<Block> IRON_SCRAP					= register("iron_scrap", settings -> new ScrapBlock(settings.nonOpaque().mapColor(MapColor.BROWN).strength(0.3F).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> STONE_RUBBLE				= register("stone_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLESTONE, settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	public static final RegistrySupplier<Block> DEEPSLATE_RUBBLE			= register("deepslate_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLED_DEEPSLATE, settings.nonOpaque().mapColor(MapColor.DEEPSLATE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	

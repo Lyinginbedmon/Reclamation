@@ -3,7 +3,7 @@ package com.lying.fabric.data;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-import com.lying.data.RCBlockTags;
+import com.lying.data.RCTags;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCBlocks.Concrete;
 import com.lying.init.RCBlocks.Terracotta;
@@ -30,7 +30,7 @@ public class RCBlockTagsProvider extends BlockTagProvider
 		getOrCreateTagBuilder(BlockTags.TRAPDOORS);
 		getOrCreateTagBuilder(BlockTags.SHULKER_BOXES);
 		
-		getOrCreateTagBuilder(RCBlockTags.CONCRETE).add(
+		getOrCreateTagBuilder(RCTags.CONCRETE).add(
 				Blocks.BLACK_CONCRETE,
 				Blocks.BLUE_CONCRETE,
 				Blocks.BROWN_CONCRETE,
@@ -48,15 +48,15 @@ public class RCBlockTagsProvider extends BlockTagProvider
 				Blocks.WHITE_CONCRETE,
 				Blocks.YELLOW_CONCRETE);
 		
-		getOrCreateTagBuilder(RCBlockTags.RUST).add(
+		getOrCreateTagBuilder(RCTags.RUST).add(
 				RCBlocks.EXPOSED_IRON.get(),
 				RCBlocks.WEATHERED_IRON.get(),
 				RCBlocks.RUSTED_IRON.get());
 		
 		Block[] fadedTerracotta = RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).map(Supplier::get).toList().toArray(new Block[0]);
 		Block[] crackedConcrete = RCBlocks.DYE_TO_CONCRETE.values().stream().map(Concrete::cracked).map(Supplier::get).toList().toArray(new Block[0]);
-		getOrCreateTagBuilder(RCBlockTags.FADED_TERRACOTTA).add(fadedTerracotta);
-		getOrCreateTagBuilder(RCBlockTags.CRACKED_CONCRETE).add(crackedConcrete);
+		getOrCreateTagBuilder(RCTags.FADED_TERRACOTTA).add(fadedTerracotta);
+		getOrCreateTagBuilder(RCTags.CRACKED_CONCRETE).add(crackedConcrete);
 		
 		getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(fadedTerracotta).add(crackedConcrete).add(
 				RCBlocks.CRACKED_STONE_BRICK_SLAB.get(),
@@ -72,10 +72,11 @@ public class RCBlockTagsProvider extends BlockTagProvider
 				RCBlocks.WAXED_TARNISHED_GOLD.get(),
 				RCBlocks.WAXED_WEATHERED_IRON.get(),
 				RCBlocks.STONE_RUBBLE.get(),
-				RCBlocks.DEEPSLATE_RUBBLE.get());
-		getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(RCBlocks.SOOT.get());
+				RCBlocks.DEEPSLATE_RUBBLE.get(),
+				RCBlocks.IRON_SCRAP.get());
+		getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(RCBlocks.SOOT.get(), RCBlocks.MOLD.get());
 		
-		getOrCreateTagBuilder(RCBlockTags.MOLD_IMPERVIOUS)
+		getOrCreateTagBuilder(RCTags.MOLD_IMPERVIOUS)
 				.addTag(BlockTags.LEAVES)
 				.addTag(BlockTags.DOORS)
 				.addTag(BlockTags.TRAPDOORS)

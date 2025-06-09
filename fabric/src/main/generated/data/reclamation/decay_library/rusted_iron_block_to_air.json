@@ -1,0 +1,24 @@
+{
+  "chance": {
+    "base_chance": 0.01
+  },
+  "conditions": [
+    {
+      "block": "reclamation:rusted_iron",
+      "id": "reclamation:is_block"
+    },
+    {
+      "id": "reclamation:on_ground",
+      "inverted": true
+    },
+    {
+      "id": "reclamation:and",
+      "set": [
+        "reclamation:exposed",
+        "reclamation:current_weather"
+      ]
+    }
+  ],
+  "function": "reclamation:to_air",
+  "name": "reclamation:rusted_iron_block_to_air"
+}

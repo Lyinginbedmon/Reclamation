@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.lying.block.CrackedConcreteBlock;
-import com.lying.data.RCBlockTags;
+import com.lying.data.RCTags;
 import com.lying.decay.conditions.ConditionBoolean;
 import com.lying.decay.conditions.ConditionClimate;
 import com.lying.decay.conditions.ConditionClimate.IsWeather.Weather;
@@ -16,6 +16,7 @@ import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionMacro;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.conditions.ConditionPosition;
+import com.lying.decay.conditions.DecayCondition;
 import com.lying.decay.functions.FunctionBlockState;
 import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionMacro;
@@ -122,18 +123,18 @@ public class DefaultDecayLibrary
 		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.1F)
-					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).blockCap(9).tag(RCBlockTags.CRACKED_CONCRETE).build()))
+					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).blockCap(9).tag(RCTags.CRACKED_CONCRETE).build()))
 				.name("crack_concrete_initial")
 				.condition(
-					ConditionIsBlock.of(RCBlockTags.CONCRETE))
+					ConditionIsBlock.of(RCTags.CONCRETE))
 				.function(
 					FunctionMacro.of(DefaultDecayMacros.CRACK_CONCRETE)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.2F)
-					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().blockCap(9).tag(RCBlockTags.CRACKED_CONCRETE).build()))
+					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().blockCap(9).tag(RCTags.CRACKED_CONCRETE).build()))
 				.name("crack_concrete_successive")
 				.condition(
-					ConditionIsBlock.of(RCBlockTags.CRACKED_CONCRETE),
+					ConditionIsBlock.of(RCTags.CRACKED_CONCRETE),
 					ConditionIsBlock.of(BlockPredicate.Builder.create().addBlockValues(PropertyMap.create().add(CrackedConcreteBlock.CRACKS, 4)).build()).invert())
 				.function(
 					FunctionBlockState.CycleValue.of(CrackedConcreteBlock.CRACKS)).build());
@@ -141,32 +142,52 @@ public class DefaultDecayLibrary
 	
 	private static void registerIronRust()
 	{
+		final DecayCondition exposure = ConditionBoolean.And.of(
+				RCDecayConditions.EXPOSED.get(),
+				ConditionClimate.IsWeather.of(Weather.RAIN));
+		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.0025F)
-					.addModifier(0.4F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(3).tag(RCBlockTags.RUST).build()))
+					.addModifier(0.4F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(3).tag(RCTags.RUST).build()))
 				.name("iron_block_start_rusting")
 				.condition(
+					ConditionIsBlock.of(Blocks.IRON_BLOCK),
 					ConditionBoolean.Or.of(
-						ConditionBoolean.And.of(
-							RCDecayConditions.EXPOSED.get(),
-							ConditionClimate.IsWeather.of(Weather.RAIN)),
-						ConditionNeighbouring.Blocks.of(List.of(RCBlockTags.RUST))),
-					ConditionIsBlock.of(Blocks.IRON_BLOCK))
+						ConditionNeighbouring.Blocks.of(List.of(RCTags.RUST)),
+						exposure))
 				.function(FunctionConvert.toBlock(RCBlocks.EXPOSED_IRON.get())).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0F)
-					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).tag(RCBlockTags.RUST).build()))
+					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).tag(RCTags.RUST).build()))
 				.name("exposed_iron_block_to_weathered_iron_block")
 				.condition(
-					ConditionIsBlock.of(RCBlocks.EXPOSED_IRON.get()))
+					ConditionIsBlock.of(RCBlocks.EXPOSED_IRON.get()),
+					exposure)
 				.function(FunctionConvert.toBlock(RCBlocks.WEATHERED_IRON.get())).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0F)
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(1).blocks(RCBlocks.WEATHERED_IRON.get(), RCBlocks.RUSTED_IRON.get()).build()))
 				.name("weathered_iron_block_to_rusted_iron_block")
 				.condition(
-					ConditionIsBlock.of(RCBlocks.WEATHERED_IRON.get()))
+					ConditionIsBlock.of(RCBlocks.WEATHERED_IRON.get()),
+					exposure)
 				.function(FunctionConvert.toBlock(RCBlocks.RUSTED_IRON.get())).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.03F))
+				.name("rusted_iron_block_to_iron_scrap")
+				.condition(
+					ConditionIsBlock.of(RCBlocks.RUSTED_IRON.get()),
+					RCDecayConditions.ON_GROUND.get(),
+					exposure)
+				.function(FunctionConvert.toBlock(RCBlocks.IRON_SCRAP.get())).build());
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.01F))
+				.name("rusted_iron_block_to_air")
+				.condition(
+					ConditionIsBlock.of(RCBlocks.RUSTED_IRON.get()),
+					RCDecayConditions.ON_GROUND.get().invert(),
+					exposure)
+				.function(RCDecayFunctions.TO_AIR.get()).build());
 	}
 	
 	private static void registerTorchLanternCampfire()
@@ -255,7 +276,7 @@ public class DefaultDecayLibrary
 	{
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.03F)
-					.addModifier(0.03F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().searchRange(1).blockCap(8).tags(List.of(RCBlockTags.FADED_TERRACOTTA, BlockTags.TERRACOTTA)).build()))
+					.addModifier(0.03F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().searchRange(1).blockCap(8).tags(List.of(RCTags.FADED_TERRACOTTA, BlockTags.TERRACOTTA)).build()))
 				.name("glazed_terracotta_to_faded_terracotta")
 				.condition(
 					RCDecayConditions.UNCOVERED.get(),
@@ -264,11 +285,11 @@ public class DefaultDecayLibrary
 		
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0F)
-					.addModifier(0.01F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(10).tag(RCBlockTags.FADED_TERRACOTTA).build()))
+					.addModifier(0.01F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().mode(Mode.FLAT_VALUE).searchRange(2).blockCap(10).tag(RCTags.FADED_TERRACOTTA).build()))
 				.name("faded_terracotta_to_blank_terracotta")
 				.condition(
 					RCDecayConditions.UNCOVERED.get(),
-					ConditionIsBlock.of(RCBlockTags.FADED_TERRACOTTA))
+					ConditionIsBlock.of(RCTags.FADED_TERRACOTTA))
 				.function(FunctionMacro.of(DefaultDecayMacros.BLANK_TERRACOTTA)).build());
 	}
 	
@@ -347,7 +368,7 @@ public class DefaultDecayLibrary
 						).named("moisture_check"),
 					ConditionNeighbouring.Uncovered.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN),
 					RCDecayConditions.IS_SOLID.get(),
-					ConditionIsBlock.of(RCBlockTags.MOLD_IMPERVIOUS).invert())
+					ConditionIsBlock.of(RCTags.MOLD_IMPERVIOUS).invert())
 				.function(
 					FunctionSprout.Builder.create()
 						.faceSet(EnumSet.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN))

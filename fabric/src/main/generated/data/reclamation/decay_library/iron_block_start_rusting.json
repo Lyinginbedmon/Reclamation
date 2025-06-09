@@ -18,26 +18,26 @@
   },
   "conditions": [
     {
+      "block": "minecraft:iron_block",
+      "id": "reclamation:is_block"
+    },
+    {
       "id": "reclamation:or",
       "set": [
+        {
+          "id": "reclamation:adjacent_to",
+          "look_for": {
+            "tag": "#reclamation:rust_block"
+          }
+        },
         {
           "id": "reclamation:and",
           "set": [
             "reclamation:exposed",
             "reclamation:current_weather"
           ]
-        },
-        {
-          "id": "reclamation:adjacent_to",
-          "look_for": {
-            "tag": "#reclamation:rust_block"
-          }
         }
       ]
-    },
-    {
-      "block": "minecraft:iron_block",
-      "id": "reclamation:is_block"
     }
   ],
   "function": {

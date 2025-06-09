@@ -2,6 +2,7 @@
 	"itemGroup.reclamation.item_group": "Reclamation",
 	// Entities
 	// Blocks
+	"block.reclamation.iron_scrap": "Iron Scrap",
 	"block.reclamation.rusted_iron": "Rusted Iron",
 	"block.reclamation.weathered_iron": "Weathered Iron",
 	"block.reclamation.exposed_iron": "Exposed Iron",

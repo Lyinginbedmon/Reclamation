@@ -5,21 +5,21 @@
         {
           "model": "reclamation:block/mold_0",
           "uvlock": true,
-          "x": 270
+          "y": 90
         },
         {
           "model": "reclamation:block/mold_1",
           "uvlock": true,
-          "x": 270
+          "y": 90
         },
         {
           "model": "reclamation:block/mold_2",
           "uvlock": true,
-          "x": 270
+          "y": 90
         }
       ],
       "when": {
-        "up": "true"
+        "east": "true"
       }
     },
     {
@@ -42,6 +42,50 @@
       ],
       "when": {
         "south": "true"
+      }
+    },
+    {
+      "apply": [
+        {
+          "model": "reclamation:block/mold_0",
+          "uvlock": true,
+          "x": 270
+        },
+        {
+          "model": "reclamation:block/mold_1",
+          "uvlock": true,
+          "x": 270
+        },
+        {
+          "model": "reclamation:block/mold_2",
+          "uvlock": true,
+          "x": 270
+        }
+      ],
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": [
+        {
+          "model": "reclamation:block/mold_0",
+          "uvlock": true,
+          "x": 90
+        },
+        {
+          "model": "reclamation:block/mold_1",
+          "uvlock": true,
+          "x": 90
+        },
+        {
+          "model": "reclamation:block/mold_2",
+          "uvlock": true,
+          "x": 90
+        }
+      ],
+      "when": {
+        "down": "true"
       }
     },
     {
@@ -80,50 +124,6 @@
       ],
       "when": {
         "north": "true"
-      }
-    },
-    {
-      "apply": [
-        {
-          "model": "reclamation:block/mold_0",
-          "uvlock": true,
-          "x": 90
-        },
-        {
-          "model": "reclamation:block/mold_1",
-          "uvlock": true,
-          "x": 90
-        },
-        {
-          "model": "reclamation:block/mold_2",
-          "uvlock": true,
-          "x": 90
-        }
-      ],
-      "when": {
-        "down": "true"
-      }
-    },
-    {
-      "apply": [
-        {
-          "model": "reclamation:block/mold_0",
-          "uvlock": true,
-          "y": 90
-        },
-        {
-          "model": "reclamation:block/mold_1",
-          "uvlock": true,
-          "y": 90
-        },
-        {
-          "model": "reclamation:block/mold_2",
-          "uvlock": true,
-          "y": 90
-        }
-      ],
-      "when": {
-        "east": "true"
       }
     }
   ]
