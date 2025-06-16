@@ -18,6 +18,8 @@ import com.lying.block.LeafPileBlock;
 import com.lying.block.MoldBlock;
 import com.lying.block.RaggedBannerBlock;
 import com.lying.block.RaggedWallBannerBlock;
+import com.lying.block.RottenFruitBlock;
+import com.lying.block.RottenOrientedFruitBlock;
 import com.lying.block.RubbleBlock;
 import com.lying.block.ScrapBlock;
 import com.lying.block.ScrapeableBlock;
@@ -29,17 +31,21 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.EntityType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 
 public class RCBlocks
 {
@@ -75,7 +81,7 @@ public class RCBlocks
 	
 	public static final RegistrySupplier<Block> SOOT						= register("soot", settings -> new SootBlock(settings.mapColor(MapColor.BLACK).replaceable().nonOpaque().noCollision().requiresTool().strength(0.1F).sounds(BlockSoundGroup.SNOW).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> IVY							= register("ivy", settings -> new IvyBlock(settings.mapColor(MapColor.DARK_GREEN).replaceable().nonOpaque().noCollision().strength(0.2F).velocityMultiplier(0.7F).sounds(BlockSoundGroup.VINE).burnable().pistonBehavior(PistonBehavior.DESTROY)));
-	public static final RegistrySupplier<Block> MOLD						= register("mold", settings -> new MoldBlock(settings.mapColor(MapColor.BLACK).replaceable().nonOpaque().noCollision().requiresTool().strength(0.1F).sounds(BlockSoundGroup.SLIME).pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> MOLD						= register("mold", settings -> new MoldBlock(settings.mapColor(MapColor.BLACK).replaceable().nonOpaque().noCollision().requiresTool().strength(0.1F).sounds(RCSoundEvents.ROTTEN_FRUIT_SOUNDS).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> CRACKED_STONE_BRICK_SLAB	= register("cracked_stone_brick_slab", settings -> new SlabBlock(settings.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)));
 	public static final RegistrySupplier<Block> CRACKED_STONE_BRICK_STAIRS	= register("cracked_stone_brick_stairs", settings -> new StairsBlock(Blocks.CRACKED_STONE_BRICKS.getDefaultState(), settings.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)));
 	public static final RegistrySupplier<Block> OAK_LEAF_PILE				= registerLeafPile(WoodType.OAK);
@@ -87,6 +93,10 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> MANGROVE_LEAF_PILE			= registerLeafPile(WoodType.MANGROVE);
 	public static final RegistrySupplier<Block> PALE_LEAF_PILE				= registerLeafPile(WoodType.PALE);
 	public static final RegistrySupplier<Block> SPRUCE_LEAF_PILE			= registerLeafPile(WoodType.SPRUCE);
+	public static final RegistrySupplier<Block> ROTTEN_MELON				= register("rotten_melon", settings -> new RottenFruitBlock(settings.mapColor(MapColor.GRAY).requiresTool().strength(0.2F).sounds(RCSoundEvents.ROTTEN_FRUIT_SOUNDS).pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> ROTTEN_PUMPKIN				= register("rotten_pumpkin", settings -> new RottenFruitBlock(settings.mapColor(MapColor.GRAY).requiresTool().strength(0.2F).sounds(RCSoundEvents.ROTTEN_FRUIT_SOUNDS).instrument(NoteBlockInstrument.DIDGERIDOO).pistonBehavior(PistonBehavior.DESTROY)));
+	public static final RegistrySupplier<Block> ROTTEN_CARVED_PUMPKIN		= register("rotten_carved_pumpkin", settings -> new RottenOrientedFruitBlock(settings.mapColor(MapColor.GRAY).requiresTool().strength(0.2F).sounds(RCSoundEvents.ROTTEN_FRUIT_SOUNDS).pistonBehavior(PistonBehavior.DESTROY).allowsSpawning(RCBlocks::always)));
+	public static final RegistrySupplier<Block> ROTTEN_JACK_O_LANTERN		= register("rotten_jack_o_lantern", settings -> new RottenOrientedFruitBlock(settings.mapColor(MapColor.GRAY).luminance(state -> 7).requiresTool().strength(0.2F).sounds(RCSoundEvents.ROTTEN_FRUIT_SOUNDS).pistonBehavior(PistonBehavior.DESTROY)));
 	
 	public static final RegistrySupplier<Block> BLACK_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.BLACK);
 	public static final RegistrySupplier<Block> BLUE_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.BLUE);
@@ -240,6 +250,8 @@ public class RCBlocks
 		ALL_BLOCKS.add(registry);
 		return registry;
 	}
+	
+	private static Boolean always(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) { return true; }
 	
 	public static void init()
 	{

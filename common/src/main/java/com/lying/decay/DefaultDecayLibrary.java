@@ -41,6 +41,8 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class DefaultDecayLibrary 
 {
@@ -341,6 +343,8 @@ public class DefaultDecayLibrary
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(1).searchRange(1).blocks(Blocks.GRASS_BLOCK).build()))
 				.name("ivy_sprout")
 				.condition(
+					ConditionClimate.IsBiome.of(BiomeKeys.DESERT).invert(),
+					ConditionPosition.Dimension.of(World.OVERWORLD),
 					RCDecayConditions.EXPOSED.get(),
 					RCDecayConditions.IS_SOLID.get(),
 					RCDecayConditions.ON_GROUND.get(),
@@ -376,7 +380,8 @@ public class DefaultDecayLibrary
 						.maxPlace(1)
 						.onCondition(ConditionMacro.of(DefaultDecayMacros.PLACE_MOLD)).build()).build());
 		
-		register(DecayEntry.Builder.create()
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.12F))
 				.name("particulate_shuffle")
 				.condition(
 					RCDecayConditions.EXPOSED.get(),

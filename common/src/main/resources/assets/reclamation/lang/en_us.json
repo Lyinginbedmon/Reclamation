@@ -81,9 +81,16 @@
 	"block.reclamation.ragged_red_banner": "Ragged Red Banner",
 	"block.reclamation.ragged_white_banner": "Ragged White Banner",
 	"block.reclamation.ragged_yellow_banner": "Ragged Yellow Banner",
+	"block.reclamation.rotten_melon": "Rotten Melon",
+	"block.reclamation.rotten_pumpkin": "Rotten Pumpkin",
+	"block.reclamation.rotten_carved_pumpkin": "Rotten Carved Pumpkin",
+	"block.reclamation.rotten_jack_o_lantern": "Rotten Jack O' Lantern",
 	// Items
 	"item.reclamation.withering_dust": "Withering Dust",
 	"item.reclamation.deactivator": "De/Activator",
+	// Item tags
+	"tag.item.reclamation.igniters": "Ignition sources",
+	"tag.item.reclamation.rotten_fruit": "Rotten fruit",
 	// Status effects
 	// Item tags
 	// Commands
@@ -108,5 +115,6 @@
 	// Keybinds
 	// Sounds
 	"sound.reclamation.withering_dust": "Withering Dust decays",
-	"sound.reclamation.rubble_shifting": "Rubble shifting"
+	"sound.reclamation.rubble_shifting": "Rubble shifting",
+	"sound.reclamation.rotten_fruit_break": "Rotten fruit squelches"
 }

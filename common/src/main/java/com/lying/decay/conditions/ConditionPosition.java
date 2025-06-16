@@ -64,6 +64,13 @@ public class ConditionPosition extends DecayCondition
 			super(idIn);
 		}
 		
+		public static Dimension of(RegistryKey<World> dimIn)
+		{
+			Dimension condition = (Dimension)RCDecayConditions.DIMENSION.get();
+			condition.dimension = dimIn;
+			return condition;
+		}
+		
 		protected boolean check(DecayContext context)
 		{
 			return context.worldKey() == dimension;

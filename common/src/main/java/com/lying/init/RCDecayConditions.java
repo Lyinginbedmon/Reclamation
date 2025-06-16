@@ -47,6 +47,8 @@ public class RCDecayConditions
 	public static final Supplier<DecayCondition> IS_AIR			= register("is_air", ConditionIsBlock.Air::new);
 	/** Succeeds if the block meets a specified {@link PropertyMap} */
 	public static final Supplier<DecayCondition> HAS_PROPERTY	= register("has_property", ConditionHasProperty::new);
+	/** Succeeds if the block is in a given biome */
+	public static final Supplier<DecayCondition> IN_BIOME			= register("in_biome", ConditionClimate.IsBiome::new);
 	/** Succeeds if the sky is visible above the affected block */
 	public static final Supplier<DecayCondition> SKY_ABOVE		= register("sky_above", ConditionClimate.SkyAbove::new);
 	/** Succeeds if it is raining directly on the affected block */

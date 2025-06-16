@@ -17,4 +17,6 @@ public class RCTags
 	public static final TagKey<Block> MOLD_IMPERVIOUS	= TagKey.of(RegistryKeys.BLOCK, prefix("mold_impervious"));
 	
 	public static final TagKey<Item> IGNITER_ITEMS		= TagKey.of(RegistryKeys.ITEM, prefix("igniters"));
+	public static final TagKey<Item> ROTTEN_FRUIT		= TagKey.of(RegistryKeys.ITEM, prefix("rotten_fruit"));
+	public static final TagKey<Item> ROTTEN_PUMPKIN		= TagKey.of(RegistryKeys.ITEM, prefix("rotten_pumpkin"));
 }

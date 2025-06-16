@@ -81,8 +81,25 @@ public class RCModelProvider extends FabricModelProvider
 	
 	public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator)
 	{
+		// Simple solid cubes
 		RCBlocks.SOLID_CUBES.forEach(entry -> blockStateModelGenerator.registerSimpleCubeAll(entry.get()));
+		
 		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).forEach(b -> blockStateModelGenerator.registerSouthDefaultHorizontalFacing(TexturedModel.TEMPLATE_GLAZED_TERRACOTTA, b.get()));
+		
+		// Vertical column blocks
+		for(Block block : new Block[] {
+				RCBlocks.ROTTEN_MELON.get(),
+				RCBlocks.ROTTEN_PUMPKIN.get()
+		})
+			blockStateModelGenerator.registerSingleton(block, TexturedModel.CUBE_COLUMN);
+		
+		// Horizontal aligned blocks eg furnaces
+		for(Block block : new Block[] {
+				RCBlocks.ROTTEN_CARVED_PUMPKIN.get(),
+				RCBlocks.ROTTEN_JACK_O_LANTERN.get()
+		})
+			blockStateModelGenerator.registerNorthDefaultHorizontalRotated(block, TexturedModel.ORIENTABLE);
+		
 		RCBlocks.DYE_TO_CONCRETE.values().stream().forEach(b -> CrackedConcrete.makeBlockState((CrackedConcreteBlock)b.cracked().get(), b.dry().get(), blockStateModelGenerator));
 		RCBlocks.DYE_TO_RAGGED_BANNER.entrySet().forEach(e -> RaggedBanner.makeBlockState(e.getValue().get(), RaggedWallBannerBlock.getForColor(e.getKey()), e.getKey(), blockStateModelGenerator));
 		DousedLights.register(blockStateModelGenerator);
@@ -90,13 +107,14 @@ public class RCModelProvider extends FabricModelProvider
 		registerSlab(RCBlocks.CRACKED_STONE_BRICK_SLAB.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		registerStairs(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);
 		
-		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
-		Mold.makeBlockState(RCBlocks.MOLD.get(), RCItems.MOLD.get(), blockStateModelGenerator);
-		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
-		
 		Scrap.makeBlockState(RCBlocks.IRON_SCRAP.get(), blockStateModelGenerator);
 		Rubble.makeBlockState((RubbleBlock)RCBlocks.STONE_RUBBLE.get(), blockStateModelGenerator);
 		Rubble.makeBlockState((RubbleBlock)RCBlocks.DEEPSLATE_RUBBLE.get(), blockStateModelGenerator);
+		
+		// Multiface blocks
+		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
+		Mold.makeBlockState(RCBlocks.MOLD.get(), RCItems.MOLD.get(), blockStateModelGenerator);
+		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
 	}
 	
 	public void generateItemModels(ItemModelGenerator itemModelGenerator)

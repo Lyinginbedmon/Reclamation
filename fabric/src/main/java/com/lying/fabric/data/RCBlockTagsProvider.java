@@ -75,6 +75,11 @@ public class RCBlockTagsProvider extends BlockTagProvider
 				RCBlocks.DEEPSLATE_RUBBLE.get(),
 				RCBlocks.IRON_SCRAP.get());
 		getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(RCBlocks.SOOT.get(), RCBlocks.MOLD.get());
+		getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).add(
+				RCBlocks.ROTTEN_MELON.get(), 
+				RCBlocks.ROTTEN_PUMPKIN.get(),
+				RCBlocks.ROTTEN_CARVED_PUMPKIN.get(),
+				RCBlocks.ROTTEN_JACK_O_LANTERN.get());
 		
 		getOrCreateTagBuilder(RCTags.MOLD_IMPERVIOUS)
 				.addTag(BlockTags.LEAVES)

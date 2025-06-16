@@ -5,6 +5,7 @@ import static com.lying.reference.Reference.ModInfo.prefix;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
@@ -13,12 +14,16 @@ import com.lying.block.RaggedWallBannerBlock;
 import com.lying.item.DeactivatorItem;
 import com.lying.item.DecayDustItem;
 import com.lying.item.RaggedBannerItem;
+import com.lying.item.RottenFruitItem;
 import com.lying.reference.Reference;
 
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.block.Block;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Settings;
@@ -69,6 +74,14 @@ public class RCItems
 	public static final RegistrySupplier<Item> SOOT							= registerBlockNoItem("soot", RCBlocks.SOOT);
 	public static final RegistrySupplier<Item> IVY							= registerBlockNoItem("ivy", RCBlocks.IVY);
 	public static final RegistrySupplier<Item> MOLD							= registerBlockNoItem("mold", RCBlocks.MOLD);
+	public static final RegistrySupplier<Item> ROTTEN_MELON					= registerBlock("rotten_melon", RCBlocks.ROTTEN_MELON);
+	public static final RegistrySupplier<Item> ROTTEN_PUMPKIN				= registerBlock("rotten_pumpkin", RCBlocks.ROTTEN_PUMPKIN);
+	public static final RegistrySupplier<Item> ROTTEN_CARVED_PUMPKIN		= register("rotten_carved_pumpkin", settings -> new RottenFruitItem(RCBlocks.ROTTEN_CARVED_PUMPKIN.get(), settings
+			.useBlockPrefixedTranslationKey()
+			.component(
+				DataComponentTypes.EQUIPPABLE, 
+				EquippableComponent.builder(EquipmentSlot.HEAD).swappable(false).cameraOverlay(Identifier.ofVanilla("misc/pumpkinblur")).build())));
+	public static final RegistrySupplier<Item> ROTTEN_JACK_O_LANTERN		= registerBlock("rotten_jack_o_lantern", RCBlocks.ROTTEN_JACK_O_LANTERN);
 	public static final RegistrySupplier<Item> CRACKED_STONE_BRICK_SLAB		= registerBlock("cracked_stone_brick_slab", RCBlocks.CRACKED_STONE_BRICK_SLAB);
 	public static final RegistrySupplier<Item> CRACKED_STONE_BRICK_STAIRS	= registerBlock("cracked_stone_brick_stairs", RCBlocks.CRACKED_STONE_BRICK_STAIRS);
 	public static final RegistrySupplier<Item> DOUSED_TORCH					= registerBlock("doused_torch", RCBlocks.DOUSED_TORCH);
@@ -133,17 +146,26 @@ public class RCItems
 	
 	private static RegistrySupplier<Item> registerBlock(String nameIn, RegistrySupplier<Block> blockIn)
 	{
-		RegistrySupplier<Item> registry = registerBlockNoItem(nameIn, blockIn);
+		return registerBlock(nameIn, blockIn, UnaryOperator.identity());
+	}
+	
+	private static RegistrySupplier<Item> registerBlock(String nameIn, RegistrySupplier<Block> blockIn, UnaryOperator<Item.Settings> settingsOp)
+	{
+		RegistrySupplier<Item> registry = registerBlockNoItem(nameIn, blockIn, settingsOp);
 		BASIC_BLOCK_ITEMS.add(registry);
 		return registry;
 	}
 	
 	private static RegistrySupplier<Item> registerBlockNoItem(String nameIn, RegistrySupplier<Block> blockIn)
 	{
+		return registerBlockNoItem(nameIn, blockIn, UnaryOperator.identity());
+	}
+	
+	private static RegistrySupplier<Item> registerBlockNoItem(String nameIn, RegistrySupplier<Block> blockIn, UnaryOperator<Item.Settings> settingsOp)
+	{
 		Identifier id = prefix(nameIn);
 		RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
-		Item.Settings settings = new Item.Settings().useBlockPrefixedTranslationKey().registryKey(key).arch$tab(RECLAMATION_TAB);
-		return registerBlockItem(nameIn, () -> new BlockItem(blockIn.get(), settings));
+		return registerBlockItem(nameIn, () -> new BlockItem(blockIn.get(), settingsOp.apply(new Item.Settings().useBlockPrefixedTranslationKey().registryKey(key).arch$tab(RECLAMATION_TAB))));
 	}
 	
 	private static RegistrySupplier<Item> registerBlockItem(String nameIn, Supplier<Item> supplier)

@@ -15,5 +15,21 @@
 			"reclamation:rubble_shifting_2",
 			"reclamation:rubble_shifting_3"
 		]
+	},
+	"rotten_fruit_break": {
+		"subtitle": "sound.reclamation.rotten_fruid_break",
+		"sounds": [
+			"reclamation:rotten_fruit_break_0",
+			"reclamation:rotten_fruit_break_1",
+			"reclamation:rotten_fruit_break_2",
+			"reclamation:rotten_fruit_break_3",
+			"reclamation:rotten_fruit_break_4",
+			"reclamation:rotten_fruit_break_5",
+			"reclamation:rotten_fruit_break_6",
+			"reclamation:rotten_fruit_break_7",
+			"reclamation:rotten_fruit_break_8",
+			"reclamation:rotten_fruit_break_9",
+			"reclamation:rotten_fruit_break_10"
+		]
 	}
 }

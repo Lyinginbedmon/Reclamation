@@ -1,8 +1,10 @@
 package com.lying.decay.conditions;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lying.decay.context.DecayContext;
@@ -12,6 +14,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -20,6 +24,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Precipitation;
+import net.minecraft.world.biome.BiomeKeys;
 
 public abstract class ConditionClimate extends DecayCondition
 {
@@ -154,14 +159,68 @@ public abstract class ConditionClimate extends DecayCondition
 		}
 	}
 	
-	protected static abstract class CheckBiome extends DecayCondition
+	public static class IsBiome extends DecayCondition
 	{
-		protected Optional<Float> temp = Optional.empty();
+		private BiomeList options = new BiomeList(List.of(BiomeKeys.PLAINS));
+		
+		public IsBiome(Identifier idIn)
+		{
+			super(idIn);
+		}
+		
+		@SafeVarargs
+		public static IsBiome of(RegistryKey<Biome>... biomesIn)
+		{
+			IsBiome condition = (IsBiome)RCDecayConditions.IN_BIOME.get();
+			List<RegistryKey<Biome>> biomes = Lists.newArrayList();
+			for(RegistryKey<Biome> biome : biomesIn)
+				biomes.add(biome);
+			condition.options = new BiomeList(biomes);
+			return condition;
+		}
+		
+		protected boolean check(DecayContext context)
+		{
+			Optional<RegistryKey<Biome>> biome = context.world.get().getBiome(context.currentPos()).getKey();
+			return biome.isPresent() && options.val.stream().anyMatch(b -> b.equals(biome.get()));
+		}
+		
+		protected JsonObject write(JsonObject obj)
+		{
+			return options.toJson().getAsJsonObject();
+		}
+		
+		protected void read(JsonObject obj)
+		{
+			options = BiomeList.fromJson(obj);
+		}
+		
+		private static record BiomeList(List<RegistryKey<Biome>> val)
+		{
+			public static final Codec<BiomeList> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
+					RegistryKey.createCodec(RegistryKeys.BIOME).listOf().fieldOf("biomes").forGetter(BiomeList::val)
+					).apply(instance, BiomeList::new));
+			
+			public JsonElement toJson()
+			{
+				return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
+			}
+			
+			public static BiomeList fromJson(JsonObject obj)
+			{
+				return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow();
+			}
+		}
+	}
+	
+	protected static abstract class CheckClimate extends DecayCondition
+	{
+		protected Optional<Float> getter = Optional.empty();
 		protected Optional<Comparison> comp = Optional.empty();
 		
 		private final Function<Biome, Float> getterFunc;
 		
-		protected CheckBiome(Identifier idIn, Function<Biome, Float> funcIn)
+		protected CheckClimate(Identifier idIn, Function<Biome, Float> funcIn)
 		{
 			super(idIn);
 			getterFunc = funcIn;
@@ -169,20 +228,20 @@ public abstract class ConditionClimate extends DecayCondition
 		
 		protected boolean check(DecayContext context)
 		{
-			float temperature = temp.orElse(0.5F);
+			float temperature = getter.orElse(0.5F);
 			Biome biome = context.world.get().getBiome(context.currentPos()).value();
 			return comp.orElse(Comparison.GREATER_THAN_OR_EQUAL).apply(getterFunc.apply(biome), temperature);
 		}
 		
 		protected JsonObject write(JsonObject obj)
 		{
-			return new BiomeData(temp, comp).toJson().getAsJsonObject();
+			return new BiomeData(getter, comp).toJson().getAsJsonObject();
 		}
 		
 		protected void read(JsonObject obj)
 		{
 			BiomeData data = BiomeData.fromJson(obj);
-			temp = data.val;
+			getter = data.val;
 			comp = data.op;
 		}
 		
@@ -205,7 +264,7 @@ public abstract class ConditionClimate extends DecayCondition
 		}
 	}
 	
-	public static class Temperature extends CheckBiome
+	public static class Temperature extends CheckClimate
 	{
 		public Temperature(Identifier idIn)
 		{
@@ -215,20 +274,20 @@ public abstract class ConditionClimate extends DecayCondition
 		public static Temperature of(float value)
 		{
 			Temperature condition = (Temperature)RCDecayConditions.TEMPERATURE.get();
-			condition.temp = Optional.of(value);
+			condition.getter = Optional.of(value);
 			return condition;
 		}
 		
 		public static Temperature of(float value, Comparison operation)
 		{
 			Temperature condition = (Temperature)RCDecayConditions.TEMPERATURE.get();
-			condition.temp = Optional.of(value);
+			condition.getter = Optional.of(value);
 			condition.comp = Optional.of(operation);
 			return condition;
 		}
 	}
 	
-	public static class Humidity extends CheckBiome
+	public static class Humidity extends CheckClimate
 	{
 		public Humidity(Identifier idIn)
 		{
@@ -238,14 +297,14 @@ public abstract class ConditionClimate extends DecayCondition
 		public static Humidity of(float value)
 		{
 			Humidity condition = (Humidity)RCDecayConditions.HUMIDITY.get();
-			condition.temp = Optional.of(value);
+			condition.getter = Optional.of(value);
 			return condition;
 		}
 		
 		public static Humidity of(float value, Comparison operation)
 		{
 			Humidity condition = (Humidity)RCDecayConditions.HUMIDITY.get();
-			condition.temp = Optional.of(value);
+			condition.getter = Optional.of(value);
 			condition.comp = Optional.of(operation);
 			return condition;
 		}

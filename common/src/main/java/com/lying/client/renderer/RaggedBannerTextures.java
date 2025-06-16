@@ -72,7 +72,6 @@ public class RaggedBannerTextures implements ReloadListener<Integer>
 	{
 		if(bannerBase == null)
 		{
-			Reclamation.LOGGER.info(" # Generating masked banner base");
 			Sprite sprite = TexturedRenderLayers.BANNER_BASE.getSprite();
 			TextureManager texManager = mc.getTextureManager();
 			texManager.registerTexture((bannerBase = prefix("entity/banner_base")), tatterPattern(sprite, lumaMatte(), texManager));
@@ -96,7 +95,6 @@ public class RaggedBannerTextures implements ReloadListener<Integer>
 	
 	private void generatePattern(RegistryEntry<BannerPattern> entry)
 	{
-		Reclamation.LOGGER.info(" # Generating masked banner pattern for {}", entry.value().assetId().toString());
 		Sprite sprite = TexturedRenderLayers.getBannerPatternTextureId(entry).getSprite();
 		TextureManager texManager = mc.getTextureManager();
 		texManager.registerTexture(patternToID(entry), tatterPattern(sprite, lumaMatte(), texManager));

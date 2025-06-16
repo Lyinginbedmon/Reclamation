@@ -77,6 +77,16 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 		addSootDrops(RCBlocks.SOOT.get());
 		addRubbleDrops(RCBlocks.STONE_RUBBLE.get());
 		addRubbleDrops(RCBlocks.DEEPSLATE_RUBBLE.get());
+		addRottenFruitDrops(RCBlocks.ROTTEN_MELON.get(), Items.MELON_SEEDS);
+		for(Block pumpkin : new Block[] {RCBlocks.ROTTEN_PUMPKIN.get(), RCBlocks.ROTTEN_CARVED_PUMPKIN.get(), RCBlocks.ROTTEN_JACK_O_LANTERN.get()})
+			addRottenFruitDrops(pumpkin, Items.PUMPKIN_SEEDS);
+	}
+	
+	private void addRottenFruitDrops(Block block, Item seeds)
+	{
+		addDrop(RCBlocks.ROTTEN_MELON.get(), LootTable.builder()
+				.pool(LootPool.builder().with(ItemEntry.builder(block).conditionally(createSilkTouchCondition())))
+				.pool(LootPool.builder().with(ItemEntry.builder(seeds).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0, 3))).conditionally(createWithoutSilkTouchCondition()))));
 	}
 	
 	private void addCrackedConcreteDrops(Block block, Block powder)

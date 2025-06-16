@@ -16,6 +16,17 @@
     }
   },
   "conditions": [
+    {
+      "biomes": [
+        "minecraft:desert"
+      ],
+      "id": "reclamation:in_biome",
+      "inverted": true
+    },
+    {
+      "id": "reclamation:dimension",
+      "target": "minecraft:overworld"
+    },
     "reclamation:exposed",
     "reclamation:is_solid_block",
     "reclamation:on_ground",
