@@ -9,13 +9,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
+import com.lying.utility.BiomePredicate;
 import com.lying.utility.PositionPredicate.Comparison;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -24,7 +26,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Precipitation;
-import net.minecraft.world.biome.BiomeKeys;
 
 public abstract class ConditionClimate extends DecayCondition
 {
@@ -161,28 +162,40 @@ public abstract class ConditionClimate extends DecayCondition
 	
 	public static class IsBiome extends DecayCondition
 	{
-		private BiomeList options = new BiomeList(List.of(BiomeKeys.PLAINS));
+		private BiomePredicate options = new BiomePredicate(List.of(), List.of());
 		
 		public IsBiome(Identifier idIn)
 		{
 			super(idIn);
 		}
 		
-		@SafeVarargs
-		public static IsBiome of(RegistryKey<Biome>... biomesIn)
+		public static IsBiome create()
 		{
-			IsBiome condition = (IsBiome)RCDecayConditions.IN_BIOME.get();
-			List<RegistryKey<Biome>> biomes = Lists.newArrayList();
-			for(RegistryKey<Biome> biome : biomesIn)
-				biomes.add(biome);
-			condition.options = new BiomeList(biomes);
-			return condition;
+			return (IsBiome)RCDecayConditions.IN_BIOME.get();
+		}
+		
+		public IsBiome addBiome(RegistryKey<Biome> biome)
+		{
+			List<RegistryKey<Biome>> tags = Lists.newArrayList(options.biomeList());
+			if(!tags.contains(biome))
+				tags.add(biome);
+			options = new BiomePredicate(tags, options.biomeTags());
+			return this;
+		}
+		
+		public IsBiome addTag(TagKey<Biome> tag)
+		{
+			List<TagKey<Biome>> tags = Lists.newArrayList(options.biomeTags());
+			if(!tags.contains(tag))
+				tags.add(tag);
+			options = new BiomePredicate(options.biomeList(), tags);
+			return this;
 		}
 		
 		protected boolean check(DecayContext context)
 		{
-			Optional<RegistryKey<Biome>> biome = context.world.get().getBiome(context.currentPos()).getKey();
-			return biome.isPresent() && options.val.stream().anyMatch(b -> b.equals(biome.get()));
+			RegistryEntry<Biome> biome = context.world.get().getBiome(context.currentPos());
+			return biome != null && options.test(biome);
 		}
 		
 		protected JsonObject write(JsonObject obj)
@@ -192,24 +205,7 @@ public abstract class ConditionClimate extends DecayCondition
 		
 		protected void read(JsonObject obj)
 		{
-			options = BiomeList.fromJson(obj);
-		}
-		
-		private static record BiomeList(List<RegistryKey<Biome>> val)
-		{
-			public static final Codec<BiomeList> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-					RegistryKey.createCodec(RegistryKeys.BIOME).listOf().fieldOf("biomes").forGetter(BiomeList::val)
-					).apply(instance, BiomeList::new));
-			
-			public JsonElement toJson()
-			{
-				return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
-			}
-			
-			public static BiomeList fromJson(JsonObject obj)
-			{
-				return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow();
-			}
+			options = BiomePredicate.fromJson(obj);
 		}
 	}
 	

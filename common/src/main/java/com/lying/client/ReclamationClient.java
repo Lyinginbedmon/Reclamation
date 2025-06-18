@@ -1,13 +1,11 @@
 package com.lying.client;
 
 import com.lying.block.LeafPileBlock;
-import com.lying.client.particle.FlyParticle;
 import com.lying.client.renderer.RaggedBannerTextures;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCParticleTypes;
 import com.lying.item.RottenFruitItem;
 
-import dev.architectury.registry.client.particle.ParticleProviderRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.client.color.block.BlockColorProvider;
@@ -31,7 +29,6 @@ public class ReclamationClient
 	{
 		RaggedBannerTextures.init();
 		registerRenderers();
-		registerParticles();
 		registerEventHandlers();
 	}
 	
@@ -41,16 +38,11 @@ public class ReclamationClient
 		RenderTypeRegistry.register(RenderLayer.getCutoutMipped(), LeafPileBlock.LEAF_PILE_TO_LEAVES.keySet().stream().toList().toArray(new Block[0]));
 	}
 	
-	private static void registerParticles()
-	{
-		ParticleProviderRegistry.register(RCParticleTypes.FLY.get(), FlyParticle.Factory::new);
-	}
-	
 	private static void registerEventHandlers()
 	{
 		RottenFruitItem.WEARING_ROTTEN_FRUIT_TICK_EVENT_CLIENT.register((player, world) -> 
 		{
-			for(int i=3; i>0; i--)
+			if(player.getRandom().nextInt(12) == 0)
 				world.addParticle(RCParticleTypes.FLY.get(), player.getParticleX(0.5), player.getRandomBodyY(), player.getParticleZ(0.5), 0, 0, 0);
 		});
 	}

@@ -343,7 +343,7 @@ public class DefaultDecayLibrary
 					.addModifier(0.3F, Operation.ADD_VALUE, BlockSaturationCalculator.Builder.create().blockCap(1).searchRange(1).blocks(Blocks.GRASS_BLOCK).build()))
 				.name("ivy_sprout")
 				.condition(
-					ConditionClimate.IsBiome.of(BiomeKeys.DESERT).invert(),
+					ConditionClimate.IsBiome.create().addBiome(BiomeKeys.DESERT).invert(),
 					ConditionPosition.Dimension.of(World.OVERWORLD),
 					RCDecayConditions.EXPOSED.get(),
 					RCDecayConditions.IS_SOLID.get(),

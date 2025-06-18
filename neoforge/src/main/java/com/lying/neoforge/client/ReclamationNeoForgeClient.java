@@ -1,9 +1,11 @@
 package com.lying.neoforge.client;
 
 import com.lying.client.ReclamationClient;
+import com.lying.client.particle.FlyParticle;
 import com.lying.client.renderer.block.RaggedBannerBlockEntityRenderer;
 import com.lying.init.RCBlockEntityTypes;
 import com.lying.init.RCBlocks;
+import com.lying.init.RCParticleTypes;
 import com.lying.reference.Reference;
 
 import net.minecraft.client.MinecraftClient;
@@ -12,6 +14,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 @EventBusSubscriber(modid = Reference.ModInfo.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ReclamationNeoForgeClient
@@ -35,5 +38,11 @@ public class ReclamationNeoForgeClient
     	colors.registerColorProvider(ReclamationClient.SPRUCE_COLOR, RCBlocks.SPRUCE_LEAF_PILE.get());
     	
     	BlockEntityRendererFactories.register(RCBlockEntityTypes.RAGGED_BANNER.get(), RaggedBannerBlockEntityRenderer::new);
+    }
+    
+    @SubscribeEvent
+    private static void registerParticleProviders(RegisterParticleProvidersEvent event)
+    {
+    	event.registerSpriteSet(RCParticleTypes.FLY.get(), FlyParticle.Factory::new);
     }
 }

@@ -25,8 +25,9 @@ public class RottenFruitBlock extends Block implements IDeActivatable
 	
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random)
 	{
-		for(int i=3; i>0; i--)
-			world.addParticle(RCParticleTypes.FLY.get(), pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble(), pos.getZ() + random.nextDouble(), 0, 0, 0);
+		if(random.nextInt(3) == 0)
+			for(int i=3; i>0; i--)
+				world.addParticle(RCParticleTypes.FLY.get(), pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble(), pos.getZ() + random.nextDouble(), 0, 0, 0);
 	}
 	
 	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance)

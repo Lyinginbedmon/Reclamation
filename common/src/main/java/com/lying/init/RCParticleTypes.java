@@ -1,10 +1,11 @@
 package com.lying.init;
 
+import static com.lying.reference.Reference.ModInfo.prefix;
+
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.lying.Reclamation;
-import com.lying.particle.BasicParticleType;
 import com.lying.reference.Reference;
 import com.mojang.serialization.MapCodec;
 
@@ -14,6 +15,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.RegistryKeys;
 
 public class RCParticleTypes
@@ -21,12 +23,14 @@ public class RCParticleTypes
 	private static final DeferredRegister<ParticleType<?>> PARTICLES	= DeferredRegister.create(Reference.ModInfo.MOD_ID, RegistryKeys.PARTICLE_TYPE);
 	private static int tally = 0;
 	
-	public static final RegistrySupplier<BasicParticleType> FLY	= register("fly", false);
+	public static final RegistrySupplier<SimpleParticleType> FLY	= register("fly", false);
 	
-	private static RegistrySupplier<BasicParticleType> register(String nameIn, boolean alwaysShow)
+	public static final RegistrySupplier<SimpleParticleType> SHOCKWAVE	= register("shockwave", true);
+	
+	private static RegistrySupplier<SimpleParticleType> register(String nameIn, boolean alwaysShow)
 	{
 		tally++;
-		return PARTICLES.register(Reference.ModInfo.prefix(nameIn), () -> new BasicParticleType(alwaysShow));
+		return PARTICLES.register(prefix(nameIn), () -> new SimpleParticleType(alwaysShow));
 	}
 	
 	@SuppressWarnings("unused")
@@ -38,7 +42,7 @@ public class RCParticleTypes
 			Supplier<T> type)
 	{
 		tally++;
-		return PARTICLES.register(Reference.ModInfo.prefix(nameIn), () -> new ParticleType<T>(alwaysShow) 
+		return PARTICLES.register(prefix(nameIn), () -> new ParticleType<T>(alwaysShow) 
 		{
 			public MapCodec<T> getCodec() { return codecGetter.apply(this); }
 			
