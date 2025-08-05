@@ -17,9 +17,7 @@
   },
   "conditions": [
     {
-      "biomes": [
-        "minecraft:desert"
-      ],
+      "biome": "minecraft:desert",
       "id": "reclamation:in_biome",
       "inverted": true
     },

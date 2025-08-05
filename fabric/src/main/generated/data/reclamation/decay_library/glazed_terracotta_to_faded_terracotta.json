@@ -7,7 +7,7 @@
         "search": {
           "capacity": 8,
           "looking_for": {
-            "tags": [
+            "block_tags": [
               "#reclamation:faded_terracotta",
               "#minecraft:terracotta"
             ]
@@ -21,8 +21,8 @@
   "conditions": [
     "reclamation:uncovered",
     {
-      "id": "reclamation:is_block",
-      "tag": "#c:glazed_terracotta"
+      "block_tag": "#c:glazed_terracotta",
+      "id": "reclamation:is_block"
     }
   ],
   "function": {

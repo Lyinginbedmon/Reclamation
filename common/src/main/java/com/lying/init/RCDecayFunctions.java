@@ -21,41 +21,41 @@ import net.minecraft.util.Identifier;
 
 public class RCDecayFunctions
 {
-	private static final Map<Identifier, Supplier<DecayFunction>> FUNCTIONS = new HashMap<>();
+	private static final Map<Identifier, Supplier<? extends DecayFunction>> FUNCTIONS = new HashMap<>();
 	
 	/** Replaces affected block with another */
-	public static final Supplier<DecayFunction> CONVERT		= register("convert", FunctionConvert::new);
+	public static final Supplier<FunctionConvert> CONVERT		= register("convert", FunctionConvert::new);
 	/** Replaces affected block with air */
-	public static final Supplier<DecayFunction> TO_AIR		= register("to_air", FunctionConvert.ToAir::new);
+	public static final Supplier<FunctionConvert.ToAir> TO_AIR		= register("to_air", FunctionConvert.ToAir::new);
 	/** Moves affected block randomly to an adjacent open space */
-	public static final Supplier<DecayFunction> SHUFFLE		= register("shuffle", FunctionShuffle::new);
+	public static final Supplier<FunctionShuffle> SHUFFLE		= register("shuffle", FunctionShuffle::new);
 	/** Applies bonemeal to the affected block */
-	public static final Supplier<DecayFunction> BONEMEAL	= register("bonemeal", FunctionBonemeal::new);
+	public static final Supplier<FunctionBonemeal> BONEMEAL	= register("bonemeal", FunctionBonemeal::new);
 	/** Causes the affected block to drop as a falling block if able */
-	public static final Supplier<DecayFunction> FALL		= register("fall", FunctionFallingBlock.Fall::new);
+	public static final Supplier<FunctionFallingBlock.Fall> FALL		= register("fall", FunctionFallingBlock.Fall::new);
 	/** Causes the affected block to drop a different blockstate as a falling block if able */
-	public static final Supplier<DecayFunction> DROP		= register("drop", FunctionFallingBlock.Drop::new);
+	public static final Supplier<FunctionFallingBlock.Drop> DROP		= register("drop", FunctionFallingBlock.Drop::new);
 	/** Waterlogs the affected block if possible */
-	public static final Supplier<DecayFunction> WATERLOG	= register("waterlog", FunctionBlockState.Waterlog::new);
+	public static final Supplier<FunctionBlockState.Waterlog> WATERLOG	= register("waterlog", FunctionBlockState.Waterlog::new);
 	/** Removes water from the affected block if possible */
-	public static final Supplier<DecayFunction> DEHYDRATE	= register("dehydrate", FunctionBlockState.Dehydrate::new);
+	public static final Supplier<FunctionBlockState.Dehydrate> DEHYDRATE	= register("dehydrate", FunctionBlockState.Dehydrate::new);
 	/** Copies one or more blockstate values from the original blockstate */
-	public static final Supplier<DecayFunction> COPY_VALUE	= register("copy_blockstate_value", FunctionBlockState.CopyValue::new);
+	public static final Supplier<FunctionBlockState.CopyValue> COPY_VALUE	= register("copy_blockstate_value", FunctionBlockState.CopyValue::new);
 	/** Cycles one or more blockstate properties */
-	public static final Supplier<DecayFunction> CYCLE_VALUE	= register("cycle_blockstate_value", FunctionBlockState.CycleValue::new);
+	public static final Supplier<FunctionBlockState.CycleValue> CYCLE_VALUE	= register("cycle_blockstate_value", FunctionBlockState.CycleValue::new);
 	/** Sets one or more blockstate properties to random values */
-	public static final Supplier<DecayFunction> RANDOMISE_VALUE		= register("randomise_blockstate_value", FunctionBlockState.RandomValue::new);
+	public static final Supplier<FunctionBlockState.RandomValue> RANDOMISE_VALUE		= register("randomise_blockstate_value", FunctionBlockState.RandomValue::new);
 	/** Sets the value of one or more blockstate properties */
-	public static final Supplier<DecayFunction> SET_STATE_VALUE		= register("set_blockstate_value", FunctionBlockState.SetValue::new);
+	public static final Supplier<FunctionBlockState.SetValue> SET_STATE_VALUE		= register("set_blockstate_value", FunctionBlockState.SetValue::new);
 	/** Calls a {@link DecayMacro} on an adjacent space to the affected block */
-	public static final Supplier<DecayFunction> SPROUT		= register("sprout", FunctionSprout::new);
+	public static final Supplier<FunctionSprout> SPROUT		= register("sprout", FunctionSprout::new);
 	/** Applies the first valid {@link DecayMacro} to the affected block */
-	public static final Supplier<DecayFunction> MACRO		= register("macro", FunctionMacro::new);
+	public static final Supplier<FunctionMacro> MACRO		= register("macro", FunctionMacro::new);
 	
-	private static Supplier<DecayFunction> register(String nameIn, Function<Identifier, DecayFunction> funcIn)
+	private static <T extends DecayFunction> Supplier<T> register(String nameIn, Function<Identifier, T> funcIn)
 	{
 		Identifier id = Reference.ModInfo.prefix(nameIn);
-		Supplier<DecayFunction> supplier = () -> funcIn.apply(id);
+		Supplier<T> supplier = () -> funcIn.apply(id);
 		FUNCTIONS.put(id, () -> funcIn.apply(id));
 		return supplier;
 	}

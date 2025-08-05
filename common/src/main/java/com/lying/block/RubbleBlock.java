@@ -4,6 +4,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
 import com.lying.init.RCSoundEvents;
 
@@ -11,12 +13,18 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.Waterloggable;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -26,11 +34,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.tick.ScheduledTickView;
 
-public class RubbleBlock extends Block implements IDeActivatable
+public class RubbleBlock extends Block implements IDeActivatable, Waterloggable
 {
 	protected static final int DELAY = 5;
 	public static final BooleanProperty FULL	= BooleanProperty.of("full");
 	public static final IntProperty DEPTH		= IntProperty.of("depth", 1, 4);
+	public static final BooleanProperty WATERLOGGED	= Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 5.0, 15.0);
 	protected static final VoxelShape[] LAYERS_TO_SHAPE = new VoxelShape[] 
 			{
@@ -46,13 +55,12 @@ public class RubbleBlock extends Block implements IDeActivatable
 	{
 		super(settings);
 		parent = parentIn;
-		setDefaultState(getDefaultState().with(DEPTH, 1).with(FULL, false).with(INERT, false));
+		setDefaultState(getDefaultState().with(DEPTH, 1).with(FULL, false).with(INERT, false).with(WATERLOGGED, false));
 	}
 	
-	// TODO Add waterlogging
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
 	{
-		builder.add(DEPTH, FULL, INERT);
+		builder.add(DEPTH, FULL, INERT, WATERLOGGED);
 	}
 	
 	public Block parentBlock() { return parent.get(); }
@@ -69,7 +77,9 @@ public class RubbleBlock extends Block implements IDeActivatable
 	
 	public BlockState getPlacementState(ItemPlacementContext context)
 	{
-		return getPlacementShape(context.getBlockPos(), context.getWorld());
+		BlockState state = getPlacementShape(context.getBlockPos(), context.getWorld());
+		return state
+				.with(WATERLOGGED, !state.get(FULL) && context.getWorld().getFluidState(context.getBlockPos()).getFluid() == Fluids.WATER);
 	}
 	
 	private BlockState getPlacementShape(BlockPos position, WorldView world)
@@ -77,8 +87,9 @@ public class RubbleBlock extends Block implements IDeActivatable
 		BlockState state = world.getBlockState(position);
 		if(state.isOf(this))
 		{
-			if(state.get(DEPTH) < 4)
-				return state.with(DEPTH, state.get(DEPTH) + 1);
+			int depth = state.get(DEPTH);
+			if(depth < 4)
+				return state.with(DEPTH, ++depth);
 			else
 				return null;
 		}
@@ -118,9 +129,20 @@ public class RubbleBlock extends Block implements IDeActivatable
 			Random random
 			)
 	{
+		if(state.get(WATERLOGGED))
+			tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		tickView.scheduleBlockTick(pos, this, DELAY);
-		return state.with(FULL, state.get(DEPTH) == 4 && world.getBlockState(pos.up()).isOf(this));
+		
+		boolean isSolid = state.get(DEPTH) == 4 && world.getBlockState(pos.up()).isOf(this);
+		return state.with(FULL, isSolid).with(WATERLOGGED, state.get(WATERLOGGED) && !isSolid);
 	}
+	
+	public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid)
+	{
+		return fluid == Fluids.WATER && !state.get(FULL);
+	}
+	
+	protected FluidState getFluidState(BlockState state) { return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state); }
 	
 	private static EnumSet<Direction> randomSequence(Random random)
 	{
@@ -131,6 +153,8 @@ public class RubbleBlock extends Block implements IDeActivatable
 		return sequence;
 	}
 	
+	// FIXME Ensure flowing water is updated on state changes
+	// TODO Replace falling behaviour with falling block entity equivalent
 	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
 	{
 		if(isInert(state))
@@ -203,8 +227,7 @@ public class RubbleBlock extends Block implements IDeActivatable
 		
 		if(otherState.isOf(this) && canStack(myState, otherState))
 		{
-			int depth2 = otherState.get(DEPTH);
-			world.setBlockState(otherPos, otherState.with(DEPTH, depth2 + 1), 2);
+			world.setBlockState(otherPos, otherState.with(DEPTH, otherState.get(DEPTH) + 1), 2);
 			depth--;
 		}
 		else if(otherState.isReplaceable())

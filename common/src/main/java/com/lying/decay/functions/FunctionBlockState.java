@@ -1,7 +1,12 @@
 package com.lying.decay.functions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -66,7 +71,7 @@ public abstract class FunctionBlockState extends DecayFunction
 		
 		public static CycleValue of(Property<?>... set)
 		{
-			CycleValue function = (CycleValue)RCDecayFunctions.CYCLE_VALUE.get();
+			CycleValue function = RCDecayFunctions.CYCLE_VALUE.get();
 			for(Property<?> property : set)
 				function.properties.add(property.getName());
 			return function;
@@ -108,19 +113,29 @@ public abstract class FunctionBlockState extends DecayFunction
 	
 	public static class RandomValue extends CycleValue
 	{
-		// TODO Implement specification of value options
+		private Map<String, String[]> properties = new HashMap<>();
 		
 		public RandomValue(Identifier idIn)
 		{
 			super(idIn);
 		}
 		
-		public static RandomValue of(Property<?>... set)
+		public static RandomValue create() { return RCDecayFunctions.RANDOMISE_VALUE.get(); }
+		
+		public RandomValue of(Property<?> property)
 		{
-			RandomValue function = (RandomValue)RCDecayFunctions.RANDOMISE_VALUE.get();
-			for(Property<?> property : set)
-				function.properties.add(property.getName());
-			return function;
+			properties.put(property.getName(), null);
+			return this;
+		}
+		
+		@SuppressWarnings("unchecked")
+		public <T extends Comparable<T>> RandomValue of(Property<T> property, T... values)
+		{
+			List<String> entries = Lists.newArrayList();
+			for(T val : values)
+				entries.add(property.name(val));
+			properties.put(property.getName(), entries.toArray(new String[0]));
+			return this;
 		}
 		
 		protected void applyTo(DecayContext context)
@@ -130,18 +145,90 @@ public abstract class FunctionBlockState extends DecayFunction
 			StateManager<Block, BlockState> manager = block.getStateManager();
 			
 			Property<?> property = null;
-			for(String propertyName : properties)
+			for(Entry<String, String[]> entry : properties.entrySet())
+			{
+				String propertyName = entry.getKey();
 				if((property = manager.getProperty(propertyName)) != null)
-					state = randomise(property, context.random, state);
+					state = randomise(property, entry.getValue(), context.random, state);
+			}
 			
 			if(!state.equals(context.currentState()))
 				context.setBlockState(state);
 		}
 		
+		private static <T extends Comparable<T>> BlockState randomise(Property<T> property, @Nullable String[] valueSet, Random random, BlockState state)
+		{
+			if(valueSet == null || valueSet.length == 0)
+				return randomise(property, random, state);
+			else
+				return randomise(property, parseValues(property, valueSet), random, state);
+		}
+		
 		private static <T extends Comparable<T>> BlockState randomise(Property<T> property, Random random, BlockState state)
 		{
-			List<T> values = property.getValues();
+			return randomise(property, property.getValues(), random, state);
+		}
+		
+		private static <T extends Comparable<T>> BlockState randomise(Property<T> property, List<T> values, Random random, BlockState state)
+		{
 			return state.with(property, values.get(random.nextInt(values.size())));
+		}
+		
+		private static <T extends Comparable<T>> List<T> parseValues(Property<T> property, String[] names)
+		{
+			List<T> values = Lists.newArrayList();
+			for(String name : names)
+				property.parse(name).ifPresent(v -> values.add(v));
+			return values;
+		}
+		
+		protected JsonObject write(JsonObject obj)
+		{
+			if(properties.isEmpty())
+				return obj;
+			
+			JsonArray array = new JsonArray();
+			properties.entrySet().forEach(entry -> 
+			{
+				if(entry.getValue() == null || entry.getValue().length == 0)
+					array.add(entry.getKey());
+				else
+				{
+					JsonObject data = new JsonObject();
+					data.addProperty("name", entry.getKey());
+					JsonArray set = new JsonArray();
+					for(String value : entry.getValue())
+						set.add(value);
+					data.add("values", set);
+					
+					array.add(data);
+				}
+			});
+			obj.add("properties", array);
+			return obj;
+		}
+		
+		protected void read(JsonObject obj)
+		{
+			properties.clear();
+			if(obj.has("properties"))
+			{
+				obj.getAsJsonArray("properties").forEach(element -> 
+				{
+					if(element.isJsonObject())
+					{
+						JsonObject data = element.getAsJsonObject();
+						String name = data.get("name").getAsString();
+						JsonArray values = data.getAsJsonArray("values");
+						String[] valueSet = new String[values.size()];
+						for(int i=0; i<values.size(); i++)
+							valueSet[i] = values.get(i).getAsString();
+						properties.put(name, valueSet);
+					}
+					else if(element.isJsonPrimitive())
+						properties.put(element.getAsString(), null);
+				});
+			}
 		}
 	}
 	

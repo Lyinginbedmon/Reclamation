@@ -1,10 +1,10 @@
 package com.lying.utility;
 
 import static com.lying.utility.RCUtils.listOrSolo;
+import static com.lying.utility.RCUtils.orEmpty;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
@@ -15,77 +15,92 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
-// TODO Add support for detecting fluid contents
-
 /** Utility class for defining a predicate for BlockStates */
-public class BlockPredicate implements Predicate<BlockState>
+public class BlockPredicate extends AbstractMatcherPredicate<BlockState>
 {
 	public static final Codec<BlockPredicate> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
 			Registries.BLOCK.getCodec().listOf().optionalFieldOf("blocks").forGetter(p -> listOrSolo(p.blocks).getLeft()),
 			Registries.BLOCK.getCodec().optionalFieldOf("block").forGetter(p -> listOrSolo(p.blocks).getRight()),
+			Registries.FLUID.getCodec().listOf().optionalFieldOf("fluids").forGetter(p -> listOrSolo(p.fluids).getLeft()),
+			Registries.FLUID.getCodec().optionalFieldOf("fluid").forGetter(p -> listOrSolo(p.fluids).getRight()),
 			BlockState.CODEC.listOf().optionalFieldOf("states").forGetter(p -> listOrSolo(p.blockStates).getLeft()),
 			BlockState.CODEC.optionalFieldOf("state").forGetter(p -> listOrSolo(p.blockStates).getRight()),
-			TagKey.codec(RegistryKeys.BLOCK).listOf().optionalFieldOf("tags").forGetter(p -> listOrSolo(p.blockTags).getLeft()),
-			TagKey.codec(RegistryKeys.BLOCK).optionalFieldOf("tag").forGetter(p -> listOrSolo(p.blockTags).getRight()),
+			TagKey.codec(RegistryKeys.BLOCK).listOf().optionalFieldOf("block_tags").forGetter(p -> listOrSolo(p.blockTags).getLeft()),
+			TagKey.codec(RegistryKeys.BLOCK).optionalFieldOf("block_tag").forGetter(p -> listOrSolo(p.blockTags).getRight()),
+			TagKey.codec(RegistryKeys.FLUID).listOf().optionalFieldOf("fluid_tags").forGetter(p -> listOrSolo(p.fluidTags).getLeft()),
+			TagKey.codec(RegistryKeys.FLUID).optionalFieldOf("fluid_tag").forGetter(p -> listOrSolo(p.fluidTags).getRight()),
 			Codec.STRING.listOf().optionalFieldOf("properties").forGetter(p -> listOrSolo(p.blockProperties).getLeft()),
 			Codec.STRING.optionalFieldOf("property").forGetter(p -> listOrSolo(p.blockProperties).getRight()),
 			PropertyMap.CODEC.listOf().optionalFieldOf("values").forGetter(p -> listOrSolo(p.blockValues).getLeft()),
 			PropertyMap.CODEC.optionalFieldOf("value").forGetter(p -> listOrSolo(p.blockValues).getRight()))
-				.apply(instance, (blockList, block, stateList, state, tagList, tag, propertyList, property, valueList, values) -> 
+				.apply(instance, (blockList, block, fluidList, fluid, stateList, state, blockTagList, blockTag, fluidTagList, fluidTag, propertyList, property, valueList, values) -> 
 				{
 					Builder builder = Builder.create();
 					blockList.ifPresent(l -> builder.addBlock(l.toArray(new Block[0])));
-					block.ifPresent(l -> builder.addBlock(l));
+					block.ifPresent(builder::addBlock);
+					
+					fluidList.ifPresent(l -> builder.addFluid(l.toArray(new Fluid[0])));
+					fluid.ifPresent(builder::addFluid);
 					
 					stateList.ifPresent(l -> builder.addBlockState(l.toArray(new BlockState[0])));
-					state.ifPresent(l -> builder.addBlockState(l));
+					state.ifPresent(builder::addBlockState);
 					
-					tagList.ifPresent(l -> builder.addBlockTags(l));
-					tag.ifPresent(l -> builder.addBlockTag(l));
+					blockTagList.ifPresent(builder::addBlockTags);
+					blockTag.ifPresent(builder::addBlockTag);
+					
+					fluidTagList.ifPresent(builder::addFluidTags);
+					fluidTag.ifPresent(builder::addFluidTag);
 					
 					propertyList.ifPresent(l -> builder.addBlockProperty(l.toArray(new String[0])));
-					property.ifPresent(l -> builder.addBlockProperty(l));
+					property.ifPresent(builder::addBlockProperty);
 					
 					valueList.ifPresent(l -> builder.addBlockValues(l.toArray(new PropertyMap[0])));
-					values.ifPresent(l -> builder.addBlockValues(l));
+					values.ifPresent(builder::addBlockValues);
 					return builder.build();
 				}));
 	
 	protected final Optional<List<Block>> blocks;
+	protected final Optional<List<Fluid>> fluids;
 	protected final Optional<List<BlockState>> blockStates;
 	protected final Optional<List<TagKey<Block>>> blockTags;
+	protected final Optional<List<TagKey<Fluid>>> fluidTags;
 	protected final Optional<List<String>> blockProperties;
 	protected final Optional<List<PropertyMap>> blockValues;
 	
-	/** List of type-specific ListMatcher objects for each internal Optional value */
-	protected final List<ListMatcher<BlockState, ?>> matchers;
-	
+	@SuppressWarnings("deprecation")
 	protected BlockPredicate(
 			Optional<List<Block>> blocksIn, 
+			Optional<List<Fluid>> fluidsIn,
 			Optional<List<BlockState>> statesIn, 
-			Optional<List<TagKey<Block>>> tagsIn, 
+			Optional<List<TagKey<Block>>> blockTagsIn, 
+			Optional<List<TagKey<Fluid>>> fluidTagsIn,
 			Optional<List<String>> blockPropertiesIn, 
 			Optional<List<PropertyMap>> blockValuesIn)
 	{
+		super(List.of(
+				new ListMatcher<BlockState, Block>(blocksIn, (state, stream) -> stream.anyMatch(b -> state.isOf(b))), 
+				new ListMatcher<BlockState, Fluid>(fluidsIn, (state, stream) -> stream.anyMatch(f -> state.getFluidState().getFluid().equals(f))),
+				new ListMatcher<BlockState, BlockState>(statesIn, (state, stream) -> stream.anyMatch(s -> state.equals(s))), 
+				new ListMatcher<BlockState, TagKey<Block>>(blockTagsIn, (state, stream) -> stream.anyMatch(t -> state.isIn(t))), 
+				new ListMatcher<BlockState, TagKey<Fluid>>(fluidTagsIn, (state, stream) -> stream.anyMatch(t -> state.getFluidState().getFluid().isIn(t))),
+				new ListMatcher<BlockState, String>(blockPropertiesIn, (state, stream) -> stream.allMatch(s -> state.getProperties().stream().anyMatch(p -> p.getName().equalsIgnoreCase(s)))),
+				new ListMatcher<BlockState, PropertyMap>(blockValuesIn, (state, stream) -> stream.anyMatch(map -> map.matches(state)))
+				));
 		blocks = blocksIn;
+		fluids = fluidsIn;
 		blockStates = statesIn;
-		blockTags = tagsIn;
+		blockTags = blockTagsIn;
+		fluidTags = fluidTagsIn;
 		blockProperties = blockPropertiesIn;
 		blockValues = blockValuesIn;
 		
-		matchers = List.of(
-				new ListMatcher<BlockState, Block>(blocks, (state, stream) -> stream.anyMatch(b -> state.isOf(b))), 
-				new ListMatcher<BlockState, BlockState>(blockStates, (state, stream) -> stream.anyMatch(s -> state.equals(s))), 
-				new ListMatcher<BlockState, TagKey<Block>>(blockTags, (state, stream) -> stream.anyMatch(t -> state.isIn(t))), 
-				new ListMatcher<BlockState, String>(blockProperties, (state, stream) -> stream.allMatch(s -> state.getProperties().stream().anyMatch(p -> p.getName().equalsIgnoreCase(s)))),
-				new ListMatcher<BlockState, PropertyMap>(blockValues, (state, stream) -> stream.anyMatch(map -> map.matches(state)))
-				);
 	}
 	
 	public JsonElement toJson()
@@ -108,21 +123,13 @@ public class BlockPredicate implements Predicate<BlockState>
 		return CODEC.parse(NbtOps.INSTANCE, nbt).getOrThrow();
 	}
 	
-	public boolean isEmpty()
-	{
-		return matchers.stream().allMatch(ListMatcher::isEmpty);
-	}
-	
-	public boolean test(BlockState currentState)
-	{
-		return !isEmpty() && matchers.stream().allMatch(v -> v.match(currentState));
-	}
-	
 	public static class Builder
 	{
 		List<Block> blocks = Lists.newArrayList();
+		List<Fluid> fluids = Lists.newArrayList();
 		List<BlockState> states = Lists.newArrayList();
-		List<TagKey<Block>> tags = Lists.newArrayList();
+		List<TagKey<Block>> blockTags = Lists.newArrayList();
+		List<TagKey<Fluid>> fluidTags = Lists.newArrayList();
 		List<String> blockProperties = Lists.newArrayList();
 		List<PropertyMap> blockValues = Lists.newArrayList();
 		
@@ -134,10 +141,20 @@ public class BlockPredicate implements Predicate<BlockState>
 		{
 			for(Block block : blocks)
 			{
-				this.blocks.removeIf(b -> b.equals(block));
+				this.blocks.removeIf(block::equals);
 				this.blocks.add(block);
 			}
 			
+			return this;
+		}
+		
+		public Builder addFluid(Fluid... fluids)
+		{
+			for(Fluid fluid : fluids)
+			{
+				this.fluids.removeIf(fluid::equals);
+				this.fluids.add(fluid);
+			}
 			return this;
 		}
 		
@@ -145,7 +162,7 @@ public class BlockPredicate implements Predicate<BlockState>
 		{
 			for(BlockState state : states)
 			{
-				this.states.removeIf(b -> b.equals(state));
+				this.states.removeIf(state::equals);
 				this.states.add(state);
 			}
 			
@@ -161,8 +178,23 @@ public class BlockPredicate implements Predicate<BlockState>
 		{
 			tagsIn.forEach(tag -> 
 			{
-				this.tags.removeIf(t -> t.equals(tag));
-				this.tags.add(tag);
+				this.blockTags.removeIf(tag::equals);
+				this.blockTags.add(tag);
+			});
+			return this;
+		}
+		
+		public Builder addFluidTag(TagKey<Fluid> tags)
+		{
+			return addFluidTags(List.of(tags));
+		}
+		
+		public Builder addFluidTags(List<TagKey<Fluid>> tagsIn)
+		{
+			tagsIn.forEach(tag -> 
+			{
+				this.fluidTags.removeIf(tag::equals);
+				this.fluidTags.add(tag);
 			});
 			return this;
 		}
@@ -183,18 +215,14 @@ public class BlockPredicate implements Predicate<BlockState>
 			return this;
 		}
 		
-		/** Returns an optional of the given list or an empty optional if it is empty */
-		private static <T extends Object> Optional<List<T>> orEmpty(List<T> list)
-		{
-			return list.isEmpty() ? Optional.empty() : Optional.of(list);
-		}
-		
 		public BlockPredicate build()
 		{
 			return new BlockPredicate(
 					orEmpty(blocks), 
+					orEmpty(fluids),
 					orEmpty(states),
-					orEmpty(tags),
+					orEmpty(blockTags),
+					orEmpty(fluidTags),
 					orEmpty(blockProperties),
 					orEmpty(blockValues));
 		}

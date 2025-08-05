@@ -8,7 +8,7 @@
         "search": {
           "capacity": 9,
           "looking_for": {
-            "tag": "#reclamation:cracked_concrete"
+            "block_tag": "#reclamation:cracked_concrete"
           }
         }
       },
@@ -16,8 +16,8 @@
     }
   },
   "condition": {
-    "id": "reclamation:is_block",
-    "tag": "#minecraft:concrete"
+    "block_tag": "#minecraft:concrete",
+    "id": "reclamation:is_block"
   },
   "function": {
     "id": "reclamation:macro",

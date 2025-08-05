@@ -26,12 +26,12 @@ public record BiomePredicate(List<RegistryKey<Biome>> biomeList, List<TagKey<Bio
 			).apply(instance, (biomes, biome, tags, tag) -> 
 			{
 				List<RegistryKey<Biome>> biomeList = Lists.newArrayList();
-				biomes.ifPresent(b -> biomeList.addAll(b));
-				biome.ifPresent(b -> biomeList.add(b));
+				biomes.ifPresent(biomeList::addAll);
+				biome.ifPresent(biomeList::add);
 				
 				List<TagKey<Biome>> tagList = Lists.newArrayList();
-				tags.ifPresent(t -> tagList.addAll(t));
-				tag.ifPresent(t -> tagList.add(t));
+				tags.ifPresent(tagList::addAll);
+				tag.ifPresent(tagList::add);
 				
 				return new BiomePredicate(biomeList, tagList);
 			}));

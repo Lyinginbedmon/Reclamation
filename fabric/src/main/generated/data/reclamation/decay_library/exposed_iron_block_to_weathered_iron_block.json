@@ -6,7 +6,7 @@
       "multiplier": {
         "search": {
           "looking_for": {
-            "tag": "#reclamation:rust_block"
+            "block_tag": "#reclamation:rust_block"
           },
           "range": 1
         },

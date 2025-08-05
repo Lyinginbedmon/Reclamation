@@ -2,6 +2,7 @@ package com.lying.decay.conditions;
 
 import java.util.Optional;
 
+import com.google.gson.JsonObject;
 import com.lying.decay.context.DecayContext;
 import com.lying.utility.ExteriorUtility;
 import com.lying.utility.RCUtils;
@@ -32,5 +33,17 @@ public class ConditionExposed extends DecayCondition
 		Optional<BlockPos> result = ExteriorUtility.isBlockInExterior(context.currentPos(), context.world.get(), range);
 		result.ifPresent(p -> context.flagExterior(p));
 		return result.isPresent();
+	}
+	
+	protected JsonObject write(JsonObject obj)
+	{
+		searchRange.ifPresent(i -> obj.addProperty("range", i));
+		return obj;
+	}
+	
+	protected void read(JsonObject obj)
+	{
+		if(obj.has("range"))
+			searchRange = Optional.of(obj.get("range").getAsInt());
 	}
 }

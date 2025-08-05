@@ -34,6 +34,20 @@
         {
           "id": "reclamation:is_humid",
           "value": 0.4
+        },
+        {
+          "bounds": {
+            "size": [
+              8,
+              8,
+              8
+            ]
+          },
+          "id": "reclamation:near_to",
+          "predicate": {
+            "fluid_tag": "#minecraft:water"
+          },
+          "threshold": 4
         }
       ]
     },
@@ -49,9 +63,9 @@
     },
     "reclamation:is_solid_block",
     {
+      "block_tag": "#reclamation:mold_impervious",
       "id": "reclamation:is_block",
-      "inverted": true,
-      "tag": "#reclamation:mold_impervious"
+      "inverted": true
     }
   ],
   "function": {

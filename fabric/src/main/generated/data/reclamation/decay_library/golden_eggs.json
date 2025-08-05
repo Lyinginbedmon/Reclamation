@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    {
+      "block": "minecraft:glass",
+      "id": "reclamation:is_block"
+    },
+    {
+      "bounds": {
+        "radius": 8.0
+      },
+      "id": "reclamation:near_entity",
+      "predicate": {
+        "type": "minecraft:chicken"
+      }
+    }
+  ],
+  "function": {
+    "convert_to": {
+      "block": "minecraft:gold_block"
+    },
+    "id": "reclamation:convert"
+  },
+  "name": "reclamation:golden_eggs"
+}

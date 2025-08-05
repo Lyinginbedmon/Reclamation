@@ -14,6 +14,7 @@ import com.lying.decay.conditions.ConditionClimate.IsWeather.Weather;
 import com.lying.decay.conditions.ConditionHasProperty;
 import com.lying.decay.conditions.ConditionIsBlock;
 import com.lying.decay.conditions.ConditionMacro;
+import com.lying.decay.conditions.ConditionNearTo;
 import com.lying.decay.conditions.ConditionNeighbouring;
 import com.lying.decay.conditions.ConditionPosition;
 import com.lying.decay.conditions.DecayCondition;
@@ -37,6 +38,7 @@ import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -77,7 +79,7 @@ public class DefaultDecayLibrary
 				.condition(ConditionIsBlock.of(Blocks.MOSSY_STONE_BRICKS))
 				.function(
 					FunctionConvert.toBlock(Blocks.MOSSY_STONE_BRICK_STAIRS),
-					FunctionBlockState.RandomValue.of(Properties.HORIZONTAL_FACING)).build());
+					FunctionBlockState.RandomValue.create().of(Properties.HORIZONTAL_FACING)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.15F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.MOSSY_STONE_BRICK_STAIRS).build()))
@@ -85,7 +87,7 @@ public class DefaultDecayLibrary
 				.condition(ConditionIsBlock.of(Blocks.MOSSY_STONE_BRICK_STAIRS))
 				.function(
 					FunctionConvert.toBlock(Blocks.MOSSY_STONE_BRICK_SLAB),
-					FunctionBlockState.RandomValue.of(Properties.SLAB_TYPE)).build());
+					FunctionBlockState.RandomValue.create().of(Properties.SLAB_TYPE, SlabType.BOTTOM, SlabType.TOP)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.15F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(Blocks.MOSSY_STONE_BRICK_SLAB).build()))
@@ -103,7 +105,7 @@ public class DefaultDecayLibrary
 				.condition(ConditionIsBlock.of(Blocks.CRACKED_STONE_BRICKS))
 				.function(
 					FunctionConvert.toBlock(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()),
-					FunctionBlockState.RandomValue.of(Properties.HORIZONTAL_FACING)).build());
+					FunctionBlockState.RandomValue.create().of(Properties.HORIZONTAL_FACING)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.4F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).searchRange(4).blockCap(9).blocks(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()).build()))
@@ -111,7 +113,7 @@ public class DefaultDecayLibrary
 				.condition(ConditionIsBlock.of(RCBlocks.CRACKED_STONE_BRICK_STAIRS.get()))
 				.function(
 					FunctionConvert.toBlock(RCBlocks.CRACKED_STONE_BRICK_SLAB.get()),
-					FunctionBlockState.RandomValue.of(Properties.SLAB_TYPE)).build());
+					FunctionBlockState.RandomValue.create().of(Properties.SLAB_TYPE, SlabType.BOTTOM, SlabType.TOP)).build());
 		register(DecayEntry.Builder.create(
 				DecayChance.base(0.4F)
 					.addModifier(Operation.ADD_MULTIPLIED_TOTAL, BlockSaturationCalculator.Builder.create().min(0.1F).power(0.2F).blockCap(9).blocks(RCBlocks.CRACKED_STONE_BRICK_SLAB.get()).build()))
@@ -367,8 +369,8 @@ public class DefaultDecayLibrary
 					RCDecayConditions.EXPOSED.get().invert().named("indoors"),
 					ConditionClimate.Temperature.of(0.5F).named("warmth_check"),
 					ConditionBoolean.Or.of(
-						ConditionClimate.Humidity.of(0.4F)
-						// TODO Add block area check for water
+						ConditionClimate.Humidity.of(0.4F),
+						ConditionNearTo.create().predicate(BlockPredicate.Builder.create().addFluidTag(FluidTags.WATER).build()).bounds(8, 8, 8).threshold(4)
 						).named("moisture_check"),
 					ConditionNeighbouring.Uncovered.face(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN),
 					RCDecayConditions.IS_SOLID.get(),
@@ -400,5 +402,12 @@ public class DefaultDecayLibrary
 					RCDecayConditions.UNCOVERED.get(),
 					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
 				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
+		
+//		register(DecayEntry.Builder.create()
+//				.name("golden_eggs")
+//				.condition(
+//					ConditionIsBlock.of(Blocks.GLASS),
+//					ConditionNearTo.Ent.create().predicate(EntityPredicate.Builder.create().add(EntityType.CHICKEN).build()).bounds(8))
+//				.function(FunctionConvert.toBlock(Blocks.GOLD_BLOCK)).build());
 	}
 }

@@ -41,4 +41,10 @@ public class RCUtils
 			return distA < distB ? -1 : distA > distB ? 1 : 0;
 		};
 	}
+	
+	/** Returns an optional of the given list or an empty optional if it is empty */
+	public static <T extends Object> Optional<List<T>> orEmpty(List<T> list)
+	{
+		return list.isEmpty() ? Optional.empty() : Optional.of(list);
+	}
 }

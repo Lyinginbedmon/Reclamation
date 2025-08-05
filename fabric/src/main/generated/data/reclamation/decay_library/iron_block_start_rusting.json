@@ -7,7 +7,7 @@
         "search": {
           "capacity": 3,
           "looking_for": {
-            "tag": "#reclamation:rust_block"
+            "block_tag": "#reclamation:rust_block"
           },
           "range": 2
         },
@@ -27,7 +27,7 @@
         {
           "id": "reclamation:adjacent_to",
           "look_for": {
-            "tag": "#reclamation:rust_block"
+            "block_tag": "#reclamation:rust_block"
           }
         },
         {

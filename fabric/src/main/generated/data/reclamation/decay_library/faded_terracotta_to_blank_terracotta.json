@@ -7,7 +7,7 @@
         "search": {
           "capacity": 10,
           "looking_for": {
-            "tag": "#reclamation:faded_terracotta"
+            "block_tag": "#reclamation:faded_terracotta"
           },
           "range": 2
         },
@@ -19,8 +19,8 @@
   "conditions": [
     "reclamation:uncovered",
     {
-      "id": "reclamation:is_block",
-      "tag": "#reclamation:faded_terracotta"
+      "block_tag": "#reclamation:faded_terracotta",
+      "id": "reclamation:is_block"
     }
   ],
   "function": {

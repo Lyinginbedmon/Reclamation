@@ -7,7 +7,7 @@
         "search": {
           "capacity": 9,
           "looking_for": {
-            "tag": "#reclamation:cracked_concrete"
+            "block_tag": "#reclamation:cracked_concrete"
           }
         }
       },
@@ -16,8 +16,8 @@
   },
   "conditions": [
     {
-      "id": "reclamation:is_block",
-      "tag": "#reclamation:cracked_concrete"
+      "block_tag": "#reclamation:cracked_concrete",
+      "id": "reclamation:is_block"
     },
     {
       "id": "reclamation:is_block",
