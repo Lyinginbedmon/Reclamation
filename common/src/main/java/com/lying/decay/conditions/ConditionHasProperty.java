@@ -22,7 +22,7 @@ public class ConditionHasProperty extends DecayCondition
 	
 	public static <T extends Comparable<T>> ConditionHasProperty of(Map<Property<T>, T> valuesIn)
 	{
-		ConditionHasProperty condition = (ConditionHasProperty)RCDecayConditions.HAS_PROPERTY.get();
+		ConditionHasProperty condition = RCDecayConditions.HAS_PROPERTY.get();
 		for(Entry<Property<T>, T> entry : valuesIn.entrySet())
 			condition.map.put(entry.getKey(), entry.getValue());
 		

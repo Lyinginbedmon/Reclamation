@@ -103,7 +103,7 @@ public abstract class ConditionClimate extends DecayCondition
 		
 		public static IsWeather of(Weather weatherIn)
 		{
-			IsWeather condition = (IsWeather)RCDecayConditions.IS_WEATHER.get();
+			IsWeather condition = RCDecayConditions.IS_WEATHER.get();
 			condition.weather = Optional.of(weatherIn);
 			return condition;
 		}
@@ -171,7 +171,7 @@ public abstract class ConditionClimate extends DecayCondition
 		
 		public static IsBiome create()
 		{
-			return (IsBiome)RCDecayConditions.IN_BIOME.get();
+			return RCDecayConditions.IN_BIOME.get();
 		}
 		
 		public IsBiome addBiome(RegistryKey<Biome> biome)
@@ -269,14 +269,14 @@ public abstract class ConditionClimate extends DecayCondition
 		
 		public static Temperature of(float value)
 		{
-			Temperature condition = (Temperature)RCDecayConditions.TEMPERATURE.get();
+			Temperature condition = RCDecayConditions.TEMPERATURE.get();
 			condition.getter = Optional.of(value);
 			return condition;
 		}
 		
 		public static Temperature of(float value, Comparison operation)
 		{
-			Temperature condition = (Temperature)RCDecayConditions.TEMPERATURE.get();
+			Temperature condition = RCDecayConditions.TEMPERATURE.get();
 			condition.getter = Optional.of(value);
 			condition.comp = Optional.of(operation);
 			return condition;
@@ -292,14 +292,14 @@ public abstract class ConditionClimate extends DecayCondition
 		
 		public static Humidity of(float value)
 		{
-			Humidity condition = (Humidity)RCDecayConditions.HUMIDITY.get();
+			Humidity condition = RCDecayConditions.HUMIDITY.get();
 			condition.getter = Optional.of(value);
 			return condition;
 		}
 		
 		public static Humidity of(float value, Comparison operation)
 		{
-			Humidity condition = (Humidity)RCDecayConditions.HUMIDITY.get();
+			Humidity condition = RCDecayConditions.HUMIDITY.get();
 			condition.getter = Optional.of(value);
 			condition.comp = Optional.of(operation);
 			return condition;

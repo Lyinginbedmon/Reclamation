@@ -9,7 +9,6 @@ import com.lying.Reclamation;
 import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
 import com.lying.utility.BlockPredicate;
-import com.lying.utility.BlockPredicate.Builder;
 import com.lying.utility.RCUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
@@ -109,43 +108,27 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		
 		public static Blocks of(Block... target)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
-			Builder builder = BlockPredicate.Builder.create();
-			builder.addBlock(target);
-			inst.predicate = builder.build();
-			return inst;
+			return of(BlockPredicate.Builder.create().addBlock(target).build());
 		}
 		
 		public static Blocks of(BlockState... target)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
-			Builder builder = BlockPredicate.Builder.create();
-			builder.addBlockState(target);
-			inst.predicate = builder.build();
-			return inst;
+			return of(BlockPredicate.Builder.create().addBlockState(target).build());
 		}
 		
 		public static Blocks of(TagKey<Block> target)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
-			Builder builder = BlockPredicate.Builder.create();
-			builder.addBlockTag(target);
-			inst.predicate = builder.build();
-			return inst;
+			return of(BlockPredicate.Builder.create().addBlockTag(target).build());
 		}
 		
 		public static Blocks of(List<TagKey<Block>> target)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
-			Builder builder = BlockPredicate.Builder.create();
-			builder.addBlockTags(target);
-			inst.predicate = builder.build();
-			return inst;
+			return of(BlockPredicate.Builder.create().addBlockTags(target).build());
 		}
 		
 		public static Blocks of(BlockPredicate predicate)
 		{
-			Blocks inst = (Blocks)RCDecayConditions.ADJACENT_TO.get();
+			Blocks inst = RCDecayConditions.ADJACENT_TO.get();
 			inst.predicate = predicate;
 			return inst;
 		}
@@ -184,11 +167,11 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			super(idIn);
 		}
 		
-		public static Supported create() { return (Supported)RCDecayConditions.SUPPORTED.get(); }
+		public static Supported create() { return RCDecayConditions.SUPPORTED.get(); }
 		
 		public static Supported onFaces(Direction... facesIn)
 		{
-			Supported condition = (Supported)RCDecayConditions.SUPPORTED.get();
+			Supported condition = create();
 			condition.faces(facesIn);
 			return condition;
 		}
@@ -221,7 +204,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 			super(idIn);
 		}
 		
-		public static Unsupported create() { return (Unsupported)RCDecayConditions.UNSUPPORTED.get(); }
+		public static Unsupported create() { return RCDecayConditions.UNSUPPORTED.get(); }
 		
 		protected boolean isMatch(BlockState state, BlockPos neighbour, Direction face, BlockPos pos, ServerWorld world)
 		{
@@ -238,7 +221,7 @@ public abstract class ConditionNeighbouring extends DecayCondition
 		
 		public static Uncovered face(Direction... facesIn)
 		{
-			Uncovered condition = (Uncovered)RCDecayConditions.UNCOVERED.get();
+			Uncovered condition = RCDecayConditions.UNCOVERED.get();
 			EnumSet<Direction> faces = EnumSet.noneOf(Direction.class);
 			faces.addAll(List.of(facesIn));
 			condition.data = new NeighbourData(Optional.of(faces), condition.data.threshold());

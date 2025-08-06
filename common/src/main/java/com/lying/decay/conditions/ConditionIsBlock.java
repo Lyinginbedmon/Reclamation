@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
 import com.lying.utility.BlockPredicate;
-import com.lying.utility.BlockPredicate.Builder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
@@ -38,38 +37,22 @@ public class ConditionIsBlock extends DecayCondition
 	
 	public static DecayCondition of(Block... target)
 	{
-		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
-		Builder builder = BlockPredicate.Builder.create();
-		builder.addBlock(target);
-		inst.predicate = builder.build();
-		return inst;
+		return of(BlockPredicate.Builder.create().addBlock(target).build());
 	}
 	
 	public static DecayCondition of(BlockState... target)
 	{
-		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
-		Builder builder = BlockPredicate.Builder.create();
-		builder.addBlockState(target);
-		inst.predicate = builder.build();
-		return inst;
+		return of(BlockPredicate.Builder.create().addBlockState(target).build());
 	}
 	
 	public static DecayCondition of(TagKey<Block> target)
 	{
-		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
-		Builder builder = BlockPredicate.Builder.create();
-		builder.addBlockTag(target);
-		inst.predicate = builder.build();
-		return inst;
+		return of(BlockPredicate.Builder.create().addBlockTag(target).build());
 	}
 	
 	public static DecayCondition of(List<TagKey<Block>> target)
 	{
-		ConditionIsBlock inst = (ConditionIsBlock)RCDecayConditions.IS_BLOCK.get();
-		Builder builder = BlockPredicate.Builder.create();
-		builder.addBlockTags(target);
-		inst.predicate = builder.build();
-		return inst;
+		return of(BlockPredicate.Builder.create().addBlockTags(target).build());
 	}
 	
 	public static DecayCondition of(BlockPredicate predicate)
@@ -128,7 +111,7 @@ public class ConditionIsBlock extends DecayCondition
 		
 		public static Solid onFace(Direction... facesIn)
 		{
-			Solid condition = (Solid)RCDecayConditions.IS_SOLID.get();
+			Solid condition = RCDecayConditions.IS_SOLID.get();
 
 			EnumSet<Direction> set = EnumSet.noneOf(Direction.class);
 			for(Direction face : facesIn)

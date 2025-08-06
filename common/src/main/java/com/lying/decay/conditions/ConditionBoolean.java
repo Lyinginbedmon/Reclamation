@@ -58,7 +58,7 @@ public abstract class ConditionBoolean extends DecayCondition
 		
 		public static ConditionBoolean of(DecayCondition... conditionsIn)
 		{
-			return ((ConditionBoolean)RCDecayConditions.OR.get()).addAll(conditionsIn);
+			return RCDecayConditions.OR.get().addAll(conditionsIn);
 		}
 		
 		protected boolean check(DecayContext context)
@@ -76,7 +76,7 @@ public abstract class ConditionBoolean extends DecayCondition
 		
 		public static ConditionBoolean of(DecayCondition... conditionsIn)
 		{
-			return ((ConditionBoolean)RCDecayConditions.AND.get()).addAll(conditionsIn);
+			return RCDecayConditions.AND.get().addAll(conditionsIn);
 		}
 		
 		protected boolean check(DecayContext context)

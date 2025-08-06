@@ -33,7 +33,7 @@ public class ConditionPosition extends DecayCondition
 	
 	public static ConditionPosition of(PositionPredicate predicateIn)
 	{
-		ConditionPosition condition = (ConditionPosition)RCDecayConditions.WORLD_POSITION.get();
+		ConditionPosition condition = RCDecayConditions.WORLD_POSITION.get();
 		condition.predicate = predicateIn;
 		return condition;
 	}
@@ -66,7 +66,7 @@ public class ConditionPosition extends DecayCondition
 		
 		public static Dimension of(RegistryKey<World> dimIn)
 		{
-			Dimension condition = (Dimension)RCDecayConditions.DIMENSION.get();
+			Dimension condition = RCDecayConditions.DIMENSION.get();
 			condition.dimension = dimIn;
 			return condition;
 		}
@@ -100,14 +100,14 @@ public class ConditionPosition extends DecayCondition
 		
 		public static Altitude of(int thresholdIn)
 		{
-			Altitude condition = (Altitude)RCDecayConditions.ALTITUDE.get();
+			Altitude condition = RCDecayConditions.ALTITUDE.get();
 			condition.threshold = Optional.of(Math.abs(thresholdIn));
 			return condition;
 		}
 		
 		public static Altitude of(int thresholdIn, Comparison operationIn)
 		{
-			Altitude condition = (Altitude)RCDecayConditions.ALTITUDE.get();
+			Altitude condition = RCDecayConditions.ALTITUDE.get();
 			condition.threshold = Optional.of(Math.abs(thresholdIn));
 			condition.operation = Optional.of(operationIn);
 			return condition;
@@ -197,7 +197,7 @@ public class ConditionPosition extends DecayCondition
 			super(idIn);
 		}
 		
-		public static Light create() { return (Light)RCDecayConditions.LIGHT.get(); }
+		public static Light create() { return RCDecayConditions.LIGHT.get(); }
 		
 		public Light type(Type typeIn)
 		{

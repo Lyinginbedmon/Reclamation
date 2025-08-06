@@ -24,7 +24,7 @@ public class ConditionMacro extends DecayCondition
 	
 	public static ConditionMacro of(Identifier... macroIDs)
 	{
-		ConditionMacro condition = (ConditionMacro)RCDecayConditions.MACRO.get();
+		ConditionMacro condition = RCDecayConditions.MACRO.get();
 		List<Identifier> ids = Lists.newArrayList();
 		for(Identifier id : macroIDs)
 			ids.add(id);
