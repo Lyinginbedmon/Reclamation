@@ -84,7 +84,7 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 	
 	private void addRottenFruitDrops(Block block, Item seeds)
 	{
-		addDrop(RCBlocks.ROTTEN_MELON.get(), LootTable.builder()
+		addDrop(block, LootTable.builder()
 				.pool(LootPool.builder().with(ItemEntry.builder(block).conditionally(createSilkTouchCondition())))
 				.pool(LootPool.builder().with(ItemEntry.builder(seeds).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0, 3))).conditionally(createWithoutSilkTouchCondition()))));
 	}

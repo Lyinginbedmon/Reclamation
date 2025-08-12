@@ -136,7 +136,9 @@ public final class Reclamation
 	 */
 	public static Optional<DecayContext> tryToDecay(ServerWorld world, DecayContext context)
 	{
-		if(context.isRoot()) return Optional.empty();
+		if(context.isRoot())
+			return Optional.empty();
+		
 		BlockPos pos = context.initialPos;
 		if(!canBlockDecay(pos, world, Optional.empty()))
 			return Optional.empty();
@@ -146,6 +148,9 @@ public final class Reclamation
 			return Optional.empty();
 		
 		List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(context);
+		if(decayOptions.isEmpty())
+			return Optional.empty();
+		
 		DecayEntry decay = decayOptions.size() > 1 ? decayOptions.get(context.random.nextInt(decayOptions.size())) : decayOptions.get(0);
 		return decay(world, decay, context);
 	}

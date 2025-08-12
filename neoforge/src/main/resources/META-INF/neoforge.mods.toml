@@ -5,13 +5,16 @@ license = "CC0-1.0"
 
 [[mods]]
 modId = "reclamation"
-version = "0.6"
+version = "0.8.1"
 displayName = "Reclamation"
 authors = "Lying"
 description = '''
 Adding more life to Minecraft through configurable decay processes
 '''
 #logoFile = "icon.png"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
 
 [[dependencies.reclamation]]
 modId = "neoforge"

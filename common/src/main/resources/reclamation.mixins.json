@@ -9,8 +9,7 @@
 	"SpriteAtlasManagerMixin"
   ],
   "mixins": [
-	"AccessorBiome",
-	"InvokerBlockEntityType"
+	"AccessorBiome"
   ],
   "injectors": {
     "defaultRequire": 1

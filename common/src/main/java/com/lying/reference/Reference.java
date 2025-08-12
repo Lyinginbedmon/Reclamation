@@ -11,7 +11,7 @@ public class Reference
 		public static final String MOD_ID	= "reclamation";
 		public static final String MOD_PREFIX	= MOD_ID + ":";
 		
-		public static final String VERSION	= "0.8";
+		public static final String VERSION	= "0.8.1";
 		
 		public static final String LEAD_DEV	= "_Lying";
 		

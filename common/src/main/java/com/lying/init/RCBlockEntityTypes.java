@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.lying.Reclamation;
 import com.lying.block.entity.RaggedBannerBlockEntity;
-import com.lying.mixin.InvokerBlockEntityType;
 import com.lying.reference.Reference;
 
 import dev.architectury.registry.registries.DeferredRegister;
@@ -56,7 +55,7 @@ public class RCBlockEntityTypes
 	private static <T extends BlockEntity> RegistrySupplier<BlockEntityType<T>> register(String nameIn, BlockEntityType.BlockEntityFactory<? extends T> supplierIn, Block... blocksIn)
 	{
 		tally++;
-		return TYPES.register(prefix(nameIn), () -> InvokerBlockEntityType.create(supplierIn, Set.of(blocksIn)));
+		return TYPES.register(prefix(nameIn), () -> new BlockEntityType<>(supplierIn, Set.of(blocksIn)));
 	}
 	
 	public static void init()
