@@ -10,6 +10,7 @@ import com.lying.block.LeafPileBlock;
 import com.lying.block.RubbleBlock;
 import com.lying.block.SootBlock;
 import com.lying.init.RCBlocks;
+import com.lying.init.RCItems;
 import com.lying.init.RCBlocks.Terracotta;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -78,8 +79,17 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 		addRubbleDrops(RCBlocks.STONE_RUBBLE.get());
 		addRubbleDrops(RCBlocks.DEEPSLATE_RUBBLE.get());
 		addRottenFruitDrops(RCBlocks.ROTTEN_MELON.get(), Items.MELON_SEEDS);
+		addBrokenGlassDrops(RCBlocks.BROKEN_GLASS.get(), RCItems.GLASS_SHARD.get());
+		RCBlocks.DYE_TO_GLASS.entrySet().forEach(entry -> addBrokenGlassDrops(entry.getValue().broken().get(), RCItems.DYE_TO_SHARD.get(entry.getKey()).get()));
 		for(Block pumpkin : new Block[] {RCBlocks.ROTTEN_PUMPKIN.get(), RCBlocks.ROTTEN_CARVED_PUMPKIN.get(), RCBlocks.ROTTEN_JACK_O_LANTERN.get()})
 			addRottenFruitDrops(pumpkin, Items.PUMPKIN_SEEDS);
+	}
+	
+	private void addBrokenGlassDrops(Block block, Item shards)
+	{
+		addDrop(block, LootTable.builder()
+				.pool(LootPool.builder().with(ItemEntry.builder(block).conditionally(createSilkTouchCondition())))
+				.pool(LootPool.builder().with(ItemEntry.builder(shards).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0, 3))).conditionally(createWithoutSilkTouchCondition()))));
 	}
 	
 	private void addRottenFruitDrops(Block block, Item seeds)

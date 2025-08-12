@@ -37,6 +37,8 @@ public class RCBlockEntityTypes
 			RCBlocks.LIGHT_BLUE_RAGGED_WALL_BANNER.get(),
 			RCBlocks.LIGHT_GRAY_RAGGED_BANNER.get(),
 			RCBlocks.LIGHT_GRAY_RAGGED_WALL_BANNER.get(),
+			RCBlocks.LIME_RAGGED_BANNER.get(),
+			RCBlocks.LIME_RAGGED_WALL_BANNER.get(),
 			RCBlocks.MAGENTA_RAGGED_BANNER.get(),
 			RCBlocks.MAGENTA_RAGGED_WALL_BANNER.get(),
 			RCBlocks.ORANGE_RAGGED_BANNER.get(),

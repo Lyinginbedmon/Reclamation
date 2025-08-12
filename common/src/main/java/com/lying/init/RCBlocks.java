@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
+import com.lying.block.BrokenGlassBlock;
 import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedLanternBlock;
 import com.lying.block.DousedTorchBlock;
@@ -56,6 +57,7 @@ public class RCBlocks
 	
 	public static final Map<DyeColor, Terracotta> DYE_TO_TERRACOTTA = new HashMap<>();
 	public static final Map<DyeColor, Concrete> DYE_TO_CONCRETE = new HashMap<>();
+	public static final Map<DyeColor, Glass> DYE_TO_GLASS = new HashMap<>();
 	public static final Map<DyeColor, RegistrySupplier<Block>> DYE_TO_RAGGED_BANNER = new HashMap<>();
 	
 	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank)
@@ -65,6 +67,10 @@ public class RCBlocks
 	public static record Concrete(Supplier<Block> dry, Supplier<Block> cracked, Supplier<Block> powder)
 	{
 		public static Concrete of(Block dry, Supplier<Block> cracked, Block powder) { return new Concrete(() -> dry, cracked, () -> powder); }
+	}
+	public static record Glass(Supplier<Block> intact, Supplier<Block> broken)
+	{
+		public static Glass of(Supplier<Block> cracked, Block intact) { return new Glass(() -> intact, cracked); }
 	}
 	
 	public static final RegistrySupplier<Block> WAXED_IRON_BLOCK		= registerSolidCube("waxed_iron_block", settings -> new ScrapeableBlock(() -> Blocks.IRON_BLOCK, settings.mapColor(MapColor.IRON_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresTool().strength(5F, 6F).sounds(BlockSoundGroup.METAL)));
@@ -132,6 +138,24 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> CRACKED_WHITE_CONCRETE		= registerCrackedConcrete(DyeColor.WHITE);
 	public static final RegistrySupplier<Block> CRACKED_YELLOW_CONCRETE		= registerCrackedConcrete(DyeColor.YELLOW);
 	
+	public static final RegistrySupplier<Block> BROKEN_GLASS				= register("broken_glass", settings -> new BrokenGlassBlock(settings.noCollision().pistonBehavior(PistonBehavior.DESTROY).nonOpaque().strength(0.1F).sounds(BlockSoundGroup.GLASS).allowsSpawning(RCBlocks::never).suffocates(RCBlocks::never).blockVision(RCBlocks::never)));
+	public static final RegistrySupplier<Block> BROKEN_BLACK_GLASS			= registerBrokenGlass(DyeColor.BLACK, Blocks.BLACK_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_BLUE_GLASS			= registerBrokenGlass(DyeColor.BLUE, Blocks.BLUE_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_BROWN_GLASS			= registerBrokenGlass(DyeColor.BROWN, Blocks.BROWN_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_CYAN_GLASS			= registerBrokenGlass(DyeColor.CYAN, Blocks.CYAN_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_GRAY_GLASS			= registerBrokenGlass(DyeColor.GRAY, Blocks.GRAY_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_GREEN_GLASS			= registerBrokenGlass(DyeColor.GREEN, Blocks.GREEN_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_LIGHT_BLUE_GLASS		= registerBrokenGlass(DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_LIGHT_GRAY_GLASS		= registerBrokenGlass(DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_LIME_GLASS			= registerBrokenGlass(DyeColor.LIME, Blocks.LIME_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_MAGENTA_GLASS		= registerBrokenGlass(DyeColor.MAGENTA, Blocks.MAGENTA_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_ORANGE_GLASS			= registerBrokenGlass(DyeColor.ORANGE, Blocks.ORANGE_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_PINK_GLASS			= registerBrokenGlass(DyeColor.PINK, Blocks.PINK_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_PURPLE_GLASS			= registerBrokenGlass(DyeColor.PURPLE, Blocks.PURPLE_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_RED_GLASS			= registerBrokenGlass(DyeColor.RED, Blocks.RED_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_WHITE_GLASS			= registerBrokenGlass(DyeColor.WHITE, Blocks.WHITE_STAINED_GLASS);
+	public static final RegistrySupplier<Block> BROKEN_YELLOW_GLASS			= registerBrokenGlass(DyeColor.YELLOW, Blocks.YELLOW_STAINED_GLASS);
+	
 	public static final RegistrySupplier<Block> DOUSED_TORCH				= register("doused_torch", settings -> new DousedTorchBlock(Blocks.TORCH, Blocks.WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_SOUL_TORCH			= register("doused_soul_torch", settings -> new DousedTorchBlock(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_LANTERN				= register("doused_lantern", settings -> new DousedLanternBlock(() -> Blocks.LANTERN, settings.mapColor(MapColor.IRON_GRAY).solid().strength(3.5F).sounds(BlockSoundGroup.LANTERN).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
@@ -198,6 +222,22 @@ public class RCBlocks
 				.burnable()));
 	}
 	
+	private static RegistrySupplier<Block> registerBrokenGlass(DyeColor color, Block intact)
+	{
+		RegistrySupplier<Block> brokenGlass = register("broken_"+color.asString()+"_glass", settings -> new BrokenGlassBlock(settings
+				.mapColor(color)
+				.noCollision()
+				.pistonBehavior(PistonBehavior.DESTROY)
+				.nonOpaque()
+				.strength(0.1F)
+				.sounds(BlockSoundGroup.GLASS)
+				.allowsSpawning(RCBlocks::never)
+				.suffocates(RCBlocks::never)
+				.blockVision(RCBlocks::never)));
+		DYE_TO_GLASS.put(color, Glass.of(brokenGlass, intact));
+		return brokenGlass;
+	}
+	
 	private static RegistrySupplier<Block> registerLeafPile(WoodType typeIn)
 	{
 		RegistrySupplier<Block> registry = register(typeIn.asString()+"_leaf_pile", settings -> 
@@ -252,6 +292,13 @@ public class RCBlocks
 	}
 	
 	private static Boolean always(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) { return true; }
+	
+	@SuppressWarnings("unused")
+	private static Boolean always(BlockState state, BlockView world, BlockPos pos) { return true; }
+	
+	private static Boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) { return false; }
+	
+	private static Boolean never(BlockState state, BlockView world, BlockPos pos) { return false; }
 	
 	public static void init()
 	{

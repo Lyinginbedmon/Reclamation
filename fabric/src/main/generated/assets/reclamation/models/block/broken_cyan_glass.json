@@ -1,0 +1,7 @@
+{
+  "parent": "reclamation:block/template_broken_glass",
+  "textures": {
+    "bottom": "minecraft:block/cyan_stained_glass",
+    "side": "reclamation:block/broken_cyan_glass_side"
+  }
+}

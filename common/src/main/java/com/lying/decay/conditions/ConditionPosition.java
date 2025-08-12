@@ -61,7 +61,7 @@ public class ConditionPosition extends DecayCondition
 		
 		public Dimension(Identifier idIn)
 		{
-			super(idIn);
+			super(idIn, -20);
 		}
 		
 		public static Dimension of(RegistryKey<World> dimIn)
@@ -194,7 +194,7 @@ public class ConditionPosition extends DecayCondition
 		
 		public Light(Identifier idIn)
 		{
-			super(idIn);
+			super(idIn, -5);
 		}
 		
 		public static Light create() { return RCDecayConditions.LIGHT.get(); }

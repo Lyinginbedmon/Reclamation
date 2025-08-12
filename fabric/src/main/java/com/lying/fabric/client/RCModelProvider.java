@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedTorchBlock;
@@ -49,6 +50,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
 
 public class RCModelProvider extends FabricModelProvider
 {
@@ -115,6 +117,8 @@ public class RCModelProvider extends FabricModelProvider
 		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
 		Mold.makeBlockState(RCBlocks.MOLD.get(), RCItems.MOLD.get(), blockStateModelGenerator);
 		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
+		BrokenGlass.register(RCBlocks.BROKEN_GLASS.get(), Blocks.GLASS, blockStateModelGenerator);
+		RCBlocks.DYE_TO_GLASS.values().forEach(g -> BrokenGlass.register(g.broken().get(), g.intact().get(), blockStateModelGenerator));
 	}
 	
 	public void generateItemModels(ItemModelGenerator itemModelGenerator)
@@ -122,6 +126,8 @@ public class RCModelProvider extends FabricModelProvider
 		RCItems.BASIC_BLOCK_ITEMS.stream().map(e -> (BlockItem)e.get()).forEach(entry -> registerBlockModel(entry, itemModelGenerator));
 		itemModelGenerator.register(RCItems.WITHERING_DUST.get(), Models.GENERATED);
 		itemModelGenerator.register(RCItems.DEACTIVATOR.get(), Models.HANDHELD_ROD);
+		itemModelGenerator.register(RCItems.GLASS_SHARD.get(), Models.GENERATED);
+		RCItems.DYE_TO_SHARD.values().stream().map(Supplier::get).forEach(s -> itemModelGenerator.register(s, Models.GENERATED));
 	}
 	
 	private static void registerBlockModel(BlockItem item, ItemModelGenerator itemModelGenerator)
@@ -170,6 +176,50 @@ public class RCModelProvider extends FabricModelProvider
 		return BlockStateVariantMap.create(property)
 			.register(true, BlockStateVariant.create().put(VariantSettings.MODEL, trueModel))
 			.register(false, BlockStateVariant.create().put(VariantSettings.MODEL, falseModel));
+	}
+	
+	private static class BrokenGlass
+	{
+		public static final Model TEMPLATE_BROKEN = new Model(
+				Optional.of(prefix("block/template_broken_glass")),
+				Optional.empty(),
+				TextureKey.BOTTOM, TextureKey.SIDE);
+		
+		private static void register(Block broken, Block intact, BlockStateModelGenerator generator)
+		{
+			Identifier brokenID = ModelIds.getBlockModelId(broken);
+			Identifier intactID = ModelIds.getBlockModelId(intact);
+			
+			Identifier sideModel = TEMPLATE_BROKEN.upload(broken, new TextureMap().put(TextureKey.BOTTOM, intactID).put(TextureKey.SIDE, Identifier.of(brokenID.getNamespace(), brokenID.getPath()+"_side")), generator.modelCollector);
+			MultipartBlockStateSupplier map = MultipartBlockStateSupplier.create(broken);
+			for(Direction face : Direction.values())
+				map.with(When.create().set(MultifaceBlock.getProperty(face), true), List.of(forFace(sideModel, face)));
+			generator.blockStateCollector.accept(map);
+			generator.registerParentedItemModel(broken, sideModel);
+		}
+		
+		private static BlockStateVariant forFace(Identifier sideModel, Direction face)
+		{
+			BlockStateVariant variant = BlockStateVariant.create().put(VariantSettings.MODEL, sideModel);
+			if(face.getAxis() != Axis.Y)
+				variant.put(VariantSettings.X, VariantSettings.Rotation.R90);
+			switch(face)
+			{
+				case SOUTH:
+					return variant;
+				case WEST:
+					return variant.put(VariantSettings.Y, VariantSettings.Rotation.R90);
+				case NORTH:
+					return variant.put(VariantSettings.Y, VariantSettings.Rotation.R180);
+				case EAST:
+					return variant.put(VariantSettings.Y, VariantSettings.Rotation.R270);
+				case UP:
+					return variant.put(VariantSettings.X, VariantSettings.Rotation.R180);
+				case DOWN:
+				default:
+					return variant;
+			}
+		}
 	}
 	
 	private static class DousedLights

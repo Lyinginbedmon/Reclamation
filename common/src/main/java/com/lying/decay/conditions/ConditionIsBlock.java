@@ -27,7 +27,7 @@ public class ConditionIsBlock extends DecayCondition
 	
 	public ConditionIsBlock(Identifier idIn)
 	{
-		super(idIn);
+		super(idIn, -10);
 	}
 	
 	protected boolean check(DecayContext context)

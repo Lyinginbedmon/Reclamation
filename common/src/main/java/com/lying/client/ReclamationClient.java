@@ -34,7 +34,7 @@ public class ReclamationClient
 	
 	private static void registerRenderers()
 	{
-		RenderTypeRegistry.register(RenderLayer.getCutout(), RCBlocks.IVY.get(), RCBlocks.MOLD.get());
+		RenderTypeRegistry.register(RenderLayer.getCutout(), RCBlocks.IVY.get(), RCBlocks.MOLD.get(), RCBlocks.BROKEN_GLASS.get());
 		RenderTypeRegistry.register(RenderLayer.getCutoutMipped(), LeafPileBlock.LEAF_PILE_TO_LEAVES.keySet().stream().toList().toArray(new Block[0]));
 	}
 	

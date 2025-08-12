@@ -23,7 +23,7 @@
               }
             }
           ],
-          "name": "reclamation:rotten_jack_o_lantern"
+          "name": "reclamation:rotten_melon"
         }
       ],
       "rolls": 1.0
@@ -64,7 +64,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:pumpkin_seeds"
+          "name": "minecraft:melon_seeds"
         }
       ],
       "rolls": 1.0

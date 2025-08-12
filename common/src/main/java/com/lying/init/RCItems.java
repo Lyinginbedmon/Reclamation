@@ -2,7 +2,9 @@ package com.lying.init;
 
 import static com.lying.reference.Reference.ModInfo.prefix;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -42,6 +44,7 @@ public class RCItems
 	public static final DeferredRegister<ItemGroup> TABS = DeferredRegister.create(Reference.ModInfo.MOD_ID, RegistryKeys.ITEM_GROUP);
 	private static int itemTally = 0;
 	
+	public static Map<DyeColor, RegistrySupplier<Item>> DYE_TO_SHARD = new HashMap<>();
 	protected static final List<RegistrySupplier<Item>> ALL_BLOCKS	= Lists.newArrayList();
 	public static List<RegistrySupplier<Item>> BASIC_BLOCK_ITEMS = Lists.newArrayList();
 	
@@ -51,6 +54,7 @@ public class RCItems
 	
 	public static final RegistrySupplier<Item> WITHERING_DUST				= register("withering_dust", settings -> new DecayDustItem(settings));
 	public static final RegistrySupplier<Item> DEACTIVATOR					= register("deactivator", settings -> new DeactivatorItem(settings.maxCount(1).rarity(Rarity.EPIC)));
+	public static final RegistrySupplier<Item> GLASS_SHARD					= register("glass_shard", settings -> new Item(settings));
 	
 	public static final RegistrySupplier<Item> RUSTED_IRON					= registerBlock("rusted_iron", RCBlocks.RUSTED_IRON);
 	public static final RegistrySupplier<Item> WEATHERED_IRON				= registerBlock("weathered_iron", RCBlocks.WEATHERED_IRON);
@@ -88,41 +92,22 @@ public class RCItems
 	public static final RegistrySupplier<Item> DOUSED_SOUL_TORCH			= registerBlock("doused_soul_torch", RCBlocks.DOUSED_SOUL_TORCH);
 	public static final RegistrySupplier<Item> DOUSED_LANTERN				= registerBlock("doused_lantern", RCBlocks.DOUSED_LANTERN);
 	public static final RegistrySupplier<Item> DOUSED_SOUL_LANTERN			= registerBlock("doused_soul_lantern", RCBlocks.DOUSED_SOUL_LANTERN);
-	public static final RegistrySupplier<Item> BLACK_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.BLACK);
-	public static final RegistrySupplier<Item> BLUE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.BLUE);
-	public static final RegistrySupplier<Item> BROWN_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.BROWN);
-	public static final RegistrySupplier<Item> CYAN_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.CYAN);
-	public static final RegistrySupplier<Item> GRAY_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.GRAY);
-	public static final RegistrySupplier<Item> GREEN_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.GREEN);
-	public static final RegistrySupplier<Item> LIGHT_BLUE_FADED_TERRACOTTA	= registerTerracottaBlock(DyeColor.LIGHT_BLUE);
-	public static final RegistrySupplier<Item> LIGHT_GRAY_FADED_TERRACOTTA	= registerTerracottaBlock(DyeColor.LIGHT_GRAY);
-	public static final RegistrySupplier<Item> LIME_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.LIME);
-	public static final RegistrySupplier<Item> MAGENTA_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.MAGENTA);
-	public static final RegistrySupplier<Item> ORANGE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.ORANGE);
-	public static final RegistrySupplier<Item> PINK_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.PINK);
-	public static final RegistrySupplier<Item> PURPLE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.PURPLE);
-	public static final RegistrySupplier<Item> RED_FADED_TERRACOTTA			= registerTerracottaBlock(DyeColor.RED);
-	public static final RegistrySupplier<Item> WHITE_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.WHITE);
-	public static final RegistrySupplier<Item> YELLOW_FADED_TERRACOTTA		= registerTerracottaBlock(DyeColor.YELLOW);
 	public static final RegistrySupplier<Item> IRON_SCRAP					= registerBlock("iron_scrap", RCBlocks.IRON_SCRAP);
 	public static final RegistrySupplier<Item> STONE_RUBBLE					= registerBlockNoItem("stone_rubble", RCBlocks.STONE_RUBBLE);
 	public static final RegistrySupplier<Item> DEEPSLATE_RUBBLE				= registerBlockNoItem("deepslate_rubble", RCBlocks.DEEPSLATE_RUBBLE);
-	public static final RegistrySupplier<Item> BLACK_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BLACK);
-	public static final RegistrySupplier<Item> BLUE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BLUE);
-	public static final RegistrySupplier<Item> BROWN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.BROWN);
-	public static final RegistrySupplier<Item> CYAN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.CYAN);
-	public static final RegistrySupplier<Item> GRAY_RAGGED_BANNER			= registerRaggedBanner(DyeColor.GRAY);
-	public static final RegistrySupplier<Item> GREEN_RAGGED_BANNER			= registerRaggedBanner(DyeColor.GREEN);
-	public static final RegistrySupplier<Item> LIGHT_BLUE_RAGGED_BANNER		= registerRaggedBanner(DyeColor.LIGHT_BLUE);
-	public static final RegistrySupplier<Item> LIGHT_GRAY_RAGGED_BANNER		= registerRaggedBanner(DyeColor.LIGHT_GRAY);
-	public static final RegistrySupplier<Item> LIME_RAGGED_BANNER			= registerRaggedBanner(DyeColor.LIME);
-	public static final RegistrySupplier<Item> MAGENTA_RAGGED_BANNER		= registerRaggedBanner(DyeColor.MAGENTA);
-	public static final RegistrySupplier<Item> ORANGE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.ORANGE);
-	public static final RegistrySupplier<Item> PINK_RAGGED_BANNER			= registerRaggedBanner(DyeColor.PINK);
-	public static final RegistrySupplier<Item> PURPLE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.PURPLE);
-	public static final RegistrySupplier<Item> RED_RAGGED_BANNER			= registerRaggedBanner(DyeColor.RED);
-	public static final RegistrySupplier<Item> WHITE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.WHITE);
-	public static final RegistrySupplier<Item> YELLOW_RAGGED_BANNER			= registerRaggedBanner(DyeColor.YELLOW);
+	public static final RegistrySupplier<Item> BROKEN_GLASS					= registerBlockNoItem("broken_glass", RCBlocks.BROKEN_GLASS);
+	
+	private static RegistrySupplier<Item> registerGlassShard(DyeColor color)
+	{
+		RegistrySupplier<Item> shard = register(color.asString()+"_glass_shard", settings -> new Item(settings));
+		DYE_TO_SHARD.put(color, shard);
+		return shard;
+	}
+	
+	private static RegistrySupplier<Item> registerBrokenGlass(DyeColor color)
+	{
+		return registerBlockNoItem("broken_"+color.asString()+"_glass", (RegistrySupplier<Block>)RCBlocks.DYE_TO_GLASS.get(color).broken());
+	}
 	
 	private static RegistrySupplier<Item> registerRaggedBanner(DyeColor color)
 	{
@@ -192,7 +177,13 @@ public class RCItems
 	public static void init()
 	{
 		for(DyeColor color : DyeColor.values())
+		{
 			registerCrackedConcrete(color);
+			registerTerracottaBlock(color);
+			registerRaggedBanner(color);
+			registerBrokenGlass(color);
+			registerGlassShard(color);
+		}
 		
 		TABS.register();
 		ITEMS.register();
