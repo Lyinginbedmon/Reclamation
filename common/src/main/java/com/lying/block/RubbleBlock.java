@@ -153,7 +153,6 @@ public class RubbleBlock extends Block implements IDeActivatable, Waterloggable
 		return sequence;
 	}
 	
-	// FIXME Ensure flowing water is updated on state changes
 	// TODO Replace falling behaviour with falling block entity equivalent
 	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
 	{
@@ -169,16 +168,16 @@ public class RubbleBlock extends Block implements IDeActivatable, Waterloggable
 			{
 				int downDepth = downState.get(DEPTH);
 				int dif = Math.min(myDepth, 4 - downDepth);
-				world.setBlockState(down, downState.with(DEPTH, downDepth + dif), 2);
+				world.setBlockState(down, downState.with(DEPTH, downDepth + dif), 11);
 				myDepth -= dif;
 			}
 			else if(downState.isReplaceable())
 			{
-				world.setBlockState(down, state, 2);
+				world.setBlockState(down, state, 11);
 				myDepth = 0;
 			}
 			
-			world.setBlockState(pos, myDepth > 0 ? state.with(DEPTH, myDepth) : Blocks.AIR.getDefaultState(), 2);
+			world.setBlockState(pos, myDepth > 0 ? state.with(DEPTH, myDepth) : Blocks.AIR.getDefaultState(), 11);
 			return;
 		}
 		
@@ -190,9 +189,9 @@ public class RubbleBlock extends Block implements IDeActivatable, Waterloggable
 			
 			if(state != myState)
 			{
-				world.setBlockState(pos, myState, 2);
+				world.setBlockState(pos, myState, 11);
 				if(random.nextInt(8) == 0)
-					world.playSound(null, pos, RCSoundEvents.RUBBLE_SHIFTING.get(), SoundCategory.BLOCKS);;
+					world.playSound(null, pos, RCSoundEvents.RUBBLE_SHIFTING.get(), SoundCategory.BLOCKS);
 			}
 		}
 	}
@@ -227,12 +226,12 @@ public class RubbleBlock extends Block implements IDeActivatable, Waterloggable
 		
 		if(otherState.isOf(this) && canStack(myState, otherState))
 		{
-			world.setBlockState(otherPos, otherState.with(DEPTH, otherState.get(DEPTH) + 1), 2);
+			world.setBlockState(otherPos, otherState.with(DEPTH, otherState.get(DEPTH) + 1), 11);
 			depth--;
 		}
 		else if(otherState.isReplaceable())
 		{
-			world.setBlockState(otherPos, getDefaultState(), 2);
+			world.setBlockState(otherPos, getDefaultState(), 11);
 			--depth;
 		}
 		

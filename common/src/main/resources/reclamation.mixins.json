@@ -4,11 +4,13 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+	"AccessorSpriteContents",
 	"MinecraftClientMixin",
 	"SpriteAtlasManagerMixin"
   ],
   "mixins": [
-	"AccessorBiome"
+	"AccessorBiome",
+	"InvokerBlockEntityType"
   ],
   "injectors": {
     "defaultRequire": 1

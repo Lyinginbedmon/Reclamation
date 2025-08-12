@@ -9,6 +9,7 @@ import java.util.concurrent.Executor;
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
 import com.lying.data.ReloadListener;
+import com.lying.mixin.AccessorSpriteContents;
 
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -104,10 +105,10 @@ public class RaggedBannerTextures implements ReloadListener<Integer>
 	private static NativeImageBackedTexture tatterPattern(Sprite sprite, Sprite lumaMatte, TextureManager manager)
 	{
 		SpriteContents contents = sprite.getContents();
-		NativeImage image = contents.image;
+		NativeImage image = ((AccessorSpriteContents)contents).image();
 		
 		SpriteContents matte = lumaMatte.getContents();
-		NativeImage luma = matte.image;
+		NativeImage luma = ((AccessorSpriteContents)matte).image();
 		
 		boolean imageNotLoaded = false, lumaNotLoaded = false;
 		NativeImage masked = new NativeImage(image.getFormat(), image.getWidth(), image.getHeight(), true);

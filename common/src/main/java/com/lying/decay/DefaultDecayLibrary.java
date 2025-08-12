@@ -402,12 +402,5 @@ public class DefaultDecayLibrary
 					RCDecayConditions.UNCOVERED.get(),
 					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
 				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
-		
-//		register(DecayEntry.Builder.create()
-//				.name("golden_eggs")
-//				.condition(
-//					ConditionIsBlock.of(Blocks.GLASS),
-//					ConditionNearTo.Ent.create().predicate(EntityPredicate.Builder.create().add(EntityType.CHICKEN).build()).bounds(8))
-//				.function(FunctionConvert.toBlock(Blocks.GOLD_BLOCK)).build());
 	}
 }

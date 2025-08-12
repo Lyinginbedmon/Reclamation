@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lying.decay.context.DecayContext;
 import com.lying.init.RCDecayConditions;
+import com.lying.mixin.AccessorBiome;
 import com.lying.utility.BiomePredicate;
 import com.lying.utility.PositionPredicate.Comparison;
 import com.mojang.serialization.Codec;
@@ -287,7 +288,7 @@ public abstract class ConditionClimate extends DecayCondition
 	{
 		public Humidity(Identifier idIn)
 		{
-			super(idIn, b -> b.weather.downfall());
+			super(idIn, b -> ((AccessorBiome)(Object)b).weather().downfall());
 		}
 		
 		public static Humidity of(float value)
