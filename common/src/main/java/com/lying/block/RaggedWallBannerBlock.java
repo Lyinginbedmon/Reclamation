@@ -122,7 +122,7 @@ public class RaggedWallBannerBlock extends AbstractRaggedBannerBlock
 	
 	public static Block getForColor(DyeColor color)
 	{
-		return (Block)COLORED_BANNERS.getOrDefault(color, RCBlocks.WHITE_RAGGED_BANNER.get());
+		return (Block)COLORED_BANNERS.getOrDefault(color, RCBlocks.DYE_TO_RAGGED_WALL_BANNER.get(DyeColor.WHITE).get());
 	}
 	
 	public static Block[] getRegistered()

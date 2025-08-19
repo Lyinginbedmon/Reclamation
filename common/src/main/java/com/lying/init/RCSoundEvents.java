@@ -23,6 +23,7 @@ public class RCSoundEvents
 	public static final RegistrySupplier<SoundEvent> WITHERING_DUST		= register(prefix("withering_dust"));
 	public static final RegistrySupplier<SoundEvent> RUBBLE_SHIFTING	= register(prefix("rubble_shifting"));
 	public static final RegistrySupplier<SoundEvent> ROTTEN_FRUIT_BREAK	= register(prefix("rotten_fruit_break"));
+	public static final RegistrySupplier<SoundEvent> GLASS_CRUNCH		= register(prefix("glass_crunch"));
 	
 	public static BlockSoundGroup	ROTTEN_FRUIT_SOUNDS	= new SupplierSoundGroup(
 			1F,

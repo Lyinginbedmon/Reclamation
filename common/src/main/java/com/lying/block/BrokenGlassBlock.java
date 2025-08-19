@@ -12,17 +12,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.TransparentBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -31,7 +26,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.tick.ScheduledTickView;
 
-public class BrokenGlassBlock extends TransparentBlock
+public class BrokenGlassBlock extends AbstractBrokenGlassBlock
 {
 	public static final MapCodec<BrokenGlassBlock> CODEC	= createCodec(BrokenGlassBlock::new);
 	public static final BooleanProperty
@@ -42,12 +37,12 @@ public class BrokenGlassBlock extends TransparentBlock
 		EAST = ConnectingBlock.EAST,
 		WEST = ConnectingBlock.WEST;
 	private static final VoxelShape 
-		UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0),
-		DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0),
-		EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0),
-		WEST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0),
-		NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0),
-		SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+		UP_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0),
+		DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0),
+		WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0),
+		EAST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0),
+		SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0),
+		NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
 	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES
 		.entrySet().stream().collect(Util.toMap());
 	private final Map<BlockState, VoxelShape> shapesByState;
@@ -68,6 +63,8 @@ public class BrokenGlassBlock extends TransparentBlock
 					.collect(Collectors.toMap(Function.identity(), BrokenGlassBlock::getShapeForState)));
 	}
 	
+	protected MapCodec<? extends BrokenGlassBlock> getCodec() { return CODEC; }
+	
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
 	{
 		builder.add(UP, DOWN, NORTH, EAST, SOUTH, WEST);
@@ -81,38 +78,19 @@ public class BrokenGlassBlock extends TransparentBlock
 		if(state.get(DOWN))
 			shape = VoxelShapes.union(shape, DOWN_SHAPE);
 		if(state.get(NORTH))
-			shape = VoxelShapes.union(shape, SOUTH_SHAPE);
-		if(state.get(SOUTH))
 			shape = VoxelShapes.union(shape, NORTH_SHAPE);
+		if(state.get(SOUTH))
+			shape = VoxelShapes.union(shape, SOUTH_SHAPE);
 		if(state.get(EAST))
-			shape = VoxelShapes.union(shape, WEST_SHAPE);
-		if(state.get(WEST))
 			shape = VoxelShapes.union(shape, EAST_SHAPE);
+		if(state.get(WEST))
+			shape = VoxelShapes.union(shape, WEST_SHAPE);
 		return shape.isEmpty() ? VoxelShapes.fullCube() : shape;
 	}
 	
 	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context)
 	{
 		return this.shapesByState.get(state);
-	}
-	
-	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity)
-	{
-		if(!(entity instanceof LivingEntity) || entity.getBlockPos().getY() != pos.getY())
-			return;
-		
-		entity.slowMovement(state, new Vec3d(0.8F, 0.75F, 0.8F));
-		if(world.isClient() || entity.isInvulnerable() || entity.isSneaky() || world.getRandom().nextInt(8) > 0)
-			return;
-		
-		Vec3d motion = entity.isControlledByPlayer() ? entity.getMovement() : entity.getLastRenderPos().subtract(entity.getPos());
-		if(motion.horizontalLengthSquared() > 0)
-		{
-			double lenX = Math.abs(motion.getX());
-			double lenZ = Math.abs(motion.getZ());
-			if(lenX >= 0.003F || lenZ >= 0.003F)
-				entity.damage((ServerWorld)world, world.getDamageSources().sweetBerryBush(), 3F);
-		}
 	}
 	
 	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos)
@@ -147,7 +125,10 @@ public class BrokenGlassBlock extends TransparentBlock
 	
 	public static boolean shouldConnectTo(BlockState state, WorldView world, BlockPos pos, Direction onFace)
 	{
-		return !(state.isAir() || state.getBlock() instanceof BrokenGlassBlock || state.getCollisionShape(world, pos).isEmpty()) && sideCoversSmallSquare(world, pos, onFace);
+		return !(
+				state.isAir() || 
+				state.getBlock() instanceof AbstractBrokenGlassBlock || 
+				state.getCollisionShape(world, pos).isEmpty()) && sideCoversSmallSquare(world, pos, onFace);
 	}
 	
 	public static boolean hasAnyFaces(BlockState state)

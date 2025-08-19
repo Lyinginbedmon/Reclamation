@@ -28,7 +28,7 @@ public class ConditionPosition extends DecayCondition
 	
 	public ConditionPosition(Identifier idIn)
 	{
-		super(idIn);
+		super(idIn, -15);
 	}
 	
 	public static ConditionPosition of(PositionPredicate predicateIn)
@@ -93,9 +93,14 @@ public class ConditionPosition extends DecayCondition
 		private Optional<Integer> threshold = Optional.empty();
 		private Optional<Comparison> operation = Optional.empty();
 		
+		protected Altitude(Identifier idIn, int priorityIn)
+		{
+			super(idIn, priorityIn);
+		}
+		
 		public Altitude(Identifier idIn)
 		{
-			super(idIn);
+			this(idIn, 5);
 		}
 		
 		public static Altitude of(int thresholdIn)
@@ -160,7 +165,7 @@ public class ConditionPosition extends DecayCondition
 	{
 		public Depth(Identifier idIn)
 		{
-			super(idIn);
+			super(idIn, 5);
 		}
 		
 		protected boolean check(DecayContext context)

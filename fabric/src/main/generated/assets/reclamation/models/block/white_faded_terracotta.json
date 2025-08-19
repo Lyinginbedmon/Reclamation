@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_glazed_terracotta",
   "textures": {
-    "pattern": "reclamation:block/white_faded_terracotta"
+    "pattern": "reclamation:block/terracotta/white_faded_terracotta"
   }
 }

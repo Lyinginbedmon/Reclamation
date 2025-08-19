@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
 import com.lying.block.BrokenGlassBlock;
+import com.lying.block.BrokenGlassPaneBlock;
 import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedLanternBlock;
 import com.lying.block.DousedTorchBlock;
@@ -26,6 +27,7 @@ import com.lying.block.ScrapBlock;
 import com.lying.block.ScrapeableBlock;
 import com.lying.block.SootBlock;
 import com.lying.reference.Reference;
+import com.lying.utility.RCUtils;
 import com.lying.utility.WoodType;
 
 import dev.architectury.registry.registries.DeferredRegister;
@@ -57,8 +59,8 @@ public class RCBlocks
 	
 	public static final Map<DyeColor, Terracotta> DYE_TO_TERRACOTTA = new HashMap<>();
 	public static final Map<DyeColor, Concrete> DYE_TO_CONCRETE = new HashMap<>();
-	public static final Map<DyeColor, Glass> DYE_TO_GLASS = new HashMap<>();
-	public static final Map<DyeColor, RegistrySupplier<Block>> DYE_TO_RAGGED_BANNER = new HashMap<>();
+	public static final Map<DyeColor, Glass> DYE_TO_GLASS_BLOCK = new HashMap<>(), DYE_TO_GLASS_PANE = new HashMap<>();
+	public static final Map<DyeColor, RegistrySupplier<Block>> DYE_TO_RAGGED_BANNER = new HashMap<>(), DYE_TO_RAGGED_WALL_BANNER = new HashMap<>();
 	
 	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank)
 	{
@@ -103,58 +105,9 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> ROTTEN_PUMPKIN				= register("rotten_pumpkin", settings -> new RottenFruitBlock(settings.mapColor(MapColor.GRAY).requiresTool().strength(0.2F).sounds(RCSoundEvents.ROTTEN_FRUIT_SOUNDS).instrument(NoteBlockInstrument.DIDGERIDOO).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> ROTTEN_CARVED_PUMPKIN		= register("rotten_carved_pumpkin", settings -> new RottenOrientedFruitBlock(settings.mapColor(MapColor.GRAY).requiresTool().strength(0.2F).sounds(RCSoundEvents.ROTTEN_FRUIT_SOUNDS).pistonBehavior(PistonBehavior.DESTROY).allowsSpawning(RCBlocks::always)));
 	public static final RegistrySupplier<Block> ROTTEN_JACK_O_LANTERN		= register("rotten_jack_o_lantern", settings -> new RottenOrientedFruitBlock(settings.mapColor(MapColor.GRAY).luminance(state -> 7).requiresTool().strength(0.2F).sounds(RCSoundEvents.ROTTEN_FRUIT_SOUNDS).pistonBehavior(PistonBehavior.DESTROY)));
-	
-	public static final RegistrySupplier<Block> BLACK_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.BLACK);
-	public static final RegistrySupplier<Block> BLUE_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.BLUE);
-	public static final RegistrySupplier<Block> BROWN_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.BROWN);
-	public static final RegistrySupplier<Block> CYAN_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.CYAN);
-	public static final RegistrySupplier<Block> GRAY_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.GRAY);
-	public static final RegistrySupplier<Block> GREEN_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.GREEN);
-	public static final RegistrySupplier<Block> LIGHT_BLUE_FADED_TERRACOTTA	= registerFadedTerracotta(DyeColor.LIGHT_BLUE);
-	public static final RegistrySupplier<Block> LIGHT_GRAY_FADED_TERRACOTTA	= registerFadedTerracotta(DyeColor.LIGHT_GRAY);
-	public static final RegistrySupplier<Block> LIME_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.LIME);
-	public static final RegistrySupplier<Block> MAGENTA_FADED_TERRACOTTA	= registerFadedTerracotta(DyeColor.MAGENTA);
-	public static final RegistrySupplier<Block> ORANGE_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.ORANGE);
-	public static final RegistrySupplier<Block> PINK_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.PINK);
-	public static final RegistrySupplier<Block> PURPLE_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.PURPLE);
-	public static final RegistrySupplier<Block> RED_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.RED);
-	public static final RegistrySupplier<Block> WHITE_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.WHITE);
-	public static final RegistrySupplier<Block> YELLOW_FADED_TERRACOTTA		= registerFadedTerracotta(DyeColor.YELLOW);
-	
-	public static final RegistrySupplier<Block> CRACKED_BLACK_CONCRETE		= registerCrackedConcrete(DyeColor.BLACK);
-	public static final RegistrySupplier<Block> CRACKED_BLUE_CONCRETE		= registerCrackedConcrete(DyeColor.BLUE);
-	public static final RegistrySupplier<Block> CRACKED_BROWN_CONCRETE		= registerCrackedConcrete(DyeColor.BROWN);
-	public static final RegistrySupplier<Block> CRACKED_CYAN_CONCRETE		= registerCrackedConcrete(DyeColor.CYAN);
-	public static final RegistrySupplier<Block> CRACKED_GRAY_CONCRETE		= registerCrackedConcrete(DyeColor.GRAY);
-	public static final RegistrySupplier<Block> CRACKED_GREEN_CONCRETE		= registerCrackedConcrete(DyeColor.GREEN);
-	public static final RegistrySupplier<Block> CRACKED_LIGHT_BLUE_CONCRETE	= registerCrackedConcrete(DyeColor.LIGHT_BLUE);
-	public static final RegistrySupplier<Block> CRACKED_LIGHT_GRAY_CONCRETE	= registerCrackedConcrete(DyeColor.LIGHT_GRAY);
-	public static final RegistrySupplier<Block> CRACKED_LIME_CONCRETE		= registerCrackedConcrete(DyeColor.LIME);
-	public static final RegistrySupplier<Block> CRACKED_MAGENTA_CONCRETE	= registerCrackedConcrete(DyeColor.MAGENTA);
-	public static final RegistrySupplier<Block> CRACKED_ORANGE_CONCRETE		= registerCrackedConcrete(DyeColor.ORANGE);
-	public static final RegistrySupplier<Block> CRACKED_PINK_CONCRETE		= registerCrackedConcrete(DyeColor.PINK);
-	public static final RegistrySupplier<Block> CRACKED_PURPLE_CONCRETE		= registerCrackedConcrete(DyeColor.PURPLE);
-	public static final RegistrySupplier<Block> CRACKED_RED_CONCRETE		= registerCrackedConcrete(DyeColor.RED);
-	public static final RegistrySupplier<Block> CRACKED_WHITE_CONCRETE		= registerCrackedConcrete(DyeColor.WHITE);
-	public static final RegistrySupplier<Block> CRACKED_YELLOW_CONCRETE		= registerCrackedConcrete(DyeColor.YELLOW);
-	
-	public static final RegistrySupplier<Block> BROKEN_GLASS				= register("broken_glass", settings -> new BrokenGlassBlock(settings.noCollision().pistonBehavior(PistonBehavior.DESTROY).nonOpaque().strength(0.1F).sounds(BlockSoundGroup.GLASS).allowsSpawning(RCBlocks::never).suffocates(RCBlocks::never).blockVision(RCBlocks::never)));
-	public static final RegistrySupplier<Block> BROKEN_BLACK_GLASS			= registerBrokenGlass(DyeColor.BLACK, Blocks.BLACK_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_BLUE_GLASS			= registerBrokenGlass(DyeColor.BLUE, Blocks.BLUE_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_BROWN_GLASS			= registerBrokenGlass(DyeColor.BROWN, Blocks.BROWN_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_CYAN_GLASS			= registerBrokenGlass(DyeColor.CYAN, Blocks.CYAN_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_GRAY_GLASS			= registerBrokenGlass(DyeColor.GRAY, Blocks.GRAY_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_GREEN_GLASS			= registerBrokenGlass(DyeColor.GREEN, Blocks.GREEN_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_LIGHT_BLUE_GLASS		= registerBrokenGlass(DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_LIGHT_GRAY_GLASS		= registerBrokenGlass(DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_LIME_GLASS			= registerBrokenGlass(DyeColor.LIME, Blocks.LIME_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_MAGENTA_GLASS		= registerBrokenGlass(DyeColor.MAGENTA, Blocks.MAGENTA_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_ORANGE_GLASS			= registerBrokenGlass(DyeColor.ORANGE, Blocks.ORANGE_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_PINK_GLASS			= registerBrokenGlass(DyeColor.PINK, Blocks.PINK_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_PURPLE_GLASS			= registerBrokenGlass(DyeColor.PURPLE, Blocks.PURPLE_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_RED_GLASS			= registerBrokenGlass(DyeColor.RED, Blocks.RED_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_WHITE_GLASS			= registerBrokenGlass(DyeColor.WHITE, Blocks.WHITE_STAINED_GLASS);
-	public static final RegistrySupplier<Block> BROKEN_YELLOW_GLASS			= registerBrokenGlass(DyeColor.YELLOW, Blocks.YELLOW_STAINED_GLASS);
+	// TODO Rotten fruit textures/models
+	public static final RegistrySupplier<Block> BROKEN_GLASS				= registerBrokenGlass("broken_glass", Function.identity());
+	public static final RegistrySupplier<Block> BROKEN_GLASS_PANE			= registerBrokenGlassPane("broken_glass_pane", Function.identity());
 	
 	public static final RegistrySupplier<Block> DOUSED_TORCH				= register("doused_torch", settings -> new DousedTorchBlock(Blocks.TORCH, Blocks.WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
 	public static final RegistrySupplier<Block> DOUSED_SOUL_TORCH			= register("doused_soul_torch", settings -> new DousedTorchBlock(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, settings.noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
@@ -165,39 +118,6 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> STONE_RUBBLE				= register("stone_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLESTONE, settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	public static final RegistrySupplier<Block> DEEPSLATE_RUBBLE			= register("deepslate_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLED_DEEPSLATE, settings.nonOpaque().mapColor(MapColor.DEEPSLATE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	
-	public static final RegistrySupplier<Block> BLACK_RAGGED_BANNER				= registerRaggedBanner(DyeColor.BLACK);
-	public static final RegistrySupplier<Block> BLACK_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.BLACK);
-	public static final RegistrySupplier<Block> BLUE_RAGGED_BANNER				= registerRaggedBanner(DyeColor.BLUE);
-	public static final RegistrySupplier<Block> BLUE_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.BLUE);
-	public static final RegistrySupplier<Block> BROWN_RAGGED_BANNER				= registerRaggedBanner(DyeColor.BROWN);
-	public static final RegistrySupplier<Block> BROWN_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.BROWN);
-	public static final RegistrySupplier<Block> CYAN_RAGGED_BANNER				= registerRaggedBanner(DyeColor.CYAN);
-	public static final RegistrySupplier<Block> CYAN_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.CYAN);
-	public static final RegistrySupplier<Block> GRAY_RAGGED_BANNER				= registerRaggedBanner(DyeColor.GRAY);
-	public static final RegistrySupplier<Block> GRAY_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.GRAY);
-	public static final RegistrySupplier<Block> GREEN_RAGGED_BANNER				= registerRaggedBanner(DyeColor.GREEN);
-	public static final RegistrySupplier<Block> GREEN_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.GREEN);
-	public static final RegistrySupplier<Block> LIGHT_BLUE_RAGGED_BANNER		= registerRaggedBanner(DyeColor.LIGHT_BLUE);
-	public static final RegistrySupplier<Block> LIGHT_BLUE_RAGGED_WALL_BANNER	= registerRaggedWallBanner(DyeColor.LIGHT_BLUE);
-	public static final RegistrySupplier<Block> LIGHT_GRAY_RAGGED_BANNER		= registerRaggedBanner(DyeColor.LIGHT_GRAY);
-	public static final RegistrySupplier<Block> LIGHT_GRAY_RAGGED_WALL_BANNER	= registerRaggedWallBanner(DyeColor.LIGHT_GRAY);
-	public static final RegistrySupplier<Block> LIME_RAGGED_BANNER				= registerRaggedBanner(DyeColor.LIME);
-	public static final RegistrySupplier<Block> LIME_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.LIME);
-	public static final RegistrySupplier<Block> MAGENTA_RAGGED_BANNER			= registerRaggedBanner(DyeColor.MAGENTA);
-	public static final RegistrySupplier<Block> MAGENTA_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.MAGENTA);
-	public static final RegistrySupplier<Block> ORANGE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.ORANGE);
-	public static final RegistrySupplier<Block> ORANGE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.ORANGE);
-	public static final RegistrySupplier<Block> PINK_RAGGED_BANNER				= registerRaggedBanner(DyeColor.PINK);
-	public static final RegistrySupplier<Block> PINK_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.PINK);
-	public static final RegistrySupplier<Block> PURPLE_RAGGED_BANNER			= registerRaggedBanner(DyeColor.PURPLE);
-	public static final RegistrySupplier<Block> PURPLE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.PURPLE);
-	public static final RegistrySupplier<Block> RED_RAGGED_BANNER				= registerRaggedBanner(DyeColor.RED);
-	public static final RegistrySupplier<Block> RED_RAGGED_WALL_BANNER			= registerRaggedWallBanner(DyeColor.RED);
-	public static final RegistrySupplier<Block> WHITE_RAGGED_BANNER				= registerRaggedBanner(DyeColor.WHITE);
-	public static final RegistrySupplier<Block> WHITE_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.WHITE);
-	public static final RegistrySupplier<Block> YELLOW_RAGGED_BANNER			= registerRaggedBanner(DyeColor.YELLOW);
-	public static final RegistrySupplier<Block> YELLOW_RAGGED_WALL_BANNER		= registerRaggedWallBanner(DyeColor.YELLOW);
-	
 	private static RegistrySupplier<Block> registerRaggedBanner(DyeColor color)
 	{
 		RegistrySupplier<Block> registry = registerBanner("ragged_"+color.asString()+"_banner", color, RaggedBannerBlock::new);
@@ -207,7 +127,17 @@ public class RCBlocks
 	
 	private static RegistrySupplier<Block> registerRaggedWallBanner(DyeColor color)
 	{
-		return registerBanner("ragged_"+color.asString()+"_wall_banner", color, RaggedWallBannerBlock::new);
+		RegistrySupplier<Block> registry = registerBanner("ragged_"+color.asString()+"_wall_banner", color, RaggedWallBannerBlock::new);
+		DYE_TO_RAGGED_WALL_BANNER.put(color, registry);
+		return registry;
+	}
+	
+	public static Block[] getAllBanners()
+	{
+		List<Block> banners = Lists.newArrayList();
+		DYE_TO_RAGGED_BANNER.values().stream().map(Supplier::get).forEach(banners::add);
+		DYE_TO_RAGGED_WALL_BANNER.values().stream().map(Supplier::get).forEach(banners::add);
+		return banners.toArray(new Block[0]);
 	}
 	
 	private static RegistrySupplier<Block> registerBanner(String nameIn, DyeColor color, BiFunction<DyeColor,AbstractBlock.Settings, Block> constructor)
@@ -222,20 +152,46 @@ public class RCBlocks
 				.burnable()));
 	}
 	
-	private static RegistrySupplier<Block> registerBrokenGlass(DyeColor color, Block intact)
+	private static RegistrySupplier<Block> registerBrokenStainedGlass(DyeColor color, Block intact)
 	{
-		RegistrySupplier<Block> brokenGlass = register("broken_"+color.asString()+"_glass", settings -> new BrokenGlassBlock(settings
-				.mapColor(color)
+		RegistrySupplier<Block> brokenGlass = registerBrokenGlass("broken_"+color.asString()+"_glass", settings -> settings.mapColor(color));
+		DYE_TO_GLASS_BLOCK.put(color, Glass.of(brokenGlass, intact));
+		return brokenGlass;
+	}
+	
+	private static RegistrySupplier<Block> registerBrokenStainedGlassPane(DyeColor color, Block intact)
+	{
+		RegistrySupplier<Block> brokenGlass = registerBrokenGlassPane("broken_"+color.asString()+"_glass_pane", settings -> settings.mapColor(color));
+		DYE_TO_GLASS_PANE.put(color, Glass.of(brokenGlass, intact));
+		return brokenGlass;
+	}
+	
+	private static RegistrySupplier<Block> registerBrokenGlass(String nameIn, Function<AbstractBlock.Settings,AbstractBlock.Settings> funcIn)
+	{
+		return register(nameIn, settings -> new BrokenGlassBlock(funcIn.apply(settings)
 				.noCollision()
 				.pistonBehavior(PistonBehavior.DESTROY)
 				.nonOpaque()
 				.strength(0.1F)
+				.instrument(NoteBlockInstrument.HAT)
 				.sounds(BlockSoundGroup.GLASS)
 				.allowsSpawning(RCBlocks::never)
 				.suffocates(RCBlocks::never)
 				.blockVision(RCBlocks::never)));
-		DYE_TO_GLASS.put(color, Glass.of(brokenGlass, intact));
-		return brokenGlass;
+	}
+	
+	private static RegistrySupplier<Block> registerBrokenGlassPane(String nameIn, Function<AbstractBlock.Settings,AbstractBlock.Settings> funcIn)
+	{
+		return register(nameIn, settings -> new BrokenGlassPaneBlock(funcIn.apply(settings)
+				.noCollision()
+				.pistonBehavior(PistonBehavior.DESTROY)
+				.nonOpaque()
+				.strength(0.3F)
+				.instrument(NoteBlockInstrument.HAT)
+				.sounds(BlockSoundGroup.GLASS)
+				.allowsSpawning(RCBlocks::never)
+				.suffocates(RCBlocks::never)
+				.blockVision(RCBlocks::never)));
 	}
 	
 	private static RegistrySupplier<Block> registerLeafPile(WoodType typeIn)
@@ -302,42 +258,27 @@ public class RCBlocks
 	
 	public static void init()
 	{
+		// Bulk registration of colour spectrum blocks
+		Map<DyeColor,RegistrySupplier<Block>> crackedConcrete = new HashMap<>(), fadedTerracotta = new HashMap<>();
+		for(DyeColor color : RCUtils.COLOR_SPECTRUM)
+		{
+			crackedConcrete.put(color, registerCrackedConcrete(color));
+			fadedTerracotta.put(color, registerFadedTerracotta(color));
+			
+			registerRaggedBanner(color);
+			registerRaggedWallBanner(color);
+			registerBrokenStainedGlass(color, RCUtils.dyeToStainedGlass(color));
+			registerBrokenStainedGlassPane(color, RCUtils.dyeToStainedGlassPane(color));
+		}
+		
 		BLOCKS.register();
 		Reclamation.LOGGER.info("# Initialised {} blocks", ALL_BLOCKS.size());
 		
-		DYE_TO_TERRACOTTA.put(DyeColor.BLACK, Terracotta.of(Blocks.BLACK_GLAZED_TERRACOTTA, RCBlocks.BLACK_FADED_TERRACOTTA, Blocks.BLACK_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.BLUE, Terracotta.of(Blocks.BLUE_GLAZED_TERRACOTTA, RCBlocks.BLUE_FADED_TERRACOTTA, Blocks.BLUE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.BROWN, Terracotta.of(Blocks.BROWN_GLAZED_TERRACOTTA, RCBlocks.BROWN_FADED_TERRACOTTA, Blocks.BROWN_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.CYAN, Terracotta.of(Blocks.CYAN_GLAZED_TERRACOTTA, RCBlocks.CYAN_FADED_TERRACOTTA, Blocks.CYAN_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.GRAY, Terracotta.of(Blocks.GRAY_GLAZED_TERRACOTTA, RCBlocks.GRAY_FADED_TERRACOTTA, Blocks.GRAY_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.GREEN, Terracotta.of(Blocks.GREEN_GLAZED_TERRACOTTA, RCBlocks.GREEN_FADED_TERRACOTTA, Blocks.GREEN_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.LIGHT_BLUE, Terracotta.of(Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA, RCBlocks.LIGHT_BLUE_FADED_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.LIGHT_GRAY, Terracotta.of(Blocks.LIGHT_GRAY_GLAZED_TERRACOTTA, RCBlocks.LIGHT_GRAY_FADED_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.LIME, Terracotta.of(Blocks.LIME_GLAZED_TERRACOTTA, RCBlocks.LIME_FADED_TERRACOTTA, Blocks.LIME_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.MAGENTA, Terracotta.of(Blocks.MAGENTA_GLAZED_TERRACOTTA, RCBlocks.MAGENTA_FADED_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.ORANGE, Terracotta.of(Blocks.ORANGE_GLAZED_TERRACOTTA, RCBlocks.ORANGE_FADED_TERRACOTTA, Blocks.ORANGE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.PINK, Terracotta.of(Blocks.PINK_GLAZED_TERRACOTTA, RCBlocks.PINK_FADED_TERRACOTTA, Blocks.PINK_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.PURPLE, Terracotta.of(Blocks.PURPLE_GLAZED_TERRACOTTA, RCBlocks.PURPLE_FADED_TERRACOTTA, Blocks.PURPLE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.RED, Terracotta.of(Blocks.RED_GLAZED_TERRACOTTA, RCBlocks.RED_FADED_TERRACOTTA, Blocks.RED_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.WHITE, Terracotta.of(Blocks.WHITE_GLAZED_TERRACOTTA, RCBlocks.WHITE_FADED_TERRACOTTA, Blocks.WHITE_TERRACOTTA));
-		DYE_TO_TERRACOTTA.put(DyeColor.YELLOW, Terracotta.of(Blocks.YELLOW_GLAZED_TERRACOTTA, RCBlocks.YELLOW_FADED_TERRACOTTA, Blocks.YELLOW_TERRACOTTA));
-		
-		DYE_TO_CONCRETE.put(DyeColor.BLACK, Concrete.of(Blocks.BLACK_CONCRETE, RCBlocks.CRACKED_BLACK_CONCRETE, Blocks.BLACK_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.BLUE, Concrete.of(Blocks.BLUE_CONCRETE, RCBlocks.CRACKED_BLUE_CONCRETE, Blocks.BLUE_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.BROWN, Concrete.of(Blocks.BROWN_CONCRETE, RCBlocks.CRACKED_BROWN_CONCRETE, Blocks.BROWN_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.CYAN, Concrete.of(Blocks.CYAN_CONCRETE, RCBlocks.CRACKED_CYAN_CONCRETE, Blocks.CYAN_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.GRAY, Concrete.of(Blocks.GRAY_CONCRETE, RCBlocks.CRACKED_GRAY_CONCRETE, Blocks.GRAY_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.GREEN, Concrete.of(Blocks.GREEN_CONCRETE, RCBlocks.CRACKED_GREEN_CONCRETE, Blocks.GREEN_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.LIGHT_BLUE, Concrete.of(Blocks.LIGHT_BLUE_CONCRETE, RCBlocks.CRACKED_LIGHT_BLUE_CONCRETE, Blocks.LIGHT_BLUE_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.LIGHT_GRAY, Concrete.of(Blocks.LIGHT_GRAY_CONCRETE, RCBlocks.CRACKED_LIGHT_GRAY_CONCRETE, Blocks.LIGHT_GRAY_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.LIME, Concrete.of(Blocks.LIME_CONCRETE, RCBlocks.CRACKED_LIME_CONCRETE, Blocks.LIME_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.MAGENTA, Concrete.of(Blocks.MAGENTA_CONCRETE, RCBlocks.CRACKED_MAGENTA_CONCRETE, Blocks.MAGENTA_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.ORANGE, Concrete.of(Blocks.ORANGE_CONCRETE, RCBlocks.CRACKED_ORANGE_CONCRETE, Blocks.ORANGE_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.PINK, Concrete.of(Blocks.PINK_CONCRETE, RCBlocks.CRACKED_PINK_CONCRETE, Blocks.PINK_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.PURPLE, Concrete.of(Blocks.PURPLE_CONCRETE, RCBlocks.CRACKED_PURPLE_CONCRETE, Blocks.PURPLE_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.RED, Concrete.of(Blocks.RED_CONCRETE, RCBlocks.CRACKED_RED_CONCRETE, Blocks.RED_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.WHITE, Concrete.of(Blocks.WHITE_CONCRETE, RCBlocks.CRACKED_WHITE_CONCRETE, Blocks.WHITE_CONCRETE_POWDER));
-		DYE_TO_CONCRETE.put(DyeColor.YELLOW, Concrete.of(Blocks.YELLOW_CONCRETE, RCBlocks.CRACKED_YELLOW_CONCRETE, Blocks.YELLOW_CONCRETE_POWDER));
+		for(DyeColor color : DyeColor.values())
+		{
+			DYE_TO_CONCRETE.put(color, Concrete.of(RCUtils.dyeToConcrete(color), crackedConcrete.get(color), RCUtils.dyeToConcretePowder(color)));
+			DYE_TO_TERRACOTTA.put(color, Terracotta.of(RCUtils.dyeToGlazedTerracotta(color), fadedTerracotta.get(color), RCUtils.dyeToTerracotta(color)));
+		}
 		
 		TINTED_LEAF_PILES = List.of(
 				ACACIA_LEAF_PILE,

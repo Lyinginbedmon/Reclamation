@@ -11,10 +11,21 @@
     {
       "apply": {
         "model": "reclamation:block/broken_magenta_glass",
-        "x": 180
+        "x": 90,
+        "y": 90
       },
       "when": {
-        "up": "true"
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "reclamation:block/broken_magenta_glass",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "east": "true"
       }
     },
     {
@@ -39,21 +50,10 @@
     {
       "apply": {
         "model": "reclamation:block/broken_magenta_glass",
-        "x": 90,
-        "y": 90
+        "x": 180
       },
       "when": {
-        "west": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "reclamation:block/broken_magenta_glass",
-        "x": 90,
-        "y": 270
-      },
-      "when": {
-        "east": "true"
+        "up": "true"
       }
     }
   ]

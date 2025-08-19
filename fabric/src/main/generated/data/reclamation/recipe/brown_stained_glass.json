@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "glass_shards",
+  "ingredients": [
+    "reclamation:brown_glass_shard",
+    "reclamation:brown_glass_shard",
+    "reclamation:brown_glass_shard",
+    "reclamation:brown_glass_shard",
+    "reclamation:brown_glass_shard",
+    "reclamation:brown_glass_shard",
+    "reclamation:brown_glass_shard",
+    "reclamation:brown_glass_shard",
+    "reclamation:brown_glass_shard"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:brown_stained_glass"
+  }
+}

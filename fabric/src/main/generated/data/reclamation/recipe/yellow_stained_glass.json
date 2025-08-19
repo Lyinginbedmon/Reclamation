@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "glass_shards",
+  "ingredients": [
+    "reclamation:yellow_glass_shard",
+    "reclamation:yellow_glass_shard",
+    "reclamation:yellow_glass_shard",
+    "reclamation:yellow_glass_shard",
+    "reclamation:yellow_glass_shard",
+    "reclamation:yellow_glass_shard",
+    "reclamation:yellow_glass_shard",
+    "reclamation:yellow_glass_shard",
+    "reclamation:yellow_glass_shard"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:yellow_stained_glass"
+  }
+}

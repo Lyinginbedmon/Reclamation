@@ -1,5 +1,5 @@
 {
-  "parent": "reclamation:block/template_tinted_cube",
+  "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "minecraft:block/cobbled_deepslate"
   }

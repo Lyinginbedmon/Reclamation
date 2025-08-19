@@ -3,23 +3,17 @@
     {
       "apply": [
         {
-          "model": "reclamation:block/mold_0",
-          "uvlock": true,
-          "x": 270
+          "model": "reclamation:block/mold_0"
         },
         {
-          "model": "reclamation:block/mold_1",
-          "uvlock": true,
-          "x": 270
+          "model": "reclamation:block/mold_1"
         },
         {
-          "model": "reclamation:block/mold_2",
-          "uvlock": true,
-          "x": 270
+          "model": "reclamation:block/mold_2"
         }
       ],
       "when": {
-        "up": "true"
+        "north": "true"
       }
     },
     {
@@ -49,6 +43,28 @@
         {
           "model": "reclamation:block/mold_0",
           "uvlock": true,
+          "x": 90
+        },
+        {
+          "model": "reclamation:block/mold_1",
+          "uvlock": true,
+          "x": 90
+        },
+        {
+          "model": "reclamation:block/mold_2",
+          "uvlock": true,
+          "x": 90
+        }
+      ],
+      "when": {
+        "down": "true"
+      }
+    },
+    {
+      "apply": [
+        {
+          "model": "reclamation:block/mold_0",
+          "uvlock": true,
           "y": 270
         },
         {
@@ -71,6 +87,28 @@
         {
           "model": "reclamation:block/mold_0",
           "uvlock": true,
+          "x": 270
+        },
+        {
+          "model": "reclamation:block/mold_1",
+          "uvlock": true,
+          "x": 270
+        },
+        {
+          "model": "reclamation:block/mold_2",
+          "uvlock": true,
+          "x": 270
+        }
+      ],
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": [
+        {
+          "model": "reclamation:block/mold_0",
+          "uvlock": true,
           "y": 180
         },
         {
@@ -86,44 +124,6 @@
       ],
       "when": {
         "south": "true"
-      }
-    },
-    {
-      "apply": [
-        {
-          "model": "reclamation:block/mold_0"
-        },
-        {
-          "model": "reclamation:block/mold_1"
-        },
-        {
-          "model": "reclamation:block/mold_2"
-        }
-      ],
-      "when": {
-        "north": "true"
-      }
-    },
-    {
-      "apply": [
-        {
-          "model": "reclamation:block/mold_0",
-          "uvlock": true,
-          "x": 90
-        },
-        {
-          "model": "reclamation:block/mold_1",
-          "uvlock": true,
-          "x": 90
-        },
-        {
-          "model": "reclamation:block/mold_2",
-          "uvlock": true,
-          "x": 90
-        }
-      ],
-      "when": {
-        "down": "true"
       }
     }
   ]

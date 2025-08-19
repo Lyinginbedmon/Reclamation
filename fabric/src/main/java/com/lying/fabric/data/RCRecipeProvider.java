@@ -5,6 +5,7 @@ import com.lying.block.LeafPileBlock;
 import com.lying.data.RCTags;
 import com.lying.init.RCBlocks;
 import com.lying.init.RCItems;
+import com.lying.utility.RCUtils;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
@@ -19,6 +20,7 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.DyeColor;
 
 public class RCRecipeProvider extends FabricRecipeProvider
 {
@@ -37,6 +39,7 @@ public class RCRecipeProvider extends FabricRecipeProvider
 				{
 					public void generate()
 					{
+						// Withering dust
 						createShapeless(RecipeCategory.MISC, new ItemStack(RCItems.WITHERING_DUST.get(), 6))
 							.input(Items.WITHER_ROSE)
 							.input(Items.NETHER_STAR)
@@ -44,6 +47,7 @@ public class RCRecipeProvider extends FabricRecipeProvider
 							.criterion(hasItem(Items.WITHER_ROSE), conditionsFromItem(Items.WITHER_ROSE))
 							.criterion(hasItem(Items.NETHER_STAR), conditionsFromItem(Items.NETHER_STAR)).offerTo(exporter);
 						
+						// Cracked stone bricks
 						createShaped(RecipeCategory.BUILDING_BLOCKS, RCItems.CRACKED_STONE_BRICK_SLAB.get(), 6)
 							.pattern("bbb").input('b', Blocks.CRACKED_STONE_BRICKS)
 							.criterion(hasItem(Blocks.CRACKED_STONE_BRICKS), conditionsFromItem(Blocks.CRACKED_STONE_BRICKS)).offerTo(exporter);
@@ -55,6 +59,7 @@ public class RCRecipeProvider extends FabricRecipeProvider
 							.criterion(hasItem(Blocks.CRACKED_STONE_BRICKS), conditionsFromItem(Blocks.CRACKED_STONE_BRICKS)).offerTo(exporter);
 						offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, RCBlocks.CRACKED_STONE_BRICK_STAIRS.get(), Blocks.CRACKED_STONE_BRICKS);
 						
+						// Ivy parity with vines
 						createShapeless(RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_COBBLESTONE)
 							.group("mossy_cobblestone")
 							.input(Blocks.COBBLESTONE).input(RCBlocks.IVY.get())
@@ -72,12 +77,14 @@ public class RCRecipeProvider extends FabricRecipeProvider
 							.criterion(hasItem(Items.PAPER), conditionsFromItem(Items.PAPER))
 							.criterion(hasItem(RCBlocks.IVY.get()), conditionsFromItem(RCBlocks.IVY.get())).offerTo(exporter);
 						
+						// Leaf piles to leaves
 						LeafPileBlock.LEAF_PILES.stream().map(b -> (LeafPileBlock)b).forEach(p -> 
 						{
 							pileToLeavesRecipe(p, PILE_TO_LEAF_CONVERSION_RATE).offerTo(exporter);
 							leavesToPileRecipe(p, PILE_TO_LEAF_CONVERSION_RATE).offerTo(exporter);
 						});
 						
+						// Block waxing
 						waxingRecipe(Blocks.IRON_BLOCK, RCBlocks.WAXED_IRON_BLOCK.get()).offerTo(exporter);
 						waxingRecipe(RCBlocks.EXPOSED_IRON.get(), RCBlocks.WAXED_EXPOSED_IRON.get()).offerTo(exporter);
 						waxingRecipe(RCBlocks.WEATHERED_IRON.get(), RCBlocks.WAXED_WEATHERED_IRON.get()).offerTo(exporter);
@@ -85,6 +92,7 @@ public class RCRecipeProvider extends FabricRecipeProvider
 						waxingRecipe(Blocks.GOLD_BLOCK, RCBlocks.WAXED_GOLD_BLOCK.get()).offerTo(exporter);
 						waxingRecipe(RCBlocks.TARNISHED_GOLD.get(), RCBlocks.WAXED_TARNISHED_GOLD.get()).offerTo(exporter);
 						
+						// Rotten fruit to seeds
 						createShapeless(RecipeCategory.FOOD, new ItemStack(Items.MELON_SEEDS, 2))
 							.input(RCBlocks.ROTTEN_MELON.get())
 							.criterion(hasItem(RCBlocks.ROTTEN_MELON.get()), conditionsFromItem(RCBlocks.ROTTEN_MELON.get())).offerTo(exporter);
@@ -92,6 +100,19 @@ public class RCRecipeProvider extends FabricRecipeProvider
 						createShapeless(RecipeCategory.FOOD, new ItemStack(Items.PUMPKIN_SEEDS, 2))
 							.input(RCTags.ROTTEN_PUMPKIN)
 							.criterion(hasItem(RCBlocks.ROTTEN_PUMPKIN.get()), conditionsFromItem(RCBlocks.ROTTEN_PUMPKIN.get())).offerTo(exporter);
+						
+						// Glass shards to glass
+						createShapeless(RecipeCategory.BUILDING_BLOCKS, Blocks.GLASS)
+							.group("glass_shards")
+							.input(RCItems.GLASS_SHARD.get(), 9)
+							.criterion(hasItem(RCItems.GLASS_SHARD.get()), conditionsFromItem(RCItems.GLASS_SHARD.get()))
+							.offerTo(exporter);
+						for(DyeColor color : DyeColor.values())
+							createShapeless(RecipeCategory.BUILDING_BLOCKS, RCUtils.dyeToStainedGlass(color))
+								.group("glass_shards")
+								.input(RCItems.DYE_TO_SHARD.get(color).get(), 9)
+								.criterion(hasItem(RCItems.DYE_TO_SHARD.get(color).get()), conditionsFromItem(RCItems.DYE_TO_SHARD.get(color).get()))
+								.offerTo(exporter);
 					}
 					
 					private ShapelessRecipeJsonBuilder waxingRecipe(ItemConvertible item, ItemConvertible output)

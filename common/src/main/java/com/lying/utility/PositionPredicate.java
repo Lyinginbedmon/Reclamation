@@ -58,10 +58,10 @@ public class PositionPredicate
 		return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow();
 	}
 	
-	public static record Property(int value, Axis axis, Comparison operation)
+	public static record Property(float value, Axis axis, Comparison operation)
 	{
 		public static final Codec<Property> CODEC	= RecordCodecBuilder.create(instance -> instance.group(
-				Codec.INT.fieldOf("value").forGetter(Property::value),
+				Codec.FLOAT.fieldOf("value").forGetter(Property::value),
 				Axis.CODEC.fieldOf("axis").forGetter(Property::axis),
 				Comparison.CODEC.fieldOf("operation").forGetter(Property::operation)
 				)

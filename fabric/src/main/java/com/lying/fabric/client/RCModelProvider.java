@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.lying.block.BrokenGlassBlock;
+import com.lying.block.BrokenGlassPaneBlock;
 import com.lying.block.CrackedConcreteBlock;
 import com.lying.block.DousedTorchBlock;
 import com.lying.block.LeafPileBlock;
@@ -66,10 +68,6 @@ public class RCModelProvider extends FabricModelProvider
 			Optional.of(prefix("block/template_layered_2")),
 			Optional.of("_2"),
 			TextureKey.ALL);
-	public static final Model TEMPLATE_TINTED_CUBE = new Model(
-			Optional.of(prefix("block/template_tinted_cube")),
-			Optional.empty(),
-			TextureKey.ALL);
 	public static final Model TEMPLATE_IVY	= new Model(
 			Optional.of(prefix("block/template_ivy")),
 			Optional.empty(),
@@ -86,7 +84,7 @@ public class RCModelProvider extends FabricModelProvider
 		// Simple solid cubes
 		RCBlocks.SOLID_CUBES.forEach(entry -> blockStateModelGenerator.registerSimpleCubeAll(entry.get()));
 		
-		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).forEach(b -> blockStateModelGenerator.registerSouthDefaultHorizontalFacing(TexturedModel.TEMPLATE_GLAZED_TERRACOTTA, b.get()));
+		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).forEach(b -> FadedTerracotta.makeBlockState(b.get(), blockStateModelGenerator));
 		
 		// Vertical column blocks
 		for(Block block : new Block[] {
@@ -117,8 +115,10 @@ public class RCModelProvider extends FabricModelProvider
 		registerIvy(RCBlocks.IVY.get(), RCItems.IVY.get(), blockStateModelGenerator);
 		Mold.makeBlockState(RCBlocks.MOLD.get(), RCItems.MOLD.get(), blockStateModelGenerator);
 		blockStateModelGenerator.registerMultifaceBlock(RCBlocks.SOOT.get());
-		BrokenGlass.register(RCBlocks.BROKEN_GLASS.get(), Blocks.GLASS, blockStateModelGenerator);
-		RCBlocks.DYE_TO_GLASS.values().forEach(g -> BrokenGlass.register(g.broken().get(), g.intact().get(), blockStateModelGenerator));
+		BrokenGlass.registerBlock(RCBlocks.BROKEN_GLASS.get(), Blocks.GLASS, blockStateModelGenerator);
+		BrokenGlass.registerPane(RCBlocks.BROKEN_GLASS_PANE.get(), Blocks.GLASS_PANE, blockStateModelGenerator);
+		RCBlocks.DYE_TO_GLASS_BLOCK.values().forEach(g -> BrokenGlass.registerBlock(g.broken().get(), g.intact().get(), blockStateModelGenerator));
+		RCBlocks.DYE_TO_GLASS_PANE.values().forEach(p -> BrokenGlass.registerPane(p.broken().get(), p.intact().get(), blockStateModelGenerator));
 	}
 	
 	public void generateItemModels(ItemModelGenerator itemModelGenerator)
@@ -128,6 +128,11 @@ public class RCModelProvider extends FabricModelProvider
 		itemModelGenerator.register(RCItems.DEACTIVATOR.get(), Models.HANDHELD_ROD);
 		itemModelGenerator.register(RCItems.GLASS_SHARD.get(), Models.GENERATED);
 		RCItems.DYE_TO_SHARD.values().stream().map(Supplier::get).forEach(s -> itemModelGenerator.register(s, Models.GENERATED));
+	}
+	
+	private static void registerParentedItem(Block block, Identifier modelIn, BlockStateModelGenerator generator)
+	{
+		generator.registerParentedItemModel(block, modelIn);
 	}
 	
 	private static void registerBlockModel(BlockItem item, ItemModelGenerator itemModelGenerator)
@@ -180,29 +185,70 @@ public class RCModelProvider extends FabricModelProvider
 	
 	private static class BrokenGlass
 	{
-		public static final Model TEMPLATE_BROKEN = new Model(
+		public static final Model TEMPLATE_BLOCK = new Model(
 				Optional.of(prefix("block/template_broken_glass")),
 				Optional.empty(),
 				TextureKey.BOTTOM, TextureKey.SIDE);
+		public static final Model TEMPLATE_PANE = new Model(
+				Optional.of(prefix("block/template_broken_glass_pane")),
+				Optional.empty(),
+				TextureKey.EDGE, TextureKey.SIDE);
 		
-		private static void register(Block broken, Block intact, BlockStateModelGenerator generator)
+		private static void registerBlock(Block broken, Block intact, BlockStateModelGenerator generator)
 		{
-			Identifier brokenID = ModelIds.getBlockModelId(broken);
+			Identifier brokenID = Registries.BLOCK.getId(broken);
 			Identifier intactID = ModelIds.getBlockModelId(intact);
 			
-			Identifier sideModel = TEMPLATE_BROKEN.upload(broken, new TextureMap().put(TextureKey.BOTTOM, intactID).put(TextureKey.SIDE, Identifier.of(brokenID.getNamespace(), brokenID.getPath()+"_side")), generator.modelCollector);
+			Identifier sideModel = TEMPLATE_BLOCK.upload(broken, new TextureMap()
+					.put(TextureKey.BOTTOM, intactID)
+					.put(TextureKey.SIDE, Identifier.of(brokenID.getNamespace(), "block/broken_glass/"+brokenID.getPath())), generator.modelCollector);
 			MultipartBlockStateSupplier map = MultipartBlockStateSupplier.create(broken);
-			for(Direction face : Direction.values())
-				map.with(When.create().set(MultifaceBlock.getProperty(face), true), List.of(forFace(sideModel, face)));
+			BrokenGlassBlock.FACING_PROPERTIES.entrySet().forEach(entry -> 
+				map.with(When.create().set(entry.getValue(), true), List.of(forFace(sideModel, entry.getKey()))));
 			generator.blockStateCollector.accept(map);
-			generator.registerParentedItemModel(broken, sideModel);
+			
+			registerParentedItem(broken, sideModel, generator);
+		}
+		
+		private static void registerPane(Block broken, Block intact, BlockStateModelGenerator generator)
+		{
+			Identifier brokenID = Registries.BLOCK.getId(broken);
+			Identifier intactID = ModelIds.getBlockModelId(intact);
+			
+			Identifier sideModel = TEMPLATE_PANE.upload(broken, new TextureMap()
+					.put(TextureKey.EDGE, Identifier.of(intactID.getNamespace(), intactID.getPath()+"_top"))
+					.put(TextureKey.SIDE, Identifier.of(brokenID.getNamespace(), "block/broken_glass_pane/"+brokenID.getPath())), generator.modelCollector);
+			MultipartBlockStateSupplier map = MultipartBlockStateSupplier.create(broken);
+			BrokenGlassPaneBlock.FACING_PROPERTIES.entrySet().forEach(entry -> 
+				map.with(When.create().set(entry.getValue(), true), List.of(forHorizontalFace(sideModel, entry.getKey()))));
+			generator.blockStateCollector.accept(map);
+			
+			registerParentedItem(broken, sideModel, generator);
 		}
 		
 		private static BlockStateVariant forFace(Identifier sideModel, Direction face)
 		{
 			BlockStateVariant variant = BlockStateVariant.create().put(VariantSettings.MODEL, sideModel);
 			if(face.getAxis() != Axis.Y)
-				variant.put(VariantSettings.X, VariantSettings.Rotation.R90);
+				return forHorizontalFace(variant.put(VariantSettings.X, VariantSettings.Rotation.R90), face);
+			
+			switch(face)
+			{
+				case UP:
+					return variant.put(VariantSettings.X, VariantSettings.Rotation.R180);
+				case DOWN:
+				default:
+					return variant;
+			}
+		}
+		
+		private static BlockStateVariant forHorizontalFace(Identifier sideModel, Direction face)
+		{
+			return forHorizontalFace(BlockStateVariant.create().put(VariantSettings.MODEL, sideModel), face);
+		}
+		
+		private static BlockStateVariant forHorizontalFace(BlockStateVariant variant, Direction face)
+		{
 			switch(face)
 			{
 				case SOUTH:
@@ -213,9 +259,6 @@ public class RCModelProvider extends FabricModelProvider
 					return variant.put(VariantSettings.Y, VariantSettings.Rotation.R180);
 				case EAST:
 					return variant.put(VariantSettings.Y, VariantSettings.Rotation.R270);
-				case UP:
-					return variant.put(VariantSettings.X, VariantSettings.Rotation.R180);
-				case DOWN:
 				default:
 					return variant;
 			}
@@ -268,7 +311,7 @@ public class RCModelProvider extends FabricModelProvider
 		{
 			Identifier leafTexture = Registries.BLOCK.getId(parentLeaf);
 			leafTexture = Identifier.of(leafTexture.getNamespace(), "block/"+leafTexture.getPath());
-			return new TextureMap().put(TextureKey.ALL, leafTexture);
+			return TextureMap.of(TextureKey.ALL, leafTexture);
 		}
 		
 		private static void register(BlockStateModelGenerator blockStateModelGenerator)
@@ -293,7 +336,7 @@ public class RCModelProvider extends FabricModelProvider
 			
 			itemTint.ifPresentOrElse(
 					tint -> generator.itemModelOutput.accept(pile.asItem(), ItemModels.tinted(model0, new ConstantTintSource(tint))), 
-					() -> generator.registerParentedItemModel(pile, model0));
+					() -> registerParentedItem(pile, model0, generator));
 		}
 	}
 	
@@ -333,7 +376,7 @@ public class RCModelProvider extends FabricModelProvider
 					.register(4, entry(TEMPLATE_CRACKED_3.upload(block, concreteTex(block, 3), generator.modelCollector)));
 			
 			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(map));
-			generator.registerParentedItemModel(block, heldModel);
+			registerParentedItem(block, heldModel, generator);
 		}
 		
 		private static List<BlockStateVariant> entry(Identifier model)
@@ -366,7 +409,7 @@ public class RCModelProvider extends FabricModelProvider
 				Optional.of("_3"),
 				TextureKey.ALL);
 		public static final Model TEMPLATE_RUBBLE_FULL_BLOCK = new Model(
-				Optional.of(prefix("block/template_tinted_cube")),
+				Optional.of(Identifier.of("block/cube_all")),
 				Optional.of("_full"),
 				TextureKey.ALL);
 		
@@ -374,7 +417,7 @@ public class RCModelProvider extends FabricModelProvider
 		{
 			Identifier tex = Registries.BLOCK.getId(cobble);
 			tex = Identifier.of(tex.getNamespace(), "block/"+tex.getPath());
-			return new TextureMap().put(TextureKey.ALL, tex);
+			return TextureMap.of(TextureKey.ALL, tex);
 		}
 		
 		private static List<BlockStateVariant> entry(Identifier model)
@@ -409,7 +452,7 @@ public class RCModelProvider extends FabricModelProvider
 					.register(4, true, entry4);
 			
 			generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(map));
-			generator.registerParentedItemModel(block, model0);
+			registerParentedItem(block, model0, generator);
 		}
 	}
 	
@@ -462,9 +505,9 @@ public class RCModelProvider extends FabricModelProvider
 			generator.registerItemModel(item, Models.GENERATED.upload(item, TextureMap.layer0(texture0), generator.modelCollector));
 			
 			List<Identifier> models = List.of(
-					MOLD_0.upload(block, new TextureMap().put(TextureKey.TEXTURE, texture0), generator.modelCollector),
-					MOLD_1.upload(block, new TextureMap().put(TextureKey.TEXTURE, Identifier.of(blockID.getNamespace(), blockID.getPath()+"_1")), generator.modelCollector),
-					MOLD_2.upload(block, new TextureMap().put(TextureKey.TEXTURE, Identifier.of(blockID.getNamespace(), blockID.getPath()+"_2")), generator.modelCollector)
+					MOLD_0.upload(block, TextureMap.of(TextureKey.TEXTURE, texture0), generator.modelCollector),
+					MOLD_1.upload(block, TextureMap.of(TextureKey.TEXTURE, Identifier.of(blockID.getNamespace(), blockID.getPath()+"_1")), generator.modelCollector),
+					MOLD_2.upload(block, TextureMap.of(TextureKey.TEXTURE, Identifier.of(blockID.getNamespace(), blockID.getPath()+"_2")), generator.modelCollector)
 					);
 			MultipartBlockStateSupplier map = MultipartBlockStateSupplier.create(block);
 			CONNECTION_VARIANT_FUNCTIONS.entrySet().forEach(entry -> 
@@ -504,6 +547,20 @@ public class RCModelProvider extends FabricModelProvider
 					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R180),
 					BlockStateVariant.create().put(VariantSettings.MODEL, model).put(VariantSettings.Y, VariantSettings.Rotation.R270)
 					);
+		}
+	}
+	
+	private static class FadedTerracotta
+	{
+		private static final Model MODEL = Models.TEMPLATE_GLAZED_TERRACOTTA;
+		
+		private static void makeBlockState(Block block, BlockStateModelGenerator generator)
+		{
+			Identifier id = Registries.BLOCK.getId(block);
+			Identifier model = MODEL.upload(block, TextureMap.of(TextureKey.PATTERN, Identifier.of(id.getNamespace(), "block/terracotta/"+id.getPath())), generator.modelCollector);
+			generator.blockStateCollector.accept(
+					VariantsBlockStateSupplier.create(block, 
+						BlockStateVariant.create().put(VariantSettings.MODEL, model)).coordinate(BlockStateModelGenerator.createSouthDefaultHorizontalRotationStates()));
 		}
 	}
 }

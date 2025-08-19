@@ -5,6 +5,7 @@ import static com.lying.reference.Reference.ModInfo.prefix;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -18,6 +19,7 @@ import com.lying.item.DecayDustItem;
 import com.lying.item.RaggedBannerItem;
 import com.lying.item.RottenFruitItem;
 import com.lying.reference.Reference;
+import com.lying.utility.RCUtils;
 
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
@@ -42,7 +44,7 @@ public class RCItems
 {
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Reference.ModInfo.MOD_ID, RegistryKeys.ITEM);
 	public static final DeferredRegister<ItemGroup> TABS = DeferredRegister.create(Reference.ModInfo.MOD_ID, RegistryKeys.ITEM_GROUP);
-	private static int itemTally = 0;
+	private static int itemTally = 0, blockTally = 0;
 	
 	public static Map<DyeColor, RegistrySupplier<Item>> DYE_TO_SHARD = new HashMap<>();
 	protected static final List<RegistrySupplier<Item>> ALL_BLOCKS	= Lists.newArrayList();
@@ -96,6 +98,7 @@ public class RCItems
 	public static final RegistrySupplier<Item> STONE_RUBBLE					= registerBlockNoItem("stone_rubble", RCBlocks.STONE_RUBBLE);
 	public static final RegistrySupplier<Item> DEEPSLATE_RUBBLE				= registerBlockNoItem("deepslate_rubble", RCBlocks.DEEPSLATE_RUBBLE);
 	public static final RegistrySupplier<Item> BROKEN_GLASS					= registerBlockNoItem("broken_glass", RCBlocks.BROKEN_GLASS);
+	public static final RegistrySupplier<Item> BROKEN_GLASS_PANE			= registerBlockNoItem("broken_glass_pane", RCBlocks.BROKEN_GLASS_PANE);
 	
 	private static RegistrySupplier<Item> registerGlassShard(DyeColor color)
 	{
@@ -106,7 +109,12 @@ public class RCItems
 	
 	private static RegistrySupplier<Item> registerBrokenGlass(DyeColor color)
 	{
-		return registerBlockNoItem("broken_"+color.asString()+"_glass", (RegistrySupplier<Block>)RCBlocks.DYE_TO_GLASS.get(color).broken());
+		return registerBlockNoItem("broken_"+color.asString()+"_glass", (RegistrySupplier<Block>)RCBlocks.DYE_TO_GLASS_BLOCK.get(color).broken());
+	}
+	
+	private static RegistrySupplier<Item> registerBrokenGlassPane(DyeColor color)
+	{
+		return registerBlockNoItem("broken_"+color.asString()+"_glass_pane", (RegistrySupplier<Block>)RCBlocks.DYE_TO_GLASS_PANE.get(color).broken());
 	}
 	
 	private static RegistrySupplier<Item> registerRaggedBanner(DyeColor color)
@@ -157,6 +165,7 @@ public class RCItems
 	{
 		RegistrySupplier<Item> registry = register(prefix(nameIn), supplier);
 		ALL_BLOCKS.add(registry);
+		blockTally++;
 		return registry;
 	}
 	
@@ -176,17 +185,20 @@ public class RCItems
 	
 	public static void init()
 	{
-		for(DyeColor color : DyeColor.values())
-		{
-			registerCrackedConcrete(color);
-			registerTerracottaBlock(color);
-			registerRaggedBanner(color);
-			registerBrokenGlass(color);
-			registerGlassShard(color);
-		}
+		// Bulk registration of colour spectrum items
+		for(Consumer<DyeColor> group : List.<Consumer<DyeColor>>of(
+				RCItems::registerCrackedConcrete, 
+				RCItems::registerTerracottaBlock, 
+				RCItems::registerRaggedBanner,
+				RCItems::registerBrokenGlass,
+				RCItems::registerBrokenGlassPane,
+				RCItems::registerGlassShard
+				))
+			for(DyeColor color : RCUtils.COLOR_SPECTRUM)
+				group.accept(color);
 		
 		TABS.register();
 		ITEMS.register();
-		Reclamation.LOGGER.info("# Initialised {} items ({} block items)", itemTally, ALL_BLOCKS.size());
+		Reclamation.LOGGER.info("# Initialised {} items ({} block items)", itemTally, blockTally);
 	}
 }

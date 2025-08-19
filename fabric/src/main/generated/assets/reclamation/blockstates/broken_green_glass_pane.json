@@ -1,0 +1,39 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "reclamation:block/broken_green_glass_pane",
+        "y": 90
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "reclamation:block/broken_green_glass_pane",
+        "y": 270
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "reclamation:block/broken_green_glass_pane",
+        "y": 180
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "reclamation:block/broken_green_glass_pane"
+      },
+      "when": {
+        "south": "true"
+      }
+    }
+  ]
+}

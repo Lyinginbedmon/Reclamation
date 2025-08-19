@@ -1,8 +1,11 @@
 package com.lying.client;
 
+import java.util.function.Supplier;
+
 import com.lying.block.LeafPileBlock;
 import com.lying.client.renderer.RaggedBannerTextures;
 import com.lying.init.RCBlocks;
+import com.lying.init.RCBlocks.Glass;
 import com.lying.init.RCParticleTypes;
 import com.lying.item.RottenFruitItem;
 
@@ -34,7 +37,9 @@ public class ReclamationClient
 	
 	private static void registerRenderers()
 	{
-		RenderTypeRegistry.register(RenderLayer.getCutout(), RCBlocks.IVY.get(), RCBlocks.MOLD.get(), RCBlocks.BROKEN_GLASS.get());
+		RenderTypeRegistry.register(RenderLayer.getCutout(), RCBlocks.IVY.get(), RCBlocks.MOLD.get(), RCBlocks.BROKEN_GLASS.get(), RCBlocks.BROKEN_GLASS_PANE.get());
+		RenderTypeRegistry.register(RenderLayer.getTranslucent(), RCBlocks.DYE_TO_GLASS_BLOCK.values().stream().map(Glass::broken).map(Supplier::get).toList().toArray(new Block[0]));
+		RenderTypeRegistry.register(RenderLayer.getTranslucent(), RCBlocks.DYE_TO_GLASS_PANE.values().stream().map(Glass::broken).map(Supplier::get).toList().toArray(new Block[0]));
 		RenderTypeRegistry.register(RenderLayer.getCutoutMipped(), LeafPileBlock.LEAF_PILE_TO_LEAVES.keySet().stream().toList().toArray(new Block[0]));
 	}
 	

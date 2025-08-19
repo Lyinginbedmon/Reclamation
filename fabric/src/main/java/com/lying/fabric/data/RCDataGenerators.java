@@ -13,6 +13,7 @@ public class RCDataGenerators implements DataGeneratorEntrypoint
 		pack.addProvider(RCModelProvider::new);
 		pack.addProvider(RCBlockTagsProvider::new);
 		pack.addProvider(RCItemTagsProvider::new);
+		pack.addProvider(RCGameEventTagsProvider::new);
 		pack.addProvider(RCBlockLootTableProvider::new);
 		pack.addProvider(RCRecipeProvider::new);
 		pack.addProvider(RCDecayProvider::new);

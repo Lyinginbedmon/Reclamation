@@ -21,6 +21,7 @@ import com.lying.init.RCBlocks;
 import com.lying.init.RCDataComponentTypes;
 import com.lying.init.RCDecayConditions;
 import com.lying.init.RCDecayFunctions;
+import com.lying.init.RCGameEvents;
 import com.lying.init.RCGameRules;
 import com.lying.init.RCItems;
 import com.lying.init.RCParticleTypes;
@@ -64,6 +65,7 @@ public final class Reclamation
 		DecayMacros.init();
 		DecayLibrary.init();
 		registerServerEvents();
+		RCGameEvents.init();
 	}
 	
 	@SuppressWarnings("deprecation")

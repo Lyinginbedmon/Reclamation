@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "glass_shards",
+  "ingredients": [
+    "reclamation:blue_glass_shard",
+    "reclamation:blue_glass_shard",
+    "reclamation:blue_glass_shard",
+    "reclamation:blue_glass_shard",
+    "reclamation:blue_glass_shard",
+    "reclamation:blue_glass_shard",
+    "reclamation:blue_glass_shard",
+    "reclamation:blue_glass_shard",
+    "reclamation:blue_glass_shard"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:blue_stained_glass"
+  }
+}

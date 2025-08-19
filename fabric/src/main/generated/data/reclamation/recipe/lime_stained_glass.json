@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "glass_shards",
+  "ingredients": [
+    "reclamation:lime_glass_shard",
+    "reclamation:lime_glass_shard",
+    "reclamation:lime_glass_shard",
+    "reclamation:lime_glass_shard",
+    "reclamation:lime_glass_shard",
+    "reclamation:lime_glass_shard",
+    "reclamation:lime_glass_shard",
+    "reclamation:lime_glass_shard",
+    "reclamation:lime_glass_shard"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:lime_stained_glass"
+  }
+}

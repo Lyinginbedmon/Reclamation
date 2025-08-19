@@ -31,5 +31,14 @@
 			"reclamation:rotten_fruit_break_9",
 			"reclamation:rotten_fruit_break_10"
 		]
+	},
+	"glass_crunch": {
+		"subtitle": "sound.reclamation.glass_crunch",
+		"sounds": [
+			"reclamation:glass_crunch_0",
+			"reclamation:glass_crunch_1",
+			"reclamation:glass_crunch_2",
+			"reclamation:glass_crunch_3"
+		]
 	}
 }
