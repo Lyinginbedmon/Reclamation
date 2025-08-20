@@ -30,11 +30,11 @@
     "id": "reclamation:macro",
     "macros": [
       "reclamation:place_mold_down",
-      "reclamation:place_mold_west",
-      "reclamation:place_mold_east",
-      "reclamation:place_mold_north",
       "reclamation:place_mold_south",
-      "reclamation:place_mold_up"
+      "reclamation:place_mold_up",
+      "reclamation:place_mold_north",
+      "reclamation:place_mold_west",
+      "reclamation:place_mold_east"
     ],
     "randomise": true
   },

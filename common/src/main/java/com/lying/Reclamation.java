@@ -3,6 +3,7 @@ package com.lying;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,7 @@ import com.lying.init.RCParticleTypes;
 import com.lying.init.RCSoundEvents;
 import com.lying.item.RottenFruitItem;
 import com.lying.reference.Reference;
+import com.lying.utility.RCUtils;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.TickEvent;
@@ -36,6 +38,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
@@ -153,8 +156,26 @@ public final class Reclamation
 		if(decayOptions.isEmpty())
 			return Optional.empty();
 		
-		DecayEntry decay = decayOptions.size() > 1 ? decayOptions.get(context.random.nextInt(decayOptions.size())) : decayOptions.get(0);
-		return decay(world, decay, context);
+		DecayEntry decay = null;
+		/** If there's only one valid choice, try to apply it */
+		if(decayOptions.size() == 1)
+			decay = decayOptions.get(0);
+		else
+		{
+			/**
+			 * If there are multiple valid choices, weight them by their chance and select from that<br>
+			 * This means high-chance choices are still the most likely to be attempted, without eliminating low-chance choices entirely
+			 */
+			final Identifier selected = RCUtils.selectFromWeightedList(
+					decayOptions.stream().map(e -> Pair.of(e.packName(),e.chance(pos, world))).toList(), 
+					context.random.nextFloat());
+			decay = decayOptions.stream().filter(e -> e.packName().equals(selected)).findAny().get();
+		}
+		
+		if(decay == null)
+			return Optional.empty();
+		else
+			return decay(world, decay, context);
 	}
 	
 	/**

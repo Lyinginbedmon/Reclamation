@@ -1,0 +1,22 @@
+{
+  "condition": {
+    "block": "minecraft:brown_banner",
+    "id": "reclamation:is_block"
+  },
+  "functions": [
+    {
+      "convert_to": {
+        "block": "reclamation:ragged_brown_banner"
+      },
+      "id": "reclamation:convert"
+    },
+    {
+      "id": "reclamation:copy_blockstate_value",
+      "properties": [
+        "rotation"
+      ]
+    },
+    "reclamation:copy_block_entity"
+  ],
+  "name": "reclamation:tatter_brown_banner"
+}

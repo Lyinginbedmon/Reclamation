@@ -54,7 +54,7 @@ public class DecayLibrary implements ReloadListener<Map<Identifier, JsonObject>>
 	/** Returns a list of all decay entries applicable to the given block */
 	public List<DecayEntry> getDecayOptions(DecayContext context)
 	{
-		return DATA.values().stream().filter(d -> d.test(context)).toList();
+		return DATA.values().stream().filter(d -> d.test(context) && d.chance(context.currentPos(), context.world.get()) > 0F).toList();
 	}
 	
 	public Optional<DecayEntry> get(Identifier id) { return DATA.containsKey(id) ? Optional.of(DATA.get(id)) : Optional.empty(); }

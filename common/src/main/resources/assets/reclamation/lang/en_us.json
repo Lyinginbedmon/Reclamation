@@ -144,7 +144,6 @@
 	"tag.item.reclamation.rotten_fruit": "Rotten fruit",
 	"tag.item.reclamation.rotten_pumpkin": "Rotten pumpkin",
 	// Status effects
-	// Item tags
 	// Commands
 	"command.reclamation.failed_generic": "Command failed",
 	"command.reclamation.natural_decay_rate.get": "Natural decay rate is currently set to %s",

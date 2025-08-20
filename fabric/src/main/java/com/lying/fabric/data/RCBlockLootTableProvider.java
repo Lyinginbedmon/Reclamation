@@ -10,8 +10,9 @@ import com.lying.block.LeafPileBlock;
 import com.lying.block.RubbleBlock;
 import com.lying.block.SootBlock;
 import com.lying.init.RCBlocks;
-import com.lying.init.RCItems;
+import com.lying.init.RCBlocks.Banner;
 import com.lying.init.RCBlocks.Terracotta;
+import com.lying.init.RCItems;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
@@ -69,6 +70,7 @@ public class RCBlockLootTableProvider extends FabricBlockLootTableProvider
 		RCBlocks.DYE_TO_TERRACOTTA.values().stream().map(Terracotta::faded).map(Supplier::get).forEach(this::addDrop);
 		RCBlocks.DYE_TO_CONCRETE.values().stream().forEach(c -> addCrackedConcreteDrops(c.cracked().get(), c.powder().get()));
 		LeafPileBlock.LEAF_PILES.forEach(l -> addLeafPileDrops(l));
+		RCBlocks.DYE_TO_BANNER.values().stream().map(Banner::floorRagged).map(Supplier::get).forEach(entry -> addDrop(entry, block -> bannerDrops(entry)));
 		
 		addRustDrops(RCBlocks.EXPOSED_IRON.get(), Items.IRON_INGOT, 4, 7);
 		addRustDrops(RCBlocks.WEATHERED_IRON.get(), Items.IRON_INGOT, 2, 5);

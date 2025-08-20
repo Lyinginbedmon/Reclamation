@@ -402,5 +402,11 @@ public class DefaultDecayLibrary
 					RCDecayConditions.UNCOVERED.get(),
 					ConditionIsBlock.of(Blocks.GOLD_BLOCK))
 				.function(FunctionConvert.toBlock(RCBlocks.TARNISHED_GOLD.get())).build());
+		
+		register(DecayEntry.Builder.create(
+				DecayChance.base(0.15F))
+				.name("banner_to_tattered_banner")
+				.condition(ConditionMacro.of(DefaultDecayMacros.TATTER_BANNER))
+				.function(FunctionMacro.of(DefaultDecayMacros.TATTER_BANNER)).build());
 	}
 }

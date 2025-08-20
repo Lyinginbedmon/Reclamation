@@ -11,21 +11,19 @@
     {
       "apply": {
         "model": "reclamation:block/broken_orange_glass",
-        "x": 90,
-        "y": 90
+        "x": 90
       },
       "when": {
-        "west": "true"
+        "south": "true"
       }
     },
     {
       "apply": {
         "model": "reclamation:block/broken_orange_glass",
-        "x": 90,
-        "y": 270
+        "x": 180
       },
       "when": {
-        "east": "true"
+        "up": "true"
       }
     },
     {
@@ -41,19 +39,21 @@
     {
       "apply": {
         "model": "reclamation:block/broken_orange_glass",
-        "x": 90
+        "x": 90,
+        "y": 90
       },
       "when": {
-        "south": "true"
+        "west": "true"
       }
     },
     {
       "apply": {
         "model": "reclamation:block/broken_orange_glass",
-        "x": 180
+        "x": 90,
+        "y": 270
       },
       "when": {
-        "up": "true"
+        "east": "true"
       }
     }
   ]

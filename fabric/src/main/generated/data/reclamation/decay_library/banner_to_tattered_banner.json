@@ -1,0 +1,14 @@
+{
+  "chance": {
+    "base_chance": 0.15
+  },
+  "condition": {
+    "id": "reclamation:macro",
+    "macro": "reclamation:tatter_banner"
+  },
+  "function": {
+    "id": "reclamation:macro",
+    "macro": "reclamation:tatter_banner"
+  },
+  "name": "reclamation:banner_to_tattered_banner"
+}

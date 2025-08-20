@@ -1,20 +1,20 @@
 {
   "values": [
-    "reclamation:cracked_cyan_concrete",
-    "reclamation:cracked_light_blue_concrete",
-    "reclamation:cracked_lime_concrete",
-    "reclamation:cracked_black_concrete",
-    "reclamation:cracked_blue_concrete",
-    "reclamation:cracked_magenta_concrete",
-    "reclamation:cracked_pink_concrete",
-    "reclamation:cracked_brown_concrete",
-    "reclamation:cracked_gray_concrete",
+    "reclamation:cracked_green_concrete",
+    "reclamation:cracked_orange_concrete",
     "reclamation:cracked_light_gray_concrete",
-    "reclamation:cracked_red_concrete",
     "reclamation:cracked_white_concrete",
     "reclamation:cracked_yellow_concrete",
-    "reclamation:cracked_orange_concrete",
+    "reclamation:cracked_pink_concrete",
+    "reclamation:cracked_light_blue_concrete",
+    "reclamation:cracked_gray_concrete",
+    "reclamation:cracked_magenta_concrete",
+    "reclamation:cracked_blue_concrete",
+    "reclamation:cracked_black_concrete",
     "reclamation:cracked_purple_concrete",
-    "reclamation:cracked_green_concrete"
+    "reclamation:cracked_red_concrete",
+    "reclamation:cracked_lime_concrete",
+    "reclamation:cracked_brown_concrete",
+    "reclamation:cracked_cyan_concrete"
   ]
 }

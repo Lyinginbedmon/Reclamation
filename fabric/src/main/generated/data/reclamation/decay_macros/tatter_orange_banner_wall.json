@@ -1,0 +1,22 @@
+{
+  "condition": {
+    "block": "minecraft:orange_wall_banner",
+    "id": "reclamation:is_block"
+  },
+  "functions": [
+    {
+      "convert_to": {
+        "block": "reclamation:ragged_orange_wall_banner"
+      },
+      "id": "reclamation:convert"
+    },
+    {
+      "id": "reclamation:copy_blockstate_value",
+      "properties": [
+        "facing"
+      ]
+    },
+    "reclamation:copy_block_entity"
+  ],
+  "name": "reclamation:tatter_orange_banner_wall"
+}

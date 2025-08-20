@@ -1,0 +1,44 @@
+{
+  "condition": {
+    "block_tag": "#minecraft:banners",
+    "id": "reclamation:is_block"
+  },
+  "function": {
+    "id": "reclamation:macro",
+    "macros": [
+      "reclamation:tatter_red_banner",
+      "reclamation:tatter_red_banner_wall",
+      "reclamation:tatter_orange_banner",
+      "reclamation:tatter_orange_banner_wall",
+      "reclamation:tatter_yellow_banner",
+      "reclamation:tatter_yellow_banner_wall",
+      "reclamation:tatter_lime_banner",
+      "reclamation:tatter_lime_banner_wall",
+      "reclamation:tatter_green_banner",
+      "reclamation:tatter_green_banner_wall",
+      "reclamation:tatter_cyan_banner",
+      "reclamation:tatter_cyan_banner_wall",
+      "reclamation:tatter_light_blue_banner",
+      "reclamation:tatter_light_blue_banner_wall",
+      "reclamation:tatter_blue_banner",
+      "reclamation:tatter_blue_banner_wall",
+      "reclamation:tatter_purple_banner",
+      "reclamation:tatter_purple_banner_wall",
+      "reclamation:tatter_magenta_banner",
+      "reclamation:tatter_magenta_banner_wall",
+      "reclamation:tatter_pink_banner",
+      "reclamation:tatter_pink_banner_wall",
+      "reclamation:tatter_brown_banner",
+      "reclamation:tatter_brown_banner_wall",
+      "reclamation:tatter_black_banner",
+      "reclamation:tatter_black_banner_wall",
+      "reclamation:tatter_gray_banner",
+      "reclamation:tatter_gray_banner_wall",
+      "reclamation:tatter_light_gray_banner",
+      "reclamation:tatter_light_gray_banner_wall",
+      "reclamation:tatter_white_banner",
+      "reclamation:tatter_white_banner_wall"
+    ]
+  },
+  "name": "reclamation:tatter_banner"
+}

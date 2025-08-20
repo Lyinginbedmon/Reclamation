@@ -8,13 +8,16 @@ import java.util.function.Supplier;
 
 import com.lying.Reclamation;
 import com.lying.decay.functions.DecayFunction;
+import com.lying.decay.functions.FunctionBlockEntity;
 import com.lying.decay.functions.FunctionBlockState;
 import com.lying.decay.functions.FunctionBonemeal;
 import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionFallingBlock;
 import com.lying.decay.functions.FunctionMacro;
+import com.lying.decay.functions.FunctionRunCmd;
 import com.lying.decay.functions.FunctionShuffle;
 import com.lying.decay.functions.FunctionSprout;
+import com.lying.decay.handler.DecayMacro;
 import com.lying.reference.Reference;
 
 import net.minecraft.util.Identifier;
@@ -22,6 +25,8 @@ import net.minecraft.util.Identifier;
 public class RCDecayFunctions
 {
 	private static final Map<Identifier, Supplier<? extends DecayFunction>> FUNCTIONS = new HashMap<>();
+	
+	// FIXME Function to apply random block update
 	
 	/** Replaces affected block with another */
 	public static final Supplier<FunctionConvert> CONVERT		= register("convert", FunctionConvert::new);
@@ -51,6 +56,12 @@ public class RCDecayFunctions
 	public static final Supplier<FunctionSprout> SPROUT		= register("sprout", FunctionSprout::new);
 	/** Applies the first valid {@link DecayMacro} to the affected block */
 	public static final Supplier<FunctionMacro> MACRO		= register("macro", FunctionMacro::new);
+	/** Clones the original block entity NBT on to the current block */
+	public static final Supplier<FunctionBlockEntity.Copy> COPY_ENTITY	= register("copy_block_entity", FunctionBlockEntity.Copy::new);
+	/** Merges the current block entity's NBT data with specified NBT data */
+	public static final Supplier<FunctionBlockEntity.Merge> MERGE_ENTITY	= register("merge_block_entity", FunctionBlockEntity.Merge::new);
+	/** Runs a specified command from the current position of the block */
+	public static final Supplier<FunctionRunCmd> RUN_CMD	= register("run_command", FunctionRunCmd::new);
 	
 	private static <T extends DecayFunction> Supplier<T> register(String nameIn, Function<Identifier, T> funcIn)
 	{

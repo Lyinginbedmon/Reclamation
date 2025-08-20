@@ -4,7 +4,9 @@ import static com.lying.reference.Reference.ModInfo.translate;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +39,7 @@ import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -253,8 +256,36 @@ public class RCCommands
 				return 15;
 			
 			List<DecayEntry> decayOptions = DecayLibrary.instance().getDecayOptions(LiveDecayContext.supplier(pos, world, DecayType.NATURAL));
+			Map<Identifier, Float> chanceMap = new HashMap<>();
+			float totalChance = 0F;
+			for(DecayEntry entry : decayOptions)
+			{
+				float chance = entry.chance(pos, world);
+				totalChance += chance;
+				chanceMap.put(entry.packName(), chance);
+			}
+			
+			final float finalChance = totalChance;
 			source.sendFeedback(() -> translate("command", "decay_chance_list", decayOptions.size()), true);
-			decayOptions.forEach(entry -> source.sendFeedback(() -> Text.literal(" - ").append(translate("command", "decay_chance_entry", entry.packName().toString(), entry.chance(pos, world))), false));
+			decayOptions.forEach(entry -> source.sendFeedback(() -> 
+			{
+				Identifier name = entry.packName();
+				float chance = chanceMap.get(name);
+				chance *= 100;
+				chance = (float)(int)chance / 100;
+				
+				MutableText text = Text.literal(" - ").append(translate("command", "decay_chance_entry", name.toString(), chance));
+				if(decayOptions.size() < 2)
+					return text;
+				else
+				{
+					float percentile = (chanceMap.get(name) / finalChance) * 100;
+					percentile *= 10;
+					percentile = (float)(int)percentile / 10;
+					
+					return text.append(" (").append(Text.literal(String.valueOf(percentile))).append("%)");
+				}
+			}, false));
 			
 			return 15;
 		}

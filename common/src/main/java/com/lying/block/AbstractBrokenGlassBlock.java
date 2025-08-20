@@ -10,7 +10,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 public abstract class AbstractBrokenGlassBlock extends TransparentBlock
@@ -20,20 +22,29 @@ public abstract class AbstractBrokenGlassBlock extends TransparentBlock
 		super(settings);
 	}
 	
-	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity)
+	public static boolean shouldAffectEntity(Entity entity, BlockState state, BlockPos pos, World world)
 	{
 		/**
 		 * Skip non-living entities and entities whose horizontal position differs from ours
 		 * This ensures only 1 broken glass block affects an entity at a time
 		 */
-		if(!(entity instanceof LivingEntity) || !entity.getBlockPos().withY(pos.getY()).equals(pos))
+		if(!(entity instanceof LivingEntity))
+			return false;
+		
+		// Ensure entity is actually colliding with the block outline
+		Box entityBox = entity.getBoundingBox();
+		VoxelShape blockBounds = state.getOutlineShape(world, pos);
+		return blockBounds.getBoundingBoxes().stream().anyMatch(box -> box.offset(pos).intersects(entityBox));
+	}
+	
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity)
+	{
+		if(!shouldAffectEntity(entity, state, pos, world) || !entity.getBlockPos().withY(pos.getY()).equals(pos))
 			return;
 		
 		// If we're on top of another broken glass block and the entity's position is in that block, skip
 		if(world.getBlockState(pos.down()).getBlock() instanceof AbstractBrokenGlassBlock && entity.getBlockPos().getY() != pos.getY())
 			return;
-		
-		// FIXME Ensure mob bounding box is within block bounding box, not just position
 		
 		entity.slowMovement(state, new Vec3d(0.8F, 0.75F, 0.8F));
 		if(!entity.bypassesSteppingEffects())

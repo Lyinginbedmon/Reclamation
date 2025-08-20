@@ -11,6 +11,8 @@ import com.lying.event.DecayEvent;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -31,6 +33,8 @@ public abstract class DecayContext
 	
 	/** The block state that was originally affected */
 	public final BlockState originalState;
+	
+	public final NbtCompound originalNBT;
 	
 	/** The current world position of the block being acted on */
 	protected BlockPos currentPos;
@@ -53,11 +57,18 @@ public abstract class DecayContext
 		{
 			world = Optional.empty();
 			random = null;
+			originalNBT = new NbtCompound();
 		}
 		else
 		{
 			world = Optional.of(serverWorld);
 			random = serverWorld.random;
+			
+			BlockEntity entity = serverWorld.getBlockEntity(start);
+			if(entity == null)
+				originalNBT = new NbtCompound();
+			else
+				originalNBT = entity.createNbt(serverWorld.getRegistryManager());
 		}
 		type = typeIn;
 		initialPos = currentPos = start;

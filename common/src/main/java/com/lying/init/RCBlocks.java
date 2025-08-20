@@ -7,6 +7,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.common.collect.Lists;
 import com.lying.Reclamation;
 import com.lying.block.BrokenGlassBlock;
@@ -60,7 +62,9 @@ public class RCBlocks
 	public static final Map<DyeColor, Terracotta> DYE_TO_TERRACOTTA = new HashMap<>();
 	public static final Map<DyeColor, Concrete> DYE_TO_CONCRETE = new HashMap<>();
 	public static final Map<DyeColor, Glass> DYE_TO_GLASS_BLOCK = new HashMap<>(), DYE_TO_GLASS_PANE = new HashMap<>();
-	public static final Map<DyeColor, RegistrySupplier<Block>> DYE_TO_RAGGED_BANNER = new HashMap<>(), DYE_TO_RAGGED_WALL_BANNER = new HashMap<>();
+	public static final Map<DyeColor, Banner> DYE_TO_BANNER	= new HashMap<>();
+	
+	private static final Map<DyeColor, Pair<RegistrySupplier<Block>,RegistrySupplier<Block>>> DYE_TO_RAGGED_BANNER = new HashMap<>();
 	
 	public static record Terracotta(Supplier<Block> glazed, Supplier<Block> faded, Supplier<Block> blank)
 	{
@@ -73,6 +77,10 @@ public class RCBlocks
 	public static record Glass(Supplier<Block> intact, Supplier<Block> broken)
 	{
 		public static Glass of(Supplier<Block> cracked, Block intact) { return new Glass(() -> intact, cracked); }
+	}
+	public static record Banner(Supplier<Block> floor, Supplier<Block> wall, Supplier<Block> floorRagged, Supplier<Block> wallRagged)
+	{
+		public static Banner of(Block floor, Block wall, Supplier<Block> floorRagged, Supplier<Block> wallRagged) { return new Banner(() -> floor, () -> wall, floorRagged, wallRagged); }
 	}
 	
 	public static final RegistrySupplier<Block> WAXED_IRON_BLOCK		= registerSolidCube("waxed_iron_block", settings -> new ScrapeableBlock(() -> Blocks.IRON_BLOCK, settings.mapColor(MapColor.IRON_GRAY).instrument(NoteBlockInstrument.IRON_XYLOPHONE).requiresTool().strength(5F, 6F).sounds(BlockSoundGroup.METAL)));
@@ -118,31 +126,27 @@ public class RCBlocks
 	public static final RegistrySupplier<Block> STONE_RUBBLE				= register("stone_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLESTONE, settings.nonOpaque().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	public static final RegistrySupplier<Block> DEEPSLATE_RUBBLE			= register("deepslate_rubble", settings -> new RubbleBlock(() -> Blocks.COBBLED_DEEPSLATE, settings.nonOpaque().mapColor(MapColor.DEEPSLATE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(1.0F, 2.0F)));
 	
-	private static RegistrySupplier<Block> registerRaggedBanner(DyeColor color)
+	private static void registerRaggedBanners(DyeColor color)
 	{
-		RegistrySupplier<Block> registry = registerBanner("ragged_"+color.asString()+"_banner", color, RaggedBannerBlock::new);
-		DYE_TO_RAGGED_BANNER.put(color, registry);
-		return registry;
-	}
-	
-	private static RegistrySupplier<Block> registerRaggedWallBanner(DyeColor color)
-	{
-		RegistrySupplier<Block> registry = registerBanner("ragged_"+color.asString()+"_wall_banner", color, RaggedWallBannerBlock::new);
-		DYE_TO_RAGGED_WALL_BANNER.put(color, registry);
-		return registry;
+		RegistrySupplier<Block> floor = registerBanner("ragged_"+color.asString()+"_banner", color, RaggedBannerBlock::new, Function.identity());
+		RegistrySupplier<Block> wall = registerBanner("ragged_"+color.asString()+"_wall_banner", color, RaggedWallBannerBlock::new, settings -> copyLootTable(settings, floor.get(), true));
+		DYE_TO_RAGGED_BANNER.put(color, Pair.of(floor, wall));
 	}
 	
 	public static Block[] getAllBanners()
 	{
 		List<Block> banners = Lists.newArrayList();
-		DYE_TO_RAGGED_BANNER.values().stream().map(Supplier::get).forEach(banners::add);
-		DYE_TO_RAGGED_WALL_BANNER.values().stream().map(Supplier::get).forEach(banners::add);
+		DYE_TO_RAGGED_BANNER.values().forEach(pair -> 
+		{
+			banners.add(pair.getLeft().get());
+			banners.add(pair.getRight().get());
+		});
 		return banners.toArray(new Block[0]);
 	}
 	
-	private static RegistrySupplier<Block> registerBanner(String nameIn, DyeColor color, BiFunction<DyeColor,AbstractBlock.Settings, Block> constructor)
+	private static RegistrySupplier<Block> registerBanner(String nameIn, DyeColor color, BiFunction<DyeColor,AbstractBlock.Settings, Block> constructor, Function<AbstractBlock.Settings,AbstractBlock.Settings> funcIn)
 	{
-		return register(nameIn, settings -> constructor.apply(color, settings
+		return register(nameIn, settings -> constructor.apply(color, funcIn.apply(settings)
 				.mapColor(MapColor.OAK_TAN)
 				.solid()
 				.instrument(NoteBlockInstrument.BASEDRUM)
@@ -256,6 +260,14 @@ public class RCBlocks
 	
 	private static Boolean never(BlockState state, BlockView world, BlockPos pos) { return false; }
 	
+	private static AbstractBlock.Settings copyLootTable(AbstractBlock.Settings settings, Block block, boolean copyTranslationKey)
+	{
+		settings.lootTable(block.getLootTableKey());
+		if(copyTranslationKey)
+			settings.overrideTranslationKey(block.getTranslationKey());
+		return settings;
+	}
+	
 	public static void init()
 	{
 		// Bulk registration of colour spectrum blocks
@@ -265,8 +277,7 @@ public class RCBlocks
 			crackedConcrete.put(color, registerCrackedConcrete(color));
 			fadedTerracotta.put(color, registerFadedTerracotta(color));
 			
-			registerRaggedBanner(color);
-			registerRaggedWallBanner(color);
+			registerRaggedBanners(color);
 			registerBrokenStainedGlass(color, RCUtils.dyeToStainedGlass(color));
 			registerBrokenStainedGlassPane(color, RCUtils.dyeToStainedGlassPane(color));
 		}
@@ -278,6 +289,9 @@ public class RCBlocks
 		{
 			DYE_TO_CONCRETE.put(color, Concrete.of(RCUtils.dyeToConcrete(color), crackedConcrete.get(color), RCUtils.dyeToConcretePowder(color)));
 			DYE_TO_TERRACOTTA.put(color, Terracotta.of(RCUtils.dyeToGlazedTerracotta(color), fadedTerracotta.get(color), RCUtils.dyeToTerracotta(color)));
+			
+			Pair<RegistrySupplier<Block>, RegistrySupplier<Block>> raggedBanners = DYE_TO_RAGGED_BANNER.get(color);
+			DYE_TO_BANNER.put(color, Banner.of(RCUtils.dyeToBanner(color).getLeft(), RCUtils.dyeToBanner(color).getRight(), raggedBanners.getLeft(), raggedBanners.getRight()));
 		}
 		
 		TINTED_LEAF_PILES = List.of(

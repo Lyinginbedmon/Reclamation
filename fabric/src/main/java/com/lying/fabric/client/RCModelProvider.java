@@ -101,7 +101,7 @@ public class RCModelProvider extends FabricModelProvider
 			blockStateModelGenerator.registerNorthDefaultHorizontalRotated(block, TexturedModel.ORIENTABLE);
 		
 		RCBlocks.DYE_TO_CONCRETE.values().stream().forEach(b -> CrackedConcrete.makeBlockState((CrackedConcreteBlock)b.cracked().get(), b.dry().get(), blockStateModelGenerator));
-		RCBlocks.DYE_TO_RAGGED_BANNER.entrySet().forEach(e -> RaggedBanner.makeBlockState(e.getValue().get(), RaggedWallBannerBlock.getForColor(e.getKey()), e.getKey(), blockStateModelGenerator));
+		RCBlocks.DYE_TO_BANNER.entrySet().forEach(e -> RaggedBanner.makeBlockState(e.getValue().floorRagged().get(), RaggedWallBannerBlock.getForColor(e.getKey()), e.getKey(), blockStateModelGenerator));
 		DousedLights.register(blockStateModelGenerator);
 		LeafPile.register(blockStateModelGenerator);
 		registerSlab(RCBlocks.CRACKED_STONE_BRICK_SLAB.get(), Blocks.CRACKED_STONE_BRICKS, blockStateModelGenerator);

@@ -21,11 +21,19 @@ import com.lying.decay.functions.FunctionConvert;
 import com.lying.decay.functions.FunctionMacro;
 import com.lying.decay.handler.DecayMacro;
 import com.lying.init.RCBlocks;
+import com.lying.init.RCBlocks.Banner;
+import com.lying.init.RCBlocks.Concrete;
+import com.lying.init.RCBlocks.Terracotta;
 import com.lying.init.RCDecayConditions;
+import com.lying.init.RCDecayFunctions;
 import com.lying.utility.PositionPredicate.Comparison;
+import com.lying.utility.RCUtils;
 
+import net.minecraft.block.BannerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.WallBannerBlock;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.DyeColor;
@@ -45,6 +53,7 @@ public class DefaultDecayMacros
 	public static final Identifier FADE_TERRACOTTA	= prefix("fade_terracotta_main");
 	public static final Identifier BLANK_TERRACOTTA	= prefix("blank_terracotta_main");
 	public static final Identifier CRACK_CONCRETE	= prefix("crack_concrete");
+	public static final Identifier TATTER_BANNER	= prefix("tatter_banner");
 	
 	private static Identifier register(DecayMacro dataIn)
 	{
@@ -56,13 +65,13 @@ public class DefaultDecayMacros
 	
 	static
 	{
+		// Place ivy
 		List<Identifier> ivySet = Lists.newArrayList();
 		IVY_FACES.entrySet().forEach(entry -> ivySet.add(register(DecayMacro.Builder.create()
 				.name("place_ivy_"+entry.getKey().asString())
 				.condition(ConditionNeighbouring.Supported.onFaces(entry.getKey()))
 				.function(FunctionConvert.toBlockState(RCBlocks.IVY.get().getDefaultState().with(entry.getValue(), true)))
 				.build())));
-		
 		register(DecayMacro.Builder.create()
 				.name(PLACE_IVY)
 				.condition(
@@ -72,13 +81,13 @@ public class DefaultDecayMacros
 				.function(FunctionMacro.of(ivySet.toArray(new Identifier[0])).randomised())
 				.build());
 		
+		// Grow mold
 		List<Identifier> moldSet = Lists.newArrayList();
 		MOLD_FACES.entrySet().forEach(entry -> moldSet.add(register(DecayMacro.Builder.create()
 				.name("place_mold_"+entry.getKey().asString())
 				.condition(ConditionNeighbouring.Supported.onFaces(entry.getKey()))
 				.function(FunctionConvert.toBlockState(RCBlocks.MOLD.get().getDefaultState().with(entry.getValue(), true)))
 				.build())));
-		
 		register(DecayMacro.Builder.create()
 				.name(PLACE_MOLD)
 				.condition(
@@ -100,15 +109,16 @@ public class DefaultDecayMacros
 					Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING, 
 					Blocks.BROWN_MUSHROOM, Blocks.RED_MUSHROOM)).build());
 		
+		// Degrade terracotta
 		List<Identifier> fadeSet = Lists.newArrayList();
 		List<Identifier> blankSet = Lists.newArrayList();
-		RCBlocks.DYE_TO_TERRACOTTA.entrySet().forEach(entry -> 
+		for(DyeColor color : RCUtils.COLOR_SPECTRUM)
 		{
-			DyeColor color = entry.getKey();
-			Block faded = entry.getValue().faded().get();
+			Terracotta set = RCBlocks.DYE_TO_TERRACOTTA.get(color);
+			Block faded = set.faded().get();
 			DecayMacro fade = DecayMacro.Builder.create()
 				.name("fade_"+color.asString()+"_terracotta")
-				.condition(ConditionIsBlock.of(entry.getValue().glazed().get()))
+				.condition(ConditionIsBlock.of(set.glazed().get()))
 				.function(
 					FunctionConvert.toBlock(faded),
 					FunctionBlockState.CopyValue.of(Properties.HORIZONTAL_FACING)).build(); 
@@ -117,9 +127,9 @@ public class DefaultDecayMacros
 			DecayMacro blank = DecayMacro.Builder.create()
 					.name("blank_"+color.asString()+"_terracotta")
 					.condition(ConditionIsBlock.of(faded))
-					.function(FunctionConvert.toBlock(entry.getValue().blank().get())).build(); 
+					.function(FunctionConvert.toBlock(set.blank().get())).build(); 
 			blankSet.add(register(blank));
-		});
+		};
 		register(DecayMacro.Builder.create()
 				.name(FADE_TERRACOTTA)
 				.function(FunctionMacro.of(fadeSet.toArray(new Identifier[0]))).build());
@@ -127,21 +137,53 @@ public class DefaultDecayMacros
 				.name(BLANK_TERRACOTTA)
 				.function(FunctionMacro.of(blankSet.toArray(new Identifier[0]))).build());
 		
+		// Crack concrete
 		List<Identifier> crackSet = Lists.newArrayList();
-		RCBlocks.DYE_TO_CONCRETE.entrySet().forEach(entry -> 
+		for(DyeColor color : RCUtils.COLOR_SPECTRUM)
 		{
-			DyeColor color = entry.getKey();
-			Block concrete = entry.getValue().dry().get();
-			Block cracked = entry.getValue().cracked().get();
+			Concrete set = RCBlocks.DYE_TO_CONCRETE.get(color);
+			Block concrete = set.dry().get();
+			Block cracked = set.cracked().get();
 			DecayMacro crack = DecayMacro.Builder.create()
 				.name("crack_"+color.asString()+"_concrete")
 				.condition(ConditionIsBlock.of(concrete))
 				.function(FunctionConvert.toBlock(cracked)).build();
 			crackSet.add(register(crack));
-		});
+		};
 		register(DecayMacro.Builder.create()
 				.name(CRACK_CONCRETE)
 				.condition(ConditionIsBlock.of(RCTags.CONCRETE))
 				.function(FunctionMacro.of(crackSet.toArray(new Identifier[0]))).build());
+		
+		// Tatter banners
+		List<Identifier> tatterSet = Lists.newArrayList();
+		for(DyeColor color : RCUtils.COLOR_SPECTRUM)
+		{
+			Banner banner = RCBlocks.DYE_TO_BANNER.get(color);
+			
+			DecayMacro tatterFloor = DecayMacro.Builder.create()
+				.name("tatter_"+color.asString()+"_banner")
+				.condition(ConditionIsBlock.of(banner.floor().get()))
+				.function(
+					FunctionConvert.toBlock(banner.floorRagged().get()),
+					FunctionBlockState.CopyValue.of(BannerBlock.ROTATION),
+					RCDecayFunctions.COPY_ENTITY.get()
+						).build();
+			tatterSet.add(register(tatterFloor));
+			
+			DecayMacro tatterWall = DecayMacro.Builder.create()
+				.name("tatter_"+color.asString()+"_banner_wall")
+				.condition(ConditionIsBlock.of(banner.wall().get()))
+				.function(
+					FunctionConvert.toBlock(banner.wallRagged().get()),
+					FunctionBlockState.CopyValue.of(WallBannerBlock.FACING),
+					RCDecayFunctions.COPY_ENTITY.get()
+						).build();
+			tatterSet.add(register(tatterWall));
+		}
+		register(DecayMacro.Builder.create()
+			.name(TATTER_BANNER)
+			.condition(ConditionIsBlock.of(BlockTags.BANNERS))
+			.function(FunctionMacro.of(tatterSet.toArray(new Identifier[0]))).build());
 	}
 }
